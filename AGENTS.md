@@ -1,51 +1,82 @@
-# Project Agents.md Guide
+# AGENTS.md
 
-This is a [MoonBit](https://docs.moonbitlang.com) project.
+## Development Commands
 
-## Project Structure
+- `moon check` - Lint and type-check (runs in pre-commit hook)
+- `moon test` - Run all tests
+- `moon test -p <package> -f <file>` - Run specific tests
+- `moon fmt` - Format code
+- `moon info` - Update `.mbti` interface files
+- `moon info && moon fmt` - Standard workflow before committing
 
-- MoonBit packages are organized per directory, for each directory, there is a
-  `moon.pkg.json` file listing its dependencies. Each package has its files and
-  blackbox test files (common, ending in `_test.mbt`) and whitebox test files
-  (ending in `_wbtest.mbt`).
+## MoonBit Notes
 
-- In the toplevel directory, this is a `moon.mod.json` file listing about the
-  module and some meta information.
+- Use `suberror` for error types, `raise` to throw, `try! func() |> ignore` to ignore errors
+- Use `func() |> ignore` not `let _ = func()`
+- When using `inspect(value, content=expected_string)`, don't declare a separate `let expected = ...` variable - it causes unused variable warnings. Put the expected string directly in the `content=` parameter
+- Use `!condition` not `not(condition)`
+- Use `f(value)` not `f!(value)` (deprecated)
+- Use `for i in 0..<n` not C-style `for i = 0; i < n; i = i + 1`
+- Use `if opt is Pattern(v) { ... }` for single-branch matching, not `match opt {}`
+- Use `arr.clear()` not `while arr.length() > 0 { arr.pop() }`
+- Use `s.code_unit_at(i)` or `for c in s` not `s[i]` (deprecated)
+- Struct/enum visibility: `priv` (hidden) < (none)/abstract (type only) < `pub` (readonly) < `pub(all)` (full)
+- Default to abstract (no modifier) for internal types; use `pub struct` when external code reads fields
+- Use `pub(all) enum` for enums that external code pattern-matches on
+- Use `let mut` only for reassignment, not for mutable containers like Array
+- Use `reinterpret_as_uint()` for unsigned ops, `to_int()` for numeric conversion
+- Use `Array::length()` not `Array::size()`
+- In moon.pkg.json, use "import", "test-import" and "wbtest-import" to manage package importing for ".mbt", "_test.mbt" and "_wbtest.mbt"
+- Use `Option::unwrap_or` not `Option::or`
+- Use `const CAPITAL_NAME : Type = expr` to define constants, not `let` or `lower_case_name`
+- Use `Ref::new` not `@ref.new`
+- Use `pub(open) trait` to export a trait 
+- Use `try! s[start:end]` to forcely get a slice (StringView)
 
-## Coding convention
+## License Header
 
-- MoonBit code is organized in block style, each block is separated by `///|`,
-  the order of each block is irrelevant. In some refactorings, you can process
-  block by block independently.
+- Add the following header to new source files (unless the file already has an
+  existing license header):
+  ```
+  // Copyright 2025 International Digital Economy Academy
+  //
+  // Licensed under the Apache License, Version 2.0 (the "License");
+  // you may not use this file except in compliance with the License.
+  // You may obtain a copy of the License at
+  //
+  //     http://www.apache.org/licenses/LICENSE-2.0
+  //
+  // Unless required by applicable law or agreed to in writing, software
+  // distributed under the License is distributed on an "AS IS" BASIS,
+  // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  // See the License for the specific language governing permissions and
+  // limitations under the License.
+  ```
 
-- Try to keep deprecated blocks in file called `deprecated.mbt` in each
-  directory.
+## Landing the Plane (Session Completion)
 
-## Tooling
+**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
 
-- `moon fmt` is used to format your code properly.
+**MANDATORY WORKFLOW:**
 
-- `moon info` is used to update the generated interface of the package, each
-  package has a generated interface file `.mbti`, it is a brief formal
-  description of the package. If nothing in `.mbti` changes, this means your
-  change does not bring the visible changes to the external package users, it is
-  typically a safe refactoring.
+1. **File issues for remaining work** - Create issues for anything that needs follow-up
+2. **Run quality gates** (if code changed) - Tests, linters, builds
+3. **Update issue status** - Close finished work, update in-progress items
+4. **PUSH TO REMOTE** - This is MANDATORY:
+   ```bash
+   git pull --rebase
+   bd sync
+   git push
+   git status  # MUST show "up to date with origin"
+   ```
+5. **Clean up** - Clear stashes, prune remote branches
+6. **Verify** - All changes committed AND pushed
+7. **Hand off** - Provide context for next session
 
-- In the last step, run `moon info && moon fmt` to update the interface and
-  format the code. Check the diffs of `.mbti` file to see if the changes are
-  expected.
+**CRITICAL RULES:**
+- Work is NOT complete until `git push` succeeds
+- NEVER stop before pushing - that leaves work stranded locally
+- NEVER say "ready to push when you are" - YOU must push
+- If push fails, resolve and retry until it succeeds
 
-- Run `moon test` to check the test is passed. MoonBit supports snapshot
-  testing, so when your changes indeed change the behavior of the code, you
-  should run `moon test --update` to update the snapshot.
-
-- You can run `moon check` to check the code is linted correctly.
-
-- When writing tests, you are encouraged to use `inspect` and run
-  `moon test --update` to update the snapshots, only use assertions like
-  `assert_eq` when you are in some loops where each snapshot may vary. You can
-  use `moon coverage analyze > uncovered.log` to see which parts of your code
-  are not covered by tests.
-
-- agent-todo.md has some small tasks that are easy for AI to pick up, agent is
-  welcome to finish the tasks and check the box when you are done
+Use 'bd' for task tracking
