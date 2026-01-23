@@ -1,0 +1,207 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/moon_swash/swash/internal"
+
+// Values
+pub const CVAR : UInt = 0x63766172
+
+pub const CVT_ : UInt = 0x63767420
+
+pub const FPGM : UInt = 0x6670676D
+
+pub const GLYF : UInt = 0x676C7966
+
+pub const GVAR : UInt = 0x67766172
+
+pub const HEAD : UInt = 0x68656164
+
+pub const HEAD_MAGIC : UInt = 0x5F0F3CF5
+
+pub const HHEA : UInt = 0x68686561
+
+pub const HMTX : UInt = 0x686D7478
+
+pub const LOCA : UInt = 0x6C6F6361
+
+pub const MAXP : UInt = 0x6D617870
+
+pub const OS_2 : UInt = 0x4F532F32
+
+pub const POST : UInt = 0x706F7374
+
+pub const PREP : UInt = 0x70726570
+
+pub const VHEA : UInt = 0x76686561
+
+pub const VMTX : UInt = 0x766D7478
+
+pub fn advance(Bytes, UInt, UInt, UInt) -> UInt
+
+pub fn ceil(Int) -> Int
+
+pub fn count(Bytes) -> Int
+
+pub fn div(Int, Int) -> Int
+
+pub fn enumerate(Bytes, UInt, (UInt, UInt) -> Unit) -> Unit
+
+pub fn floor(Int) -> Int
+
+pub fn get(Bytes, UInt, UInt, UInt, UInt) -> BytesView?
+
+pub fn is_collection(Bytes) -> Bool
+
+pub fn is_font(Bytes, Int) -> Bool
+
+pub fn map(Bytes, UInt, UInt, UInt) -> UInt?
+
+pub fn mul(Int, Int) -> Int
+
+pub fn muldiv(Int, Int, Int) -> Int
+
+pub fn offset(Bytes, Int) -> Int?
+
+pub fn raw_tag(Bytes) -> UInt?
+
+pub fn round(Int) -> Int
+
+pub fn sb(Bytes, UInt, UInt, UInt) -> Int
+
+pub fn[T : RawFont] subtable(T) -> (UInt, UInt, Bool)?
+
+pub fn[T : RawFont] table_data(T, UInt) -> BytesView?
+
+pub fn[T : RawFont] table_offset(T, UInt) -> UInt
+
+pub fn[T : RawFont] table_range(T, UInt) -> (UInt, UInt)?
+
+pub fn ymax(Bytes, UInt, UInt, UInt, UInt) -> Int?
+
+// Errors
+
+// Types and methods
+pub struct BeBytes {
+  data : BytesView
+}
+pub fn BeBytes::check_range(Self, Int, Int) -> Bool
+pub fn BeBytes::data(Self) -> BytesView
+pub fn BeBytes::ensure_range(Self, Int, Int) -> Bool
+pub fn BeBytes::from_view(BytesView) -> Self
+pub fn BeBytes::len(Self) -> Int
+pub fn BeBytes::new(Bytes) -> Self
+pub fn BeBytes::read_i16(Self, Int) -> Int?
+pub fn BeBytes::read_i32(Self, Int) -> Int?
+pub fn BeBytes::read_u16(Self, Int) -> UInt?
+pub fn BeBytes::read_u24(Self, Int) -> UInt?
+pub fn BeBytes::read_u32(Self, Int) -> UInt?
+pub fn BeBytes::read_u64(Self, Int) -> UInt64?
+pub fn BeBytes::read_u8(Self, Int) -> Byte?
+pub fn BeBytes::with_offset(Bytes, Int) -> Self?
+
+pub struct Fixed {
+  value : Int
+}
+pub fn Fixed::abs(Self) -> Self
+pub fn Fixed::epsilon() -> Self
+pub fn Fixed::floor(Self) -> Self
+pub fn Fixed::fract(Self) -> Self
+pub fn Fixed::from_f2dot14(Int) -> Self
+pub fn Fixed::from_f32(Double) -> Self
+pub fn Fixed::from_i32(Int) -> Self
+pub fn Fixed::from_raw(Int) -> Self
+pub fn Fixed::max(Self, Self) -> Self
+pub fn Fixed::max_value() -> Self
+pub fn Fixed::min(Self, Self) -> Self
+pub fn Fixed::min_value() -> Self
+pub fn Fixed::one() -> Self
+pub fn Fixed::raw(Self) -> Int
+pub fn Fixed::round(Self) -> Self
+pub fn Fixed::to_f2dot14(Self) -> Int
+pub fn Fixed::to_f32(Self) -> Double
+pub fn Fixed::to_i32(Self) -> Int
+pub fn Fixed::zero() -> Self
+pub impl Add for Fixed
+pub impl Div for Fixed
+pub impl Mul for Fixed
+pub impl Neg for Fixed
+pub impl Sub for Fixed
+
+pub struct Head {
+  data : BytesView
+}
+pub fn Head::bounds(Self) -> ((Int, Int), (Int, Int))
+pub fn Head::checksum_adjustment(Self) -> UInt
+pub fn Head::created(Self) -> UInt64
+pub fn Head::direction_hint(Self) -> UInt
+pub fn Head::flags(Self) -> UInt
+pub fn[T : RawFont] Head::from_font(T) -> Self?
+pub fn Head::glyph_data_format(Self) -> Int
+pub fn Head::index_to_location_format(Self) -> UInt
+pub fn Head::lowest_recommended_ppem(Self) -> UInt
+pub fn Head::mac_style(Self) -> UInt
+pub fn Head::magic(Self) -> UInt
+pub fn Head::major_version(Self) -> UInt
+pub fn Head::minor_version(Self) -> UInt
+pub fn Head::modified(Self) -> UInt64
+pub fn Head::new(BytesView) -> Self
+pub fn Head::revision(Self) -> UInt
+pub fn Head::units_per_em(Self) -> UInt
+
+pub struct Hhea {
+  data : BytesView
+}
+pub fn Hhea::ascender(Self) -> Int
+pub fn Hhea::descender(Self) -> Int
+pub fn[T : RawFont] Hhea::from_font(T) -> Self?
+pub fn Hhea::line_gap(Self) -> Int
+pub fn Hhea::max_advance(Self) -> UInt
+pub fn Hhea::new(BytesView) -> Self
+pub fn Hhea::num_long_metrics(Self) -> UInt
+
+pub struct Maxp {
+  data : BytesView
+}
+pub fn[T : RawFont] Maxp::from_font(T) -> Self?
+pub fn Maxp::glyph_count(Self) -> UInt
+pub fn Maxp::is_truetype(Self) -> Bool
+pub fn Maxp::new(BytesView) -> Self
+pub fn Maxp::version(Self) -> UInt
+
+pub struct Stream {
+  data : BytesView
+  mut offset : Int
+}
+pub fn Stream::check_range(Self, Int) -> Bool
+pub fn Stream::data(Self) -> BytesView
+pub fn Stream::from_view(BytesView) -> Self
+pub fn Stream::len(Self) -> Int
+pub fn Stream::new(Bytes) -> Self
+pub fn Stream::offset(Self) -> Int
+pub fn Stream::read_i16(Self) -> Int?
+pub fn Stream::read_u16(Self) -> UInt?
+pub fn Stream::read_u32(Self) -> UInt?
+pub fn Stream::read_u8(Self) -> Byte?
+pub fn Stream::remaining(Self) -> Int
+pub fn Stream::set_offset(Self, Int) -> Bool
+pub fn Stream::skip(Self, Int) -> Bool
+pub fn Stream::with_offset(Bytes, Int) -> Self?
+
+pub struct Vhea {
+  data : BytesView
+}
+pub fn Vhea::ascender(Self) -> Int
+pub fn Vhea::descender(Self) -> Int
+pub fn[T : RawFont] Vhea::from_font(T) -> Self?
+pub fn Vhea::line_gap(Self) -> Int
+pub fn Vhea::max_advance(Self) -> UInt
+pub fn Vhea::new(BytesView) -> Self
+pub fn Vhea::num_long_metrics(Self) -> UInt
+
+// Type aliases
+pub type RawTag = UInt
+
+// Traits
+pub(open) trait RawFont {
+  data(Self) -> Bytes
+  offset(Self) -> Int
+}
+

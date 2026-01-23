@@ -1,0 +1,9 @@
+{
+  "import": [
+    "moonbitlang/core/array",
+    "moonbitlang/core/bytes",
+    "moonbitlang/core/option",
+    "Milky2018/moon_swash/swash",
+    "Milky2018/moon_swash/swash/internal"
+  ]
+}

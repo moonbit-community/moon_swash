@@ -1,0 +1,15 @@
+{
+  "name": "Milky2018/moon_swash",
+  "version": "0.1.0",
+  "readme": "README.mbt.md",
+  "repository": "",
+  "license": "Apache-2.0",
+  "keywords": [],
+  "description": "",
+  "source": "src",
+  "deps": {
+    "Milky2018/moon_zeno": "0.1.0",
+    "Milky2018/moon_yazi": "0.1.0",
+    "Milky2018/moon_skrifa": "0.1.0"
+  }
+}
