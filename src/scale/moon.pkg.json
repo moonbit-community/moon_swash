@@ -3,7 +3,29 @@
     "moonbitlang/core/array",
     "moonbitlang/core/bytes",
     "moonbitlang/core/option",
-    "Milky2018/moon_swash/swash",
-    "Milky2018/moon_swash/swash/internal"
+    {
+      "path": "Milky2018/moon_swash",
+      "alias": "swash"
+    },
+    {
+      "path": "Milky2018/moon_zeno",
+      "alias": "zeno"
+    },
+    {
+      "path": "Milky2018/moon_yazi",
+      "alias": "yazi"
+    },
+    {
+      "path": "Milky2018/moon_skrifa",
+      "alias": "skrifa"
+    },
+    {
+      "path": "Milky2018/moon_skrifa/outline",
+      "alias": "skrifa_outline"
+    },
+    {
+      "path": "Milky2018/moon_swash/internal",
+      "alias": "internal"
+    }
   ]
 }

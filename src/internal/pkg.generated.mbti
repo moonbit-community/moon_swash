@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "Milky2018/moon_swash/swash/internal"
+package "Milky2018/moon_swash/internal"
 
 // Values
 pub const CVAR : UInt = 0x63766172

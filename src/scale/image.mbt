@@ -84,6 +84,7 @@ pub fn Image::data(self : Image) -> Bytes {
   self.data
 }
 
+///|
 test "Image::new produces empty image" {
   let img = Image::new()
   inspect(
@@ -104,6 +105,7 @@ test "Image::new produces empty image" {
   inspect(img.data().length(), content="0")
 }
 
+///|
 test "Image::clear resets fields" {
   let img = Image::new()
   img.clear()

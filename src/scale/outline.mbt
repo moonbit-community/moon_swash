@@ -19,13 +19,12 @@
 ///
 /// Note: MoonBit doesn't currently expose slice borrowing like Rust, so the
 /// `Layer` accessors return index ranges into the shared points/verbs arrays.
-
 pub struct LayerData {
   points_start : Int
   points_end : Int
   verbs_start : Int
   verbs_end : Int
-  color_index : Option[UInt16]
+  color_index : UInt16?
 }
 
 ///|
@@ -59,7 +58,7 @@ pub fn Outline::is_empty(self : Outline) -> Bool {
 }
 
 ///|
-pub fn Outline::layer_data(self : Outline, index : Int) -> Option[LayerData] {
+pub fn Outline::layer_data(self : Outline, index : Int) -> LayerData? {
   if index < 0 || index >= self.layers.length() {
     None
   } else {
@@ -99,11 +98,13 @@ pub fn Outline::clear(self : Outline) -> Unit {
 
 // ---- internal builders (ported from `pub(super)` APIs) ----
 
-///| Internal builder method (upstream: `pub(super)`).
+///|
+/// Internal builder method (upstream: `pub(super)`).
 pub fn Outline::set_color(self : Outline, color : Bool) -> Unit {
   self.is_color = color
 }
 
+///|
 fn Outline::maybe_close(self : Outline) -> Unit {
   if self.verbs.length() == 0 {
     return
@@ -116,8 +117,9 @@ fn Outline::maybe_close(self : Outline) -> Unit {
   self.verbs.push(Verb::Close)
 }
 
-///| Internal builder method (upstream: `pub(super)`).
-pub fn Outline::begin_layer(self : Outline, color_index : Option[UInt16]) -> Unit {
+///|
+/// Internal builder method (upstream: `pub(super)`).
+pub fn Outline::begin_layer(self : Outline, color_index : UInt16?) -> Unit {
   let points_end = self.points.length()
   let verbs_end = self.verbs.length()
   if self.layers.length() > 0 {
@@ -130,18 +132,17 @@ pub fn Outline::begin_layer(self : Outline, color_index : Option[UInt16]) -> Uni
       color_index: last.color_index,
     }
   }
-  self.layers.push(
-    LayerData::{
-      points_start: points_end,
-      points_end,
-      verbs_start: verbs_end,
-      verbs_end,
-      color_index,
-    },
-  )
+  self.layers.push(LayerData::{
+    points_start: points_end,
+    points_end,
+    verbs_start: verbs_end,
+    verbs_end,
+    color_index,
+  })
 }
 
-///| Internal builder method (upstream: `pub(super)`).
+///|
+/// Internal builder method (upstream: `pub(super)`).
 pub fn Outline::finish(self : Outline) -> Unit {
   let points_end = self.points.length()
   let verbs_end = self.verbs.length()
@@ -155,39 +156,41 @@ pub fn Outline::finish(self : Outline) -> Unit {
       color_index: last.color_index,
     }
   } else {
-    self.layers.push(
-      LayerData::{
-        points_start: 0,
-        points_end,
-        verbs_start: 0,
-        verbs_end,
-        color_index: None,
-      },
-    )
+    self.layers.push(LayerData::{
+      points_start: 0,
+      points_end,
+      verbs_start: 0,
+      verbs_end,
+      color_index: None,
+    })
   }
 }
 
-///| Internal builder method (upstream: `pub(super)`).
+///|
+/// Internal builder method (upstream: `pub(super)`).
 pub fn Outline::move_to(self : Outline, p : Point) -> Unit {
   self.maybe_close()
   self.points.push(p)
   self.verbs.push(Verb::MoveTo)
 }
 
-///| Internal builder method (upstream: `pub(super)`).
+///|
+/// Internal builder method (upstream: `pub(super)`).
 pub fn Outline::line_to(self : Outline, p : Point) -> Unit {
   self.points.push(p)
   self.verbs.push(Verb::LineTo)
 }
 
-///| Internal builder method (upstream: `pub(super)`).
+///|
+/// Internal builder method (upstream: `pub(super)`).
 pub fn Outline::quad_to(self : Outline, p0 : Point, p1 : Point) -> Unit {
   self.points.push(p0)
   self.points.push(p1)
   self.verbs.push(Verb::QuadTo)
 }
 
-///| Internal builder method (upstream: `pub(super)`).
+///|
+/// Internal builder method (upstream: `pub(super)`).
 pub fn Outline::curve_to(
   self : Outline,
   p0 : Point,
@@ -200,11 +203,13 @@ pub fn Outline::curve_to(
   self.verbs.push(Verb::CurveTo)
 }
 
-///| Internal builder method (upstream: `pub(super)`).
+///|
+/// Internal builder method (upstream: `pub(super)`).
 pub fn Outline::close(self : Outline) -> Unit {
   self.verbs.push(Verb::Close)
 }
 
+///|
 test "Outline basic path recording" {
   let o = Outline::new()
   o.set_color(false)

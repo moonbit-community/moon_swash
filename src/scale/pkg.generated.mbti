@@ -1,0 +1,143 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/moon_swash/scale"
+
+import {
+  "Milky2018/moon_skrifa/outline",
+  "Milky2018/moon_swash",
+  "Milky2018/moon_yazi",
+  "Milky2018/moon_zeno",
+}
+
+// Values
+pub fn inflate_zlib(Bytes) -> Array[Byte] raise @moon_yazi.YaziError
+
+pub fn is_png(Bytes) -> Bool
+
+// Errors
+
+// Types and methods
+pub(all) enum Content {
+  Mask
+  SubpixelMask
+  Color
+}
+pub fn Content::default() -> Self
+
+pub struct Image {
+  mut source : Source
+  mut content : Content
+  mut placement : @moon_zeno.Placement
+  mut data : Bytes
+}
+pub fn Image::clear(Self) -> Unit
+pub fn Image::content(Self) -> Content
+pub fn Image::data(Self) -> Bytes
+pub fn Image::new() -> Self
+pub fn Image::placement(Self) -> @moon_zeno.Placement
+pub fn Image::source(Self) -> Source
+
+pub struct LayerData {
+  points_start : Int
+  points_end : Int
+  verbs_start : Int
+  verbs_end : Int
+  color_index : UInt16?
+}
+
+pub struct Outline {
+  layers : Array[LayerData]
+  points : Array[@moon_zeno.Vector]
+  verbs : Array[@moon_zeno.Verb]
+  mut is_color : Bool
+}
+pub fn Outline::begin_layer(Self, UInt16?) -> Unit
+pub fn Outline::bounds(Self) -> @moon_zeno.Bounds
+pub fn Outline::clear(Self) -> Unit
+pub fn Outline::close(Self) -> Unit
+pub fn Outline::curve_to(Self, @moon_zeno.Vector, @moon_zeno.Vector, @moon_zeno.Vector) -> Unit
+pub fn Outline::finish(Self) -> Unit
+pub fn Outline::is_color(Self) -> Bool
+pub fn Outline::is_empty(Self) -> Bool
+pub fn Outline::layer_data(Self, Int) -> LayerData?
+pub fn Outline::len(Self) -> Int
+pub fn Outline::line_to(Self, @moon_zeno.Vector) -> Unit
+pub fn Outline::move_to(Self, @moon_zeno.Vector) -> Unit
+pub fn Outline::new() -> Self
+pub fn Outline::points(Self) -> Array[@moon_zeno.Vector]
+pub fn Outline::quad_to(Self, @moon_zeno.Vector, @moon_zeno.Vector) -> Unit
+pub fn Outline::set_color(Self, Bool) -> Unit
+pub fn Outline::transform(Self, @moon_zeno.Transform) -> Unit
+pub fn Outline::verbs(Self) -> Array[@moon_zeno.Verb]
+
+type OutlineWriter
+pub impl @outline.OutlinePen for OutlineWriter
+
+pub struct Render {
+  sources : Array[Source]
+  format : @moon_zeno.Format
+  offset : @moon_zeno.Vector
+}
+pub fn Render::format(Self, @moon_zeno.Format) -> Self
+pub fn Render::new(Array[Source]) -> Self
+pub fn Render::offset(Self, @moon_zeno.Vector) -> Self
+pub fn Render::render(Self, Scaler, UInt) -> Image?
+
+pub struct ScaleContext {
+}
+pub fn ScaleContext::builder(Self, @moon_swash.FontRef) -> ScalerBuilder
+pub fn ScaleContext::new() -> Self
+
+pub struct Scaler {
+  font : @moon_swash.FontRef
+  size : Double
+  hint : Bool
+}
+pub fn Scaler::hint(Self) -> Bool
+pub fn Scaler::scale_outline(Self, UInt) -> Outline?
+pub fn Scaler::size(Self) -> Double
+
+pub struct ScalerBuilder {
+  font : @moon_swash.FontRef
+  size : Double
+  hint : Bool
+}
+pub fn ScalerBuilder::build(Self) -> Scaler
+pub fn ScalerBuilder::hint(Self, Bool) -> Self
+pub fn ScalerBuilder::size(Self, Double) -> Self
+
+pub(all) enum Source {
+  Outline
+  ColorOutline(UInt16)
+  Bitmap(StrikeWith)
+  ColorBitmap(StrikeWith)
+}
+pub fn Source::default() -> Self
+
+pub(all) enum StrikeWith {
+  ExactSize
+  BestFit
+  LargestSize
+  Index(UInt)
+}
+
+// Type aliases
+pub using @moon_zeno {type Bounds}
+
+pub using @moon_zeno {type Format}
+
+pub type PaletteIndex = UInt16
+
+pub using @moon_zeno {type Placement}
+
+pub using @moon_zeno {type Vector as Point}
+
+pub type StrikeIndex = UInt
+
+pub using @moon_zeno {type Transform}
+
+pub using @moon_zeno {type Vector}
+
+pub using @moon_zeno {type Verb}
+
+// Traits
+

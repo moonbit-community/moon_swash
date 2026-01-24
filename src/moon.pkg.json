@@ -3,6 +3,6 @@
     "moonbitlang/core/bytes",
     "moonbitlang/core/ref",
     "moonbitlang/core/string",
-    "Milky2018/moon_swash/swash/internal"
+    "Milky2018/moon_swash/internal"
   ]
 }

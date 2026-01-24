@@ -18,8 +18,9 @@
 /// This package is an early scaffold ported from upstream `swash/src/scale/*`.
 /// The public data model aims to stay source-compatible with upstream where
 /// practical; functional rasterization is implemented incrementally.
-
 pub type PaletteIndex = UInt16
+
+///|
 pub type StrikeIndex = UInt
 
 ///|
@@ -49,6 +50,7 @@ pub fn Source::default() -> Source {
   Source::Outline
 }
 
+///|
 test "Source::default is Outline" {
   let ok = match Source::default() {
     Outline => true

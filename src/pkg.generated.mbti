@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "Milky2018/moon_swash/swash"
+package "Milky2018/moon_swash"
 
 import {
-  "Milky2018/moon_swash/swash/internal",
+  "Milky2018/moon_swash/internal",
 }
 
 // Values

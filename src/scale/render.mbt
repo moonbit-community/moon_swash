@@ -17,7 +17,6 @@
 ///
 /// Ported in shape from upstream `swash::scale::Render`, but without the actual
 /// rasterization pipeline (zeno Mask/Scratch) yet.
-
 pub struct Render {
   sources : Array[Source]
   format : @zeno.Format
@@ -44,14 +43,19 @@ pub fn Render::offset(self : Render, offset : @zeno.Vector) -> Render {
 }
 
 ///|
-pub fn Render::render(_self : Render, _scaler : Scaler, _glyph_id : @swash.GlyphId) -> Image? {
+pub fn Render::render(
+  _self : Render,
+  _scaler : Scaler,
+  _glyph_id : @swash.GlyphId,
+) -> Image? {
   // TODO(swash): implement render using Outline/Bitmap sources.
   None
 }
 
+///|
 test "Render builder scaffolding" {
-  let r = Render::new([Source::Outline]).format(@zeno.Format::Subpixel).offset(
-    @zeno.Vector::new(0.25, 0.75),
-  )
+  let r = Render::new([Source::Outline])
+    .format(@zeno.Format::Subpixel)
+    .offset(@zeno.Vector::new(0.25, 0.75))
   inspect(r.sources.length(), content="1")
 }
