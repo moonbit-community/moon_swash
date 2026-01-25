@@ -118,15 +118,14 @@ fn to_skrifa_font(font : @swash.FontRef) -> @skrifa.FontRef? {
 ///|
 struct OutlineWriter {
   outline : Outline
-  scale : Double
 }
 
 ///|
-fn OutlineWriter::new(scale : Double) -> OutlineWriter {
+fn OutlineWriter::new() -> OutlineWriter {
   let outline = Outline::new()
   outline.set_color(false)
   outline.begin_layer(None)
-  OutlineWriter::{ outline, scale }
+  OutlineWriter::{ outline, }
 }
 
 ///|
@@ -137,16 +136,12 @@ fn OutlineWriter::finish(self : OutlineWriter) -> Outline {
 
 ///|
 pub impl @skrifa_outline.OutlinePen for OutlineWriter with move_to(self, x, y) {
-  self.outline.move_to(
-    Vector::new(x.to_double() * self.scale, y.to_double() * self.scale),
-  )
+  self.outline.move_to(Vector::new(x.to_double(), y.to_double()))
 }
 
 ///|
 pub impl @skrifa_outline.OutlinePen for OutlineWriter with line_to(self, x, y) {
-  self.outline.line_to(
-    Vector::new(x.to_double() * self.scale, y.to_double() * self.scale),
-  )
+  self.outline.line_to(Vector::new(x.to_double(), y.to_double()))
 }
 
 ///|
@@ -158,8 +153,8 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with quad_to(
   y,
 ) {
   self.outline.quad_to(
-    Vector::new(cx0.to_double() * self.scale, cy0.to_double() * self.scale),
-    Vector::new(x.to_double() * self.scale, y.to_double() * self.scale),
+    Vector::new(cx0.to_double(), cy0.to_double()),
+    Vector::new(x.to_double(), y.to_double()),
   )
 }
 
@@ -174,9 +169,9 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with curve_to(
   y,
 ) {
   self.outline.curve_to(
-    Vector::new(cx0.to_double() * self.scale, cy0.to_double() * self.scale),
-    Vector::new(cx1.to_double() * self.scale, cy1.to_double() * self.scale),
-    Vector::new(x.to_double() * self.scale, y.to_double() * self.scale),
+    Vector::new(cx0.to_double(), cy0.to_double()),
+    Vector::new(cx1.to_double(), cy1.to_double()),
+    Vector::new(x.to_double(), y.to_double()),
   )
 }
 
@@ -189,7 +184,8 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with close(self) {
 fn outline_from_skrifa(
   font : @swash.FontRef,
   glyph_id : @swash.GlyphId,
-  scale : Double,
+  ppem : Double,
+  hint : Bool,
 ) -> Outline? {
   match to_skrifa_font(font) {
     None => None
@@ -197,8 +193,28 @@ fn outline_from_skrifa(
       let outlines = @skrifa_outline.OutlineGlyphCollection::from_font(
         skrifa_font,
       )
-      let pen = OutlineWriter::new(scale)
-      if outlines.draw(glyph_id, pen) {
+      let size = if ppem <= 0.0 {
+        @skrifa.Size::unscaled()
+      } else {
+        @skrifa.Size::new(ppem)
+      }
+      let loc = @skrifa.LocationRef::default()
+      let settings = if hint {
+        match
+          @skrifa_outline.HintingInstance::new(
+            outlines,
+            size,
+            loc,
+            @skrifa_outline.HintingOptions::default(),
+          ) {
+          Err(_) => @skrifa_outline.DrawSettings::unhinted(size, loc)
+          Ok(h) => @skrifa_outline.DrawSettings::hinted(h, false)
+        }
+      } else {
+        @skrifa_outline.DrawSettings::unhinted(size, loc)
+      }
+      let pen = OutlineWriter::new()
+      if outlines.draw(glyph_id, settings, pen) {
         Some(pen.finish())
       } else {
         None
@@ -229,7 +245,7 @@ pub fn Scaler::scale_outline(
   } else {
     self.size / units_per_em.to_double()
   }
-  match outline_from_skrifa(self.font, glyph_id, scale) {
+  match outline_from_skrifa(self.font, glyph_id, self.size, self.hint) {
     Some(o) => return Some(o)
     None => ()
   }
