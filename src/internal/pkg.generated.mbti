@@ -106,6 +106,8 @@ pub fn language_feature_count(Bytes, UInt) -> UInt16
 
 pub fn map(Bytes, UInt, UInt, UInt) -> UInt?
 
+pub fn morx_chains(Bytes, UInt) -> MorxChains
+
 pub fn mul(Int, Int) -> Int
 
 pub fn muldiv(Int, Int, Int) -> Int
@@ -235,6 +237,26 @@ pub fn Maxp::glyph_count(Self) -> UInt
 pub fn Maxp::is_truetype(Self) -> Bool
 pub fn Maxp::new(BytesView) -> Self
 pub fn Maxp::version(Self) -> UInt
+
+pub struct MorxChain {
+  b : BeBytes
+  offset : Int
+  feature_count : UInt
+}
+pub fn MorxChain::features(Self) -> Iter[MorxFeature]
+
+pub struct MorxChains {
+  b : BeBytes
+  offset : Int
+  len : UInt
+  cur : UInt
+}
+pub fn MorxChains::iter(Self) -> Iter[MorxChain]
+
+pub struct MorxFeature {
+  selector : UInt16
+  setting_selector : UInt16
+}
 
 pub struct Mvar {
   data : Bytes

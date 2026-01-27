@@ -115,6 +115,29 @@ fn feature_test_build_gsubgpos(script_tag : UInt, feature_tag : UInt) -> Bytes {
 }
 
 ///|
+fn feature_test_build_morx(feature : Int, selector : Int) -> Bytes {
+  // Minimal morx table containing:
+  // - chainCount = 1
+  // - one chain with one feature record (feature + selector)
+  let out : Array[Byte] = Array::new()
+  // Header (version + reserved)
+  feature_test_push_u16_be(out, 2)
+  feature_test_push_u16_be(out, 0)
+  feature_test_push_u32_be(out, 1U) // chainCount
+  // Chain (defaultFlags + chainLen + featureCount + subtableCount)
+  feature_test_push_u32_be(out, 0U) // defaultFlags
+  feature_test_push_u32_be(out, 28U) // chainLen (16 + 12 * 1)
+  feature_test_push_u32_be(out, 1U) // featureCount
+  feature_test_push_u32_be(out, 0U) // subtableCount
+  // Feature record (12 bytes)
+  feature_test_push_u16_be(out, feature)
+  feature_test_push_u16_be(out, selector)
+  feature_test_push_u32_be(out, 0U) // enableFlags
+  feature_test_push_u32_be(out, 0U) // disableFlags
+  Bytes::from_array(out.op_as_view())
+}
+
+///|
 test "FontRef::writing_systems enumerates GSUB/GPOS writing systems and features" {
   let gsub = feature_test_build_gsubgpos(0x6C61746E, 0x6C696761) // "latn", "liga"
   let gpos = feature_test_build_gsubgpos(0x6C61746E, 0x6B65726E) // "latn", "kern"
@@ -173,4 +196,67 @@ test "FontRef::features returns known features (unique across GSUB/GPOS)" {
   let font = FontRef::from_offset(sfnt, 0).unwrap()
   let feats = font.features().iter().to_array()
   inspect(feats.length(), content="2")
+}
+
+///|
+test "FontRef::features enumerates morx features (and kern fallback)" {
+  let morx = feature_test_build_morx(1, 0)
+  let kern = Bytes::from_array([0])
+  // NOTE: table records must be sorted by tag ("kern" < "morx").
+  let sfnt = feature_test_build_sfnt(
+    Array::from_fixed_array([(0x6B65726E, kern), (0x6D6F7278, morx)]),
+  )
+  let font = FontRef::from_offset(sfnt, 0).unwrap()
+  let feats = font.features().iter().to_array()
+  inspect(feats.length(), content="2")
+  let (_, tag, desc) = desc_from_aat((1).to_uint16(), (0).to_uint16()).unwrap()
+  inspect(feats[0].tag().to_string(), content=tag.to_string())
+  inspect(
+    match feats[0].action() {
+      Substitution => true
+      _ => false
+    },
+    content="true",
+  )
+  inspect(feats[0].name().unwrap(), content=desc)
+  inspect(
+    feats[1].tag().to_string(),
+    content=tag_from_str_lossy("kern").to_string(),
+  )
+  inspect(
+    match feats[1].action() {
+      Adjustment => true
+      _ => false
+    },
+    content="true",
+  )
+}
+
+///|
+test "FontRef::writing_systems enumerates AAT writing system (DFLT)" {
+  let morx = feature_test_build_morx(1, 0)
+  let sfnt = feature_test_build_sfnt(
+    Array::from_fixed_array([(0x6D6F7278, morx)]),
+  )
+  let font = FontRef::from_offset(sfnt, 0).unwrap()
+  let wss = font.writing_systems().iter().to_array()
+  inspect(wss.length(), content="1")
+  let ws = wss[0]
+  inspect(
+    ws.script_tag().to_string(),
+    content=tag_from_str_lossy("DFLT").to_string(),
+  )
+  inspect(
+    ws.language_tag().to_string(),
+    content=tag_from_str_lossy("DFLT").to_string(),
+  )
+  inspect(
+    match ws.language() {
+      None => true
+      Some(_) => false
+    },
+    content="true",
+  )
+  let feats = ws.features().iter().to_array()
+  inspect(feats.length(), content="1")
 }
