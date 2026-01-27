@@ -6,6 +6,10 @@ import {
 }
 
 // Values
+pub fn desc_from_aat(UInt16, UInt16) -> (Int, UInt, String)?
+
+pub fn desc_from_at(UInt) -> (Int, String)?
+
 pub fn tag_from_bytes(Bytes) -> UInt?
 
 pub fn tag_from_str_lossy(String) -> UInt
@@ -13,6 +17,12 @@ pub fn tag_from_str_lossy(String) -> UInt
 // Errors
 
 // Types and methods
+pub(all) enum Action {
+  Substitution
+  Attachment
+  Adjustment
+}
+
 pub struct Attributes {
   value : UInt
 }
@@ -133,6 +143,15 @@ pub(all) enum Encoding {
 }
 pub fn Encoding::is_decodable(Self) -> Bool
 
+type Feature
+pub fn Feature::action(Self) -> Action
+pub fn Feature::name(Self) -> String?
+pub fn Feature::tag(Self) -> UInt
+
+type Features
+pub fn Features::from_font(FontRef) -> Self
+pub fn Features::iter(Self) -> Iter[Feature]
+
 type FontCache[T]
 pub fn[T] FontCache::get(Self[T], FontRef, (UInt64, UInt64)?, (FontRef) -> T) -> ((UInt64, UInt64), Ref[T])
 pub fn[T] FontCache::new(Int) -> Self[T]
@@ -159,6 +178,7 @@ pub fn FontRef::attributes(Self) -> Attributes
 pub fn FontRef::color_palettes(Self) -> ColorPalettes
 pub fn FontRef::color_strikes(Self) -> BitmapStrikes
 pub fn FontRef::data(Self) -> Bytes
+pub fn FontRef::features(Self) -> Features
 pub fn FontRef::from_index(Bytes, Int) -> Self?
 pub fn FontRef::from_offset(Bytes, Int) -> Self?
 pub fn FontRef::glyph_metrics(Self, ArrayView[Int]) -> GlyphMetrics
@@ -176,6 +196,7 @@ pub fn FontRef::table_data(Self, UInt) -> BytesView?
 pub fn FontRef::table_offset(Self, UInt) -> UInt
 pub fn FontRef::variations(Self) -> Iter[Variation]
 pub fn FontRef::vhea(Self) -> @internal.Vhea?
+pub fn FontRef::writing_systems(Self) -> WritingSystems
 pub impl @internal.RawFont for FontRef
 
 type GlyphMetrics
@@ -446,6 +467,12 @@ pub fn Script::is_joined(Self) -> Bool
 pub fn Script::name(Self) -> String
 pub fn Script::to_opentype(Self) -> UInt
 
+pub struct SeenFeatures {
+  bits : Array[UInt]
+}
+pub fn SeenFeatures::mark(Self, Int) -> Bool
+pub fn SeenFeatures::new() -> Self
+
 pub struct Setting[T] {
   tag : UInt
   value : T
@@ -568,6 +595,17 @@ pub fn Weight::to_string(Self) -> String
 pub impl Compare for Weight
 pub impl Eq for Weight
 pub impl Show for Weight
+
+type WritingSystem
+pub fn WritingSystem::features(Self) -> Features
+pub fn WritingSystem::language(Self) -> Language?
+pub fn WritingSystem::language_tag(Self) -> UInt
+pub fn WritingSystem::script(Self) -> Script?
+pub fn WritingSystem::script_tag(Self) -> UInt
+
+type WritingSystems
+pub fn WritingSystems::from_font(FontRef) -> Self
+pub fn WritingSystems::iter(Self) -> Iter[WritingSystem]
 
 // Type aliases
 pub type FeatureSetting = Setting[UInt16]

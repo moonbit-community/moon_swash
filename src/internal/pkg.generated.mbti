@@ -10,11 +10,17 @@ pub const CVAR : UInt = 0x63766172
 
 pub const CVT_ : UInt = 0x63767420
 
+pub const DFLT : UInt = 0x44464C54
+
 pub const FPGM : UInt = 0x6670676D
 
 pub const FVAR : UInt = 0x66766172
 
 pub const GLYF : UInt = 0x676C7966
+
+pub const GPOS : UInt = 0x47504F53
+
+pub const GSUB : UInt = 0x47535542
 
 pub const GVAR : UInt = 0x67766172
 
@@ -80,6 +86,10 @@ pub fn div(Int, Int) -> Int
 
 pub fn enumerate(Bytes, UInt, (UInt, UInt) -> Unit) -> Unit
 
+pub fn feature_at(Bytes, UInt, UInt16) -> (UInt, UInt)?
+
+pub fn feature_count(Bytes, UInt) -> UInt16
+
 pub fn floor(Int) -> Int
 
 pub fn get(Bytes, UInt, UInt, UInt, UInt) -> BytesView?
@@ -89,6 +99,10 @@ pub fn is_collection(Bytes) -> Bool
 pub fn is_font(Bytes, Int) -> Bool
 
 pub fn item_delta(Bytes, UInt, UInt, UInt, ArrayView[Int]) -> Fixed?
+
+pub fn language_feature_at(Bytes, UInt, UInt16) -> UInt16?
+
+pub fn language_feature_count(Bytes, UInt) -> UInt16
 
 pub fn map(Bytes, UInt, UInt, UInt) -> UInt?
 
@@ -107,6 +121,20 @@ pub fn round(Int) -> Int
 pub fn sb(Bytes, UInt, UInt, UInt) -> Int
 
 pub fn sb_delta(Bytes, UInt, UInt, ArrayView[Int]) -> Double
+
+pub fn script_at(Bytes, UInt, UInt16) -> (UInt, UInt)?
+
+pub fn script_by_tag(Bytes, UInt, UInt) -> UInt?
+
+pub fn script_count(Bytes, UInt) -> UInt16
+
+pub fn script_default_language(Bytes, UInt) -> UInt?
+
+pub fn script_language_at(Bytes, UInt, UInt16) -> (UInt, UInt)?
+
+pub fn script_language_by_tag(Bytes, UInt, UInt?) -> (UInt, Bool)?
+
+pub fn script_language_count(Bytes, UInt) -> UInt16
 
 pub fn[T : RawFont] subtable(T) -> (UInt, UInt, Bool)?
 
