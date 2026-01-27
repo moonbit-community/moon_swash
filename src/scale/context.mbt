@@ -22,6 +22,7 @@
 ///|
 pub struct ScaleContext {
   state : Ref[State]
+  hinting_cache : Ref[HintingCache]
 }
 
 ///|
@@ -44,7 +45,10 @@ fn State::new() -> State {
 
 ///|
 pub fn ScaleContext::new() -> ScaleContext {
-  ScaleContext::{ state: Ref::new(State::new()) }
+  ScaleContext::{
+    state: Ref::new(State::new()),
+    hinting_cache: Ref::new(HintingCache::new()),
+  }
 }
 
 ///|
@@ -52,13 +56,20 @@ pub fn ScaleContext::builder(
   self : ScaleContext,
   font : @swash.FontRef,
 ) -> ScalerBuilder {
-  ScalerBuilder::{ state: self.state, font, size: 0.0, hint: false }
+  ScalerBuilder::{
+    state: self.state,
+    hinting_cache: self.hinting_cache,
+    font,
+    size: 0.0,
+    hint: false,
+  }
 }
 
 ///|
 /// Builder for configuring a scaler.
 pub struct ScalerBuilder {
   state : Ref[State]
+  hinting_cache : Ref[HintingCache]
   font : @swash.FontRef
   size : Double
   hint : Bool
@@ -71,6 +82,7 @@ pub fn ScalerBuilder::size(
 ) -> ScalerBuilder {
   ScalerBuilder::{
     state: self.state,
+    hinting_cache: self.hinting_cache,
     font: self.font,
     size: if ppem < 0.0 {
       0.0
@@ -85,6 +97,7 @@ pub fn ScalerBuilder::size(
 pub fn ScalerBuilder::hint(self : ScalerBuilder, yes : Bool) -> ScalerBuilder {
   ScalerBuilder::{
     state: self.state,
+    hinting_cache: self.hinting_cache,
     font: self.font,
     size: self.size,
     hint: yes,
@@ -93,10 +106,46 @@ pub fn ScalerBuilder::hint(self : ScalerBuilder, yes : Bool) -> ScalerBuilder {
 
 ///|
 pub fn ScalerBuilder::build(self : ScalerBuilder) -> Scaler {
+  let head_opt = @internal.Head::from_font(self.font)
+  let upem = match head_opt {
+    None => 1
+    Some(h) => {
+      let v = h.units_per_em().reinterpret_as_int()
+      if v == 0 {
+        1
+      } else {
+        v
+      }
+    }
+  }
+  let skrifa_size = if self.size != 0.0 && upem != 0 {
+    @skrifa.Size::new(self.size)
+  } else {
+    @skrifa.Size::unscaled()
+  }
+  let loc = @skrifa.LocationRef::default()
+  let skrifa_font = to_skrifa_font(self.font)
+  let outlines = match skrifa_font {
+    None => None
+    Some(f) => Some(@skrifa_outline.OutlineGlyphCollection::from_font(f))
+  }
+  let outlines0 = outlines
+  let hinting_instance = if self.hint && outlines is Some(oc) {
+    let id0 = self.font.key().value()
+    let id1 = (-1).to_int64().reinterpret_as_uint64()
+    self.hinting_cache.val.get(id0, id1, oc, skrifa_size, loc)
+  } else {
+    None
+  }
   Scaler::{
     state: self.state,
+    hinting_cache: self.hinting_cache,
     font: self.font,
+    outlines: outlines0,
+    hinting_instance,
     size: self.size,
+    skrifa_size,
+    loc,
     hint: self.hint,
   }
 }
@@ -104,8 +153,13 @@ pub fn ScalerBuilder::build(self : ScalerBuilder) -> Scaler {
 ///|
 pub struct Scaler {
   state : Ref[State]
+  hinting_cache : Ref[HintingCache]
   font : @swash.FontRef
+  outlines : @skrifa_outline.OutlineGlyphCollection?
+  hinting_instance : @skrifa_outline.HintingInstance?
   size : Double
+  skrifa_size : @skrifa.Size
+  loc : @skrifa.LocationRef
   hint : Bool
 }
 
@@ -250,52 +304,6 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with close(self) {
 }
 
 ///|
-fn outline_from_skrifa(
-  font : @swash.FontRef,
-  glyph_id : @swash.GlyphId,
-  ppem : Double,
-  hint : Bool,
-) -> (Bool, Outline) {
-  let outline = Outline::new()
-  outline.set_color(false)
-  outline.begin_layer(None)
-  match to_skrifa_font(font) {
-    None => (false, outline)
-    Some(skrifa_font) => {
-      let outlines = @skrifa_outline.OutlineGlyphCollection::from_font(
-        skrifa_font,
-      )
-      let size = if ppem <= 0.0 {
-        @skrifa.Size::unscaled()
-      } else {
-        @skrifa.Size::new(ppem)
-      }
-      let loc = @skrifa.LocationRef::default()
-      let settings = if hint {
-        match
-          @skrifa_outline.HintingInstance::new(
-            outlines,
-            size,
-            loc,
-            @skrifa_outline.HintingOptions::default(),
-          ) {
-          Err(_) => @skrifa_outline.DrawSettings::unhinted(size, loc)
-          Ok(h) => @skrifa_outline.DrawSettings::hinted(h, false)
-        }
-      } else {
-        @skrifa_outline.DrawSettings::unhinted(size, loc)
-      }
-      let pen = OutlineWriter::new(outline)
-      let gid = @skrifa.GlyphId::new(glyph_id)
-      if outlines.draw(gid, settings, pen) {
-        pen.outline.finish()
-        (true, pen.outline)
-      } else {
-        (false, pen.outline)
-      }
-    }
-  }
-}
 
 ///|
 pub fn Scaler::scale_outline(
@@ -334,15 +342,13 @@ pub fn Scaler::has_color_outlines(self : Scaler) -> Bool {
 
 ///|
 pub fn Scaler::has_outlines(self : Scaler) -> Bool {
-  match to_skrifa_font(self.font) {
+  match self.outlines {
     None => {
       let loca = @internal.table_offset(self.font, @internal.LOCA)
       let glyf = @internal.table_offset(self.font, @internal.GLYF)
       loca != 0 && glyf != 0
     }
-    Some(skrifa_font) =>
-      @skrifa_outline.OutlineGlyphCollection::from_font(skrifa_font).format()
-      is Some(_)
+    Some(outlines) => outlines.format() is Some(_)
   }
 }
 
@@ -738,20 +744,27 @@ fn Scaler::scale_outline_layer_into(
   }
   outline.begin_layer(color_index)
 
-  // Try skrifa first.
-  let (ok, o) = outline_from_skrifa(self.font, glyph_id, self.size, self.hint)
-  if ok {
-    // Copy points/verbs from the produced outline (single layer) into `outline`.
-    for p in o.points() {
-      outline.points.push(p)
+  // Upstream swash uses skrifa outline collection for all formats.
+  match self.outlines {
+    None => ()
+    Some(outlines) => {
+      let settings = match self.hinting_instance {
+        None =>
+          @skrifa_outline.DrawSettings::unhinted(self.skrifa_size, self.loc)
+        Some(h) => @skrifa_outline.DrawSettings::hinted(h, false)
+      }
+      let gid = @skrifa.GlyphId::new(glyph_id)
+      let pen = OutlineWriter::new(outline)
+      if outlines.draw(gid, settings, pen) {
+        outline.maybe_close()
+        outline.finish()
+        return true
+      }
     }
-    for v in o.verbs() {
-      outline.verbs.push(v)
-    }
-    outline.maybe_close()
-    outline.finish()
-    return true
   }
+
+  // NOTE: Fallback decoder for minimal synthetic fonts in tests (missing tables
+  // required by skrifa). Upstream swash does not have this path.
   let scale = if self.size <= 0.0 {
     1.0
   } else {
