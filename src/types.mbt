@@ -20,3 +20,10 @@
 ///|
 /// Glyph identifier.
 pub type GlyphId = UInt16
+
+///|
+/// Normalized variation coordinate in 2.14 fixed point format.
+///
+/// Port note: swash uses `i16`; we use `Int` in MoonBit and keep the value
+/// in the same 2.14 fixed-point bit representation.
+pub type NormalizedCoord = Int

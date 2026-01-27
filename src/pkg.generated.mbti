@@ -60,10 +60,17 @@ pub struct FontRef {
 pub fn FontRef::data(Self) -> Bytes
 pub fn FontRef::from_index(Bytes, Int) -> Self?
 pub fn FontRef::from_offset(Bytes, Int) -> Self?
+pub fn FontRef::instances(Self) -> Iter[Instance]
 pub fn FontRef::key(Self) -> CacheKey
 pub fn FontRef::offset(Self) -> Int
 pub fn FontRef::table_data(Self, UInt) -> BytesView?
+pub fn FontRef::variations(Self) -> Iter[Variation]
 pub impl @internal.RawFont for FontRef
+
+type Instance
+pub fn Instance::index(Self) -> Int
+pub fn Instance::normalized_coords(Self) -> ArrayView[Int]
+pub fn Instance::values(Self) -> ArrayView[Double]
 
 pub struct Setting[T] {
   tag : UInt
@@ -75,10 +82,21 @@ pub fn Setting::parse_feature_list(String) -> Iter[Self[UInt16]]
 pub fn Setting::parse_variation(String) -> Self[Double]?
 pub fn Setting::parse_variation_list(String) -> Iter[Self[Double]]
 
+type Variation
+pub fn Variation::default_value(Self) -> Double
+pub fn Variation::index(Self) -> Int
+pub fn Variation::is_hidden(Self) -> Bool
+pub fn Variation::max_value(Self) -> Double
+pub fn Variation::min_value(Self) -> Double
+pub fn Variation::normalize(Self, Double) -> Int
+pub fn Variation::tag(Self) -> UInt
+
 // Type aliases
 pub type FeatureSetting = Setting[UInt16]
 
 pub type GlyphId = UInt16
+
+pub type NormalizedCoord = Int
 
 pub type Tag = UInt
 
