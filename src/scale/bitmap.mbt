@@ -86,3 +86,282 @@ pub fn blit(
     }
   }
 }
+
+///|
+fn decode_ebdt_1bpp(
+  data : BytesView,
+  width : UInt,
+  height : UInt,
+  target : Array[Byte],
+) -> Bool {
+  let w = width.reinterpret_as_int()
+  let h = height.reinterpret_as_int()
+  if w <= 0 || h <= 0 {
+    return false
+  }
+  let bytes_per_row = (w + 7) / 8
+  let needed = bytes_per_row * h
+  if data.length() < needed {
+    return false
+  }
+  let expected = w * h
+  if target.length() < expected {
+    return false
+  }
+  let mut out = 0
+  for y in 0..<h {
+    let row = y * bytes_per_row
+    for x in 0..<w {
+      let byte_index = row + x / 8
+      let bit_index = 7 - x % 8
+      match data.get(byte_index) {
+        None => return false
+        Some(b) => {
+          let bit = (b.to_int().reinterpret_as_uint() >> bit_index) & 1
+          target[out] = if bit != 0 { (255).to_byte() } else { (0).to_byte() }
+          out = out + 1
+        }
+      }
+    }
+  }
+  true
+}
+
+///|
+fn mitchell(x : Double) -> Double {
+  let a = x.abs()
+  if a < 1.0 {
+    ((16.0 + a * a * (21.0 * a - 36.0)) / 18.0).abs()
+  } else if a < 2.0 {
+    ((32.0 + a * (-60.0 + a * (36.0 - 7.0 * a))) / 18.0).abs()
+  } else {
+    0.0
+  }
+}
+
+///|
+fn resize_weights(
+  width : UInt,
+  new_width : UInt,
+  outx : UInt,
+  weights : Array[Double],
+) -> (Int, Int, Double) {
+  // Mirrors swash-reference `sample_dir` weight computation for Mitchell.
+  weights.clear()
+  let ratio = width.to_double() / new_width.to_double()
+  let sratio = if ratio > 1.0 { ratio } else { 1.0 }
+  let src_support = 2.0 * sratio
+  let isratio = 1.0 / sratio
+  let inx = (outx.to_double() + 0.5) * ratio - 0.5
+  let mut left = (inx - src_support).floor().to_int()
+  let mut right = (inx + src_support).ceil().to_int()
+  if left < 0 {
+    left = 0
+  }
+  let max_left = width.reinterpret_as_int() - 1
+  if left > max_left {
+    left = max_left
+  }
+  if right < left + 1 {
+    right = left + 1
+  }
+  let max_right = width.reinterpret_as_int()
+  if right > max_right {
+    right = max_right
+  }
+  // Limit weights to 64 samples like upstream.
+  while right - left > 64 {
+    right = right - 1
+    left = left + 1
+  }
+  let mut sum = 0.0
+  for i in left..<right {
+    let w = mitchell((i.to_double() - inx) * isratio)
+    weights.push(w)
+    sum = sum + w
+  }
+  let isum = 1.0 / sum
+  (left, right, isum)
+}
+
+///|
+fn resize_mitchell_alpha(
+  image : Array[Byte],
+  width : UInt,
+  height : UInt,
+  target : Array[Byte],
+  target_width : UInt,
+  target_height : UInt,
+  scratch : Array[Byte],
+) -> Bool {
+  if target_width == 0U || target_height == 0U {
+    return true
+  }
+  let image_size = (width * height).reinterpret_as_int()
+  if image.length() < image_size {
+    return false
+  }
+  let target_size = (target_width * target_height).reinterpret_as_int()
+  if target.length() < target_size {
+    return false
+  }
+
+  // Horizontal pass: image -> scratch (target_width x height).
+  scratch.clear()
+  let scratch_size = (target_width * height).reinterpret_as_int()
+  for _ in 0..<scratch_size {
+    scratch.push((0).to_byte())
+  }
+  let weights : Array[Double] = []
+  for outx in 0U..<target_width {
+    let (left, right, isum) = resize_weights(width, target_width, outx, weights)
+    for y in 0U..<height {
+      let mut acc = 0.0
+      let mut wi = 0
+      for x in left..<right {
+        let sx = x.reinterpret_as_uint()
+        let a = image[(y * width + sx).reinterpret_as_int()]
+          .to_int()
+          .to_double() /
+          255.0
+        let wv = weights[wi]
+        acc = acc + a * wv
+        wi = wi + 1
+      }
+      let outa = (acc * isum * 255.0).to_int()
+      scratch[(y * target_width + outx).reinterpret_as_int()] = outa.to_byte()
+    }
+  }
+
+  // Recompute weights for vertical pass per outy.
+  for outy in 0U..<target_height {
+    let (top, bottom, isum) = resize_weights(
+      height, target_height, outy, weights,
+    )
+    for x in 0U..<target_width {
+      let mut acc = 0.0
+      let mut wi = 0
+      for y in top..<bottom {
+        let sy = y.reinterpret_as_uint()
+        let a = scratch[(sy * target_width + x).reinterpret_as_int()]
+          .to_int()
+          .to_double() /
+          255.0
+        let wv = weights[wi]
+        acc = acc + a * wv
+        wi = wi + 1
+      }
+      let outa = (acc * isum * 255.0).to_int()
+      target[(outy * target_width + x).reinterpret_as_int()] = outa.to_byte()
+    }
+  }
+  true
+}
+
+///|
+fn resize_mitchell_rgba(
+  image : Array[Byte],
+  width : UInt,
+  height : UInt,
+  target : Array[Byte],
+  target_width : UInt,
+  target_height : UInt,
+  scratch : Array[Byte],
+) -> Bool {
+  if target_width == 0U || target_height == 0U {
+    return true
+  }
+  let image_size = (width * height * 4U).reinterpret_as_int()
+  if image.length() < image_size {
+    return false
+  }
+  let target_size = (target_width * target_height * 4U).reinterpret_as_int()
+  if target.length() < target_size {
+    return false
+  }
+
+  // Horizontal pass: image -> scratch (target_width x height x 4).
+  scratch.clear()
+  let scratch_size = (target_width * height * 4U).reinterpret_as_int()
+  for _ in 0..<scratch_size {
+    scratch.push((0).to_byte())
+  }
+  let weights : Array[Double] = []
+  for outx in 0U..<target_width {
+    let (left, right, isum) = resize_weights(width, target_width, outx, weights)
+    for y in 0U..<height {
+      let mut ar = 0.0
+      let mut ag = 0.0
+      let mut ab = 0.0
+      let mut aa = 0.0
+      let mut wi = 0
+      for x in left..<right {
+        let sx = x.reinterpret_as_uint()
+        let base = ((y * width + sx) * 4U).reinterpret_as_int()
+        let r = image[base + 0].to_int().to_double() / 255.0
+        let g = image[base + 1].to_int().to_double() / 255.0
+        let b = image[base + 2].to_int().to_double() / 255.0
+        let a = image[base + 3].to_int().to_double() / 255.0
+        let wv = weights[wi]
+        ar = ar + r * wv * a
+        ag = ag + g * wv * a
+        ab = ab + b * wv * a
+        aa = aa + a * wv
+        wi = wi + 1
+      }
+      if aa != 0.0 {
+        let inv = 1.0 / aa
+        ar = ar * inv
+        ag = ag * inv
+        ab = ab * inv
+        aa = aa * isum
+      }
+      let out_base = ((y * target_width + outx) * 4U).reinterpret_as_int()
+      scratch[out_base + 0] = (ar * 255.0).to_int().to_byte()
+      scratch[out_base + 1] = (ag * 255.0).to_int().to_byte()
+      scratch[out_base + 2] = (ab * 255.0).to_int().to_byte()
+      scratch[out_base + 3] = (aa * 255.0).to_int().to_byte()
+    }
+  }
+
+  // Vertical pass: scratch -> target (target_width x target_height x 4).
+  for outy in 0U..<target_height {
+    let (top, bottom, isum) = resize_weights(
+      height, target_height, outy, weights,
+    )
+    for x in 0U..<target_width {
+      let mut ar = 0.0
+      let mut ag = 0.0
+      let mut ab = 0.0
+      let mut aa = 0.0
+      let mut wi = 0
+      for y in top..<bottom {
+        let sy = y.reinterpret_as_uint()
+        let base = ((sy * target_width + x) * 4U).reinterpret_as_int()
+        let r = scratch[base + 0].to_int().to_double() / 255.0
+        let g = scratch[base + 1].to_int().to_double() / 255.0
+        let b = scratch[base + 2].to_int().to_double() / 255.0
+        let a = scratch[base + 3].to_int().to_double() / 255.0
+        let wv = weights[wi]
+        ar = ar + r * wv * a
+        ag = ag + g * wv * a
+        ab = ab + b * wv * a
+        aa = aa + a * wv
+        wi = wi + 1
+      }
+      if aa != 0.0 {
+        let inv = 1.0 / aa
+        ar = ar * inv
+        ag = ag * inv
+        ab = ab * inv
+        aa = aa * isum
+      }
+      let out_base = ((outy * target_width + x) * 4U).reinterpret_as_int()
+      target[out_base + 0] = (ar * 255.0).to_int().to_byte()
+      target[out_base + 1] = (ag * 255.0).to_int().to_byte()
+      target[out_base + 2] = (ab * 255.0).to_int().to_byte()
+      target[out_base + 3] = (aa * 255.0).to_int().to_byte()
+    }
+  }
+  true
+}

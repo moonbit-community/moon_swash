@@ -347,6 +347,381 @@ pub fn Scaler::has_outlines(self : Scaler) -> Bool {
 }
 
 ///|
+pub fn Scaler::has_bitmaps(self : Scaler) -> Bool {
+  let eblc = @internal.table_offset(self.font, 0x45424C43) // "EBLC"
+  if eblc == 0 {
+    return false
+  }
+  let ebdt = @internal.table_offset(self.font, 0x45424454) // "EBDT"
+  ebdt != 0
+}
+
+///|
+pub fn Scaler::has_color_bitmaps(self : Scaler) -> Bool {
+  let sbix = @internal.table_offset(self.font, 0x73626978) // "sbix"
+  if sbix != 0 {
+    return true
+  }
+  let cblc = @internal.table_offset(self.font, 0x43424C43) // "CBLC"
+  if cblc == 0 {
+    return false
+  }
+  let cbdt = @internal.table_offset(self.font, 0x43424454) // "CBDT"
+  cbdt != 0
+}
+
+///|
+pub fn Scaler::scale_bitmap_into(
+  self : Scaler,
+  glyph_id : @swash.GlyphId,
+  strike : StrikeWith,
+  image : Image,
+) -> Bool {
+  match self.scale_bitmap_impl(glyph_id, false, strike, image) {
+    None => false
+    Some(v) => v
+  }
+}
+
+///|
+pub fn Scaler::scale_bitmap(
+  self : Scaler,
+  glyph_id : @swash.GlyphId,
+  strike : StrikeWith,
+) -> Image? {
+  let image = Image::new()
+  if self.scale_bitmap_into(glyph_id, strike, image) {
+    Some(image)
+  } else {
+    None
+  }
+}
+
+///|
+pub fn Scaler::scale_color_bitmap_into(
+  self : Scaler,
+  glyph_id : @swash.GlyphId,
+  strike : StrikeWith,
+  image : Image,
+) -> Bool {
+  match self.scale_bitmap_impl(glyph_id, true, strike, image) {
+    None => false
+    Some(v) => v
+  }
+}
+
+///|
+pub fn Scaler::scale_color_bitmap(
+  self : Scaler,
+  glyph_id : @swash.GlyphId,
+  strike : StrikeWith,
+) -> Image? {
+  let image = Image::new()
+  if self.scale_color_bitmap_into(glyph_id, strike, image) {
+    Some(image)
+  } else {
+    None
+  }
+}
+
+///|
+fn Scaler::scale_bitmap_impl(
+  self : Scaler,
+  glyph_id : @swash.GlyphId,
+  color : Bool,
+  strike : StrikeWith,
+  image : Image,
+) -> Bool? {
+  image.clear()
+  let size = self.size
+  let skrifa_font = match to_skrifa_font(self.font) {
+    None => return None
+    Some(f) => f
+  }
+  let strikes = if color {
+    match
+      @skrifa.BitmapStrikes::with_format(
+        skrifa_font,
+        @skrifa.BitmapFormat::Sbix,
+      ) {
+      None =>
+        @skrifa.BitmapStrikes::with_format(
+          skrifa_font,
+          @skrifa.BitmapFormat::Cbdt,
+        )
+      Some(s) => Some(s)
+    }
+  } else {
+    @skrifa.BitmapStrikes::with_format(skrifa_font, @skrifa.BitmapFormat::Ebdt)
+  }
+  let strikes = match strikes {
+    None => return None
+    Some(s) => s
+  }
+  let ppem = size.to_int()
+  let gid = @skrifa.GlyphId::new(glyph_id)
+
+  // Select a strike and glyph, mirroring swash-reference strike selection.
+  let mut glyph : @skrifa.BitmapGlyph? = None
+  let mut strike_ppem = 0
+  match strike {
+    StrikeWith::ExactSize => {
+      if size == 0.0 {
+        return None
+      }
+      for i in 0..<strikes.len() {
+        match strikes.get(i) {
+          None => ()
+          Some(s) =>
+            if s.ppem_y() == ppem {
+              match s.get(gid) {
+                None => ()
+                Some(g) => {
+                  glyph = Some(g)
+                  strike_ppem = s.ppem_y()
+                  break
+                }
+              }
+            }
+        }
+      }
+    }
+    StrikeWith::BestFit => {
+      if size == 0.0 {
+        return None
+      }
+      let mut best : @skrifa.BitmapGlyph? = None
+      let mut best_size = 0
+      for i in 0..<strikes.len() {
+        match strikes.get(i) {
+          None => ()
+          Some(s) =>
+            match s.get(gid) {
+              None => ()
+              Some(g) => {
+                best = Some(g)
+                let s_ppem = s.ppem_y()
+                if s_ppem > best_size {
+                  best = Some(g)
+                  best_size = s_ppem
+                }
+                if s_ppem >= ppem {
+                  glyph = Some(g)
+                  strike_ppem = s_ppem
+                  break
+                }
+              }
+            }
+        }
+      }
+      if glyph is None {
+        glyph = best
+        strike_ppem = best_size
+      }
+    }
+    StrikeWith::LargestSize => {
+      let mut best : @skrifa.BitmapGlyph? = None
+      let mut best_size = 0
+      for i in 0..<strikes.len() {
+        match strikes.get(i) {
+          None => ()
+          Some(s) =>
+            match s.get(gid) {
+              None => ()
+              Some(g) => {
+                let s_ppem = s.ppem_y()
+                if best is None || s_ppem > best_size {
+                  best = Some(g)
+                  best_size = s_ppem
+                }
+              }
+            }
+        }
+      }
+      glyph = best
+      strike_ppem = best_size
+    }
+    StrikeWith::Index(index) => {
+      let i = index.reinterpret_as_int()
+      if i < 0 || i >= strikes.len() {
+        return None
+      }
+      match strikes.get(i) {
+        None => return None
+        Some(s) =>
+          match s.get(gid) {
+            None => return None
+            Some(g) => {
+              glyph = Some(g)
+              strike_ppem = s.ppem_y()
+            }
+          }
+      }
+    }
+  }
+  let glyph = match glyph {
+    None => return None
+    Some(g) => g
+  }
+  if strike_ppem == 0 {
+    return None
+  }
+
+  // Decode into `image.data`, optionally scaling if requested.
+  let w = match glyph.width() {
+    None => return None
+    Some(w) => w
+  }
+  let h = match glyph.height() {
+    None => return None
+    Some(h) => h
+  }
+  if w <= 0 || h <= 0 {
+    image.placement = Placement::{ left: 0, top: 0, width: 0U, height: 0U }
+    image.source = if color {
+      Source::ColorBitmap(strike)
+    } else {
+      Source::Bitmap(strike)
+    }
+    image.content = if color { Content::Color } else { Content::Mask }
+    return Some(true)
+  }
+  let scale = if size == 0.0 { 1.0 } else { size / strike_ppem.to_double() }
+  let scaled_w = if size != 0.0 && scale != 1.0 {
+    (w.to_double() * scale).to_int().reinterpret_as_uint()
+  } else {
+    w.reinterpret_as_uint()
+  }
+  let scaled_h = if size != 0.0 && scale != 1.0 {
+    (h.to_double() * scale).to_int().reinterpret_as_uint()
+  } else {
+    h.reinterpret_as_uint()
+  }
+  self.state.val._scratch0.clear()
+  self.state.val._scratch1.clear()
+  let origin_x = glyph.origin_x()
+  let origin_y = glyph.origin_y()
+  match (color, glyph.format()) {
+    (true, @skrifa.BitmapImageFormat::Png) => {
+      let raw : Array[Byte] = []
+      for b in glyph.data() {
+        raw.push(b)
+      }
+      let raw_bytes = Bytes::from_array(raw.op_as_view())
+      if size != 0.0 && scale != 1.0 {
+        // Decode into scratch then resize into image buffer.
+        let src_len = (w.reinterpret_as_uint() * h.reinterpret_as_uint() * 4U).reinterpret_as_int()
+        self.state.val._scratch0 = Array::makei(src_len, _ => b'\x00')
+        match
+          decode_png(
+            raw_bytes,
+            self.state.val._scratch1,
+            self.state.val._scratch0,
+          ) {
+          None => return None
+          Some(_) => ()
+        }
+        let dst_len = (scaled_w * scaled_h * 4U).reinterpret_as_int()
+        image.data = Array::makei(dst_len, _ => b'\x00')
+        if !resize_mitchell_rgba(
+            self.state.val._scratch0,
+            w.reinterpret_as_uint(),
+            h.reinterpret_as_uint(),
+            image.data,
+            scaled_w,
+            scaled_h,
+            self.state.val._scratch1,
+          ) {
+          return None
+        }
+      } else {
+        // Decode directly into the destination buffer (do not alias state scratch).
+        let dst_len = (w.reinterpret_as_uint() * h.reinterpret_as_uint() * 4U).reinterpret_as_int()
+        image.data = Array::makei(dst_len, _ => b'\x00')
+        match decode_png(raw_bytes, self.state.val._scratch1, image.data) {
+          None => return None
+          Some(_) => ()
+        }
+      }
+      image.placement = Placement::{
+        left: if size != 0.0 && scale != 1.0 {
+          (origin_x.to_double() * scale).to_int()
+        } else {
+          origin_x
+        },
+        top: if size != 0.0 && scale != 1.0 {
+          (origin_y.to_double() * scale).to_int()
+        } else {
+          origin_y
+        },
+        width: scaled_w,
+        height: scaled_h,
+      }
+      image.source = Source::ColorBitmap(strike)
+      image.content = Content::Color
+      Some(true)
+    }
+    (false, _) => {
+      // Decode EBDT bitmap glyph data as a 1-bit mask.
+      if size != 0.0 && scale != 1.0 {
+        let src_len = (w.reinterpret_as_uint() * h.reinterpret_as_uint()).reinterpret_as_int()
+        self.state.val._scratch0 = Array::makei(src_len, _ => b'\x00')
+        if !decode_ebdt_1bpp(
+            glyph.data(),
+            w.reinterpret_as_uint(),
+            h.reinterpret_as_uint(),
+            self.state.val._scratch0,
+          ) {
+          return None
+        }
+        let dst_len = (scaled_w * scaled_h).reinterpret_as_int()
+        image.data = Array::makei(dst_len, _ => b'\x00')
+        if !resize_mitchell_alpha(
+            self.state.val._scratch0,
+            w.reinterpret_as_uint(),
+            h.reinterpret_as_uint(),
+            image.data,
+            scaled_w,
+            scaled_h,
+            self.state.val._scratch1,
+          ) {
+          return None
+        }
+      } else {
+        let dst_len = (w.reinterpret_as_uint() * h.reinterpret_as_uint()).reinterpret_as_int()
+        image.data = Array::makei(dst_len, _ => b'\x00')
+        if !decode_ebdt_1bpp(
+            glyph.data(),
+            w.reinterpret_as_uint(),
+            h.reinterpret_as_uint(),
+            image.data,
+          ) {
+          return None
+        }
+      }
+      image.placement = Placement::{
+        left: if size != 0.0 && scale != 1.0 {
+          (origin_x.to_double() * scale).to_int()
+        } else {
+          origin_x
+        },
+        top: if size != 0.0 && scale != 1.0 {
+          (origin_y.to_double() * scale).to_int()
+        } else {
+          origin_y
+        },
+        width: scaled_w,
+        height: scaled_h,
+      }
+      image.source = Source::Bitmap(strike)
+      image.content = Content::Mask
+      Some(true)
+    }
+    _ => None
+  }
+}
+
+///|
 fn Scaler::scale_outline_layer_into(
   self : Scaler,
   glyph_id : @swash.GlyphId,

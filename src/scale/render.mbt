@@ -242,7 +242,22 @@ pub fn Render::render_into(
           return true
         }
       }
-      _ => continue
+      Source::Bitmap(mode) => {
+        if !scaler.has_bitmaps() {
+          continue
+        }
+        if scaler.scale_bitmap_into(glyph_id, mode, image) {
+          return true
+        }
+      }
+      Source::ColorBitmap(mode) => {
+        if !scaler.has_color_bitmaps() {
+          continue
+        }
+        if scaler.scale_color_bitmap_into(glyph_id, mode, image) {
+          return true
+        }
+      }
     }
   }
   false

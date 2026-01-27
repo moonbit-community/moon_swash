@@ -119,9 +119,15 @@ pub struct Scaler {
   size : Double
   hint : Bool
 }
+pub fn Scaler::has_bitmaps(Self) -> Bool
+pub fn Scaler::has_color_bitmaps(Self) -> Bool
 pub fn Scaler::has_color_outlines(Self) -> Bool
 pub fn Scaler::has_outlines(Self) -> Bool
 pub fn Scaler::hint(Self) -> Bool
+pub fn Scaler::scale_bitmap(Self, UInt16, StrikeWith) -> Image?
+pub fn Scaler::scale_bitmap_into(Self, UInt16, StrikeWith, Image) -> Bool
+pub fn Scaler::scale_color_bitmap(Self, UInt16, StrikeWith) -> Image?
+pub fn Scaler::scale_color_bitmap_into(Self, UInt16, StrikeWith, Image) -> Bool
 pub fn Scaler::scale_color_outline(Self, UInt16) -> Outline?
 pub fn Scaler::scale_color_outline_into(Self, UInt16, Outline) -> Bool
 pub fn Scaler::scale_outline(Self, UInt16) -> Outline?
