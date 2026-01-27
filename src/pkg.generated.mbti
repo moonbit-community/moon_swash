@@ -13,6 +13,63 @@ pub fn tag_from_str_lossy(String) -> UInt
 // Errors
 
 // Types and methods
+pub struct Attributes {
+  value : UInt
+}
+pub fn Attributes::from_font(FontRef) -> Self
+pub fn Attributes::has_italic_variation(Self) -> Bool
+pub fn Attributes::has_oblique_variation(Self) -> Bool
+pub fn Attributes::has_stretch_variation(Self) -> Bool
+pub fn Attributes::has_variations(Self) -> Bool
+pub fn Attributes::has_weight_variation(Self) -> Bool
+pub fn Attributes::new(Stretch, Weight, Style) -> Self
+pub fn Attributes::parts(Self) -> (Stretch, Weight, Style)
+pub fn Attributes::stretch(Self) -> Stretch
+pub fn Attributes::style(Self) -> Style
+pub fn Attributes::synthesize(Self, Self) -> Synthesis
+pub fn Attributes::weight(Self) -> Weight
+pub impl Eq for Attributes
+pub impl Show for Attributes
+
+pub struct BitmapStrike {
+  b : @internal.BeBytes
+  bitmap_data : BytesView
+  offset : Int
+  upem : UInt
+  is_sbix : Bool
+  is_apple : Bool
+}
+pub fn BitmapStrike::bit_depth(Self) -> Byte
+pub fn BitmapStrike::contains(Self, UInt16) -> Bool
+pub fn BitmapStrike::ppem(Self) -> UInt16
+pub fn BitmapStrike::ppi(Self) -> UInt16
+
+pub struct BitmapStrikes {
+  b : @internal.BeBytes
+  bitmap_data : BytesView
+  is_sbix : Bool
+  is_apple : Bool
+  upem : UInt
+  len : Int
+}
+pub fn BitmapStrikes::find_by_exact_ppem(Self, UInt16, UInt16) -> BitmapStrike?
+pub fn BitmapStrikes::find_by_largest_ppem(Self, UInt16) -> BitmapStrike?
+pub fn BitmapStrikes::find_by_nearest_ppem(Self, UInt16, UInt16) -> BitmapStrike?
+pub fn BitmapStrikes::iter(Self) -> Iter[BitmapStrike]
+pub fn BitmapStrikes::len(Self) -> Int
+
+pub struct BitmapStrikesProxy {
+  bitmaps : (UInt, UInt)
+  color_bitmaps : (UInt, UInt)
+  upem : UInt
+  is_apple : Bool
+}
+pub fn BitmapStrikesProxy::from_font(FontRef) -> Self
+pub fn BitmapStrikesProxy::has_alpha(Self) -> Bool
+pub fn BitmapStrikesProxy::has_color(Self) -> Bool
+pub fn BitmapStrikesProxy::materialize_alpha(Self, FontRef) -> BitmapStrikes
+pub fn BitmapStrikesProxy::materialize_color(Self, FontRef) -> BitmapStrikes
+
 pub struct CacheKey {
   value : UInt64
 }
@@ -35,6 +92,31 @@ pub struct CharmapProxy {
 }
 pub fn CharmapProxy::from_font(FontRef) -> Self
 pub fn CharmapProxy::materialize(Self, FontRef) -> Charmap
+
+pub struct ColorPalette {
+  font : FontRef
+  b : @internal.BeBytes
+  version : UInt16
+  index : UInt16
+  num_entries : UInt16
+  offset : Int
+}
+pub fn ColorPalette::get(Self, UInt16) -> (Byte, Byte, Byte, Byte)
+pub fn ColorPalette::index(Self) -> UInt16
+pub fn ColorPalette::is_empty(Self) -> Bool
+pub fn ColorPalette::len(Self) -> UInt16
+pub fn ColorPalette::name(Self, String?) -> LocalizedString?
+pub fn ColorPalette::name_id(Self) -> StringId?
+pub fn ColorPalette::usability(Self) -> Usability?
+
+pub struct ColorPalettes {
+  font : FontRef
+  b : @internal.BeBytes
+  len : Int
+}
+pub fn ColorPalettes::from_font(FontRef) -> Self
+pub fn ColorPalettes::iter(Self) -> Iter[ColorPalette]
+pub fn ColorPalettes::len(Self) -> Int
 
 pub(all) enum Encoding {
   Unicode
@@ -64,6 +146,10 @@ pub struct FontRef {
   offset : Int
   key : CacheKey
 }
+pub fn FontRef::alpha_strikes(Self) -> BitmapStrikes
+pub fn FontRef::attributes(Self) -> Attributes
+pub fn FontRef::color_palettes(Self) -> ColorPalettes
+pub fn FontRef::color_strikes(Self) -> BitmapStrikes
 pub fn FontRef::data(Self) -> Bytes
 pub fn FontRef::from_index(Bytes, Int) -> Self?
 pub fn FontRef::from_offset(Bytes, Int) -> Self?
@@ -156,6 +242,15 @@ pub fn MetricsProxy::materialize_glyph_metrics(Self, FontRef, ArrayView[Int]) ->
 pub fn MetricsProxy::materialize_metrics(Self, FontRef, ArrayView[Int]) -> Metrics
 pub fn MetricsProxy::units_per_em(Self) -> UInt16
 
+pub struct ObliqueAngle {
+  value : UInt16
+}
+pub fn ObliqueAngle::from_degrees(Double) -> Self
+pub fn ObliqueAngle::from_gradians(Double) -> Self
+pub fn ObliqueAngle::from_radians(Double) -> Self
+pub fn ObliqueAngle::from_turns(Double) -> Self
+pub fn ObliqueAngle::to_degrees(Self) -> Double
+
 pub struct Setting[T] {
   tag : UInt
   value : T
@@ -165,6 +260,30 @@ pub fn Setting::parse_feature(String) -> Self[UInt16]?
 pub fn Setting::parse_feature_list(String) -> Iter[Self[UInt16]]
 pub fn Setting::parse_variation(String) -> Self[Double]?
 pub fn Setting::parse_variation_list(String) -> Iter[Self[Double]]
+
+pub struct Stretch {
+  value : UInt16
+}
+pub fn Stretch::condensed() -> Self
+pub fn Stretch::expanded() -> Self
+pub fn Stretch::extra_condensed() -> Self
+pub fn Stretch::extra_expanded() -> Self
+pub fn Stretch::from_percentage(Double) -> Self
+pub fn Stretch::is_condensed(Self) -> Bool
+pub fn Stretch::is_expanded(Self) -> Bool
+pub fn Stretch::is_normal(Self) -> Bool
+pub fn Stretch::normal() -> Self
+pub fn Stretch::parse(String) -> Self?
+pub fn Stretch::raw(Self) -> UInt16
+pub fn Stretch::semi_condensed() -> Self
+pub fn Stretch::semi_expanded() -> Self
+pub fn Stretch::to_percentage(Self) -> Double
+pub fn Stretch::to_string(Self) -> String
+pub fn Stretch::ultra_condensed() -> Self
+pub fn Stretch::ultra_expanded() -> Self
+pub impl Compare for Stretch
+pub impl Eq for Stretch
+pub impl Show for Stretch
 
 pub(all) enum StringId {
   Copyright
@@ -197,6 +316,35 @@ pub(all) enum StringId {
 pub fn StringId::from_raw(UInt16) -> Self
 pub fn StringId::to_raw(Self) -> UInt16
 
+pub(all) enum Style {
+  Normal
+  Italic
+  Oblique(ObliqueAngle)
+}
+pub fn Style::from_degrees(Double) -> Self
+pub fn Style::parse(String) -> Self?
+pub fn Style::to_degrees(Self) -> Double
+pub fn Style::to_string(Self) -> String
+pub impl Eq for Style
+pub impl Show for Style
+
+pub struct Synthesis {
+  vars : Array[Setting[Double]]
+  embolden : Bool
+  skew : Int
+}
+pub fn Synthesis::any(Self) -> Bool
+pub fn Synthesis::embolden(Self) -> Bool
+pub fn Synthesis::skew(Self) -> Double?
+pub fn Synthesis::variations(Self) -> ArrayView[Setting[Double]]
+pub impl Eq for Synthesis
+
+pub(all) enum Usability {
+  Light
+  Dark
+  Both
+}
+
 type Variation
 pub fn Variation::default_value(Self) -> Double
 pub fn Variation::index(Self) -> Int
@@ -207,6 +355,24 @@ pub fn Variation::name(Self, String?) -> LocalizedString?
 pub fn Variation::name_id(Self) -> StringId
 pub fn Variation::normalize(Self, Double) -> Int
 pub fn Variation::tag(Self) -> UInt
+
+pub struct Weight {
+  value : UInt16
+}
+pub fn Weight::black() -> Self
+pub fn Weight::bold() -> Self
+pub fn Weight::extra_bold() -> Self
+pub fn Weight::extra_light() -> Self
+pub fn Weight::light() -> Self
+pub fn Weight::medium() -> Self
+pub fn Weight::normal() -> Self
+pub fn Weight::parse(String) -> Self?
+pub fn Weight::semi_bold() -> Self
+pub fn Weight::thin() -> Self
+pub fn Weight::to_string(Self) -> String
+pub impl Compare for Weight
+pub impl Eq for Weight
+pub impl Show for Weight
 
 // Type aliases
 pub type FeatureSetting = Setting[UInt16]

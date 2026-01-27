@@ -159,6 +159,16 @@ pub fn Os2::average_char_width(self : Os2) -> Int {
 }
 
 ///|
+pub fn Os2::weight_class(self : Os2) -> Int {
+  BeBytes::from_view(self.data).read_i16(4).unwrap_or(0)
+}
+
+///|
+pub fn Os2::width_class(self : Os2) -> Int {
+  BeBytes::from_view(self.data).read_i16(6).unwrap_or(0)
+}
+
+///|
 pub fn Os2::strikeout_position(self : Os2) -> Int {
   BeBytes::from_view(self.data).read_i16(28).unwrap_or(0)
 }
@@ -176,6 +186,16 @@ pub struct Os2Flags {
 ///|
 pub fn Os2Flags::use_typographic_metrics(self : Os2Flags) -> Bool {
   (self.value & ((1).reinterpret_as_uint() << 7)) != 0
+}
+
+///|
+pub fn Os2Flags::italic(self : Os2Flags) -> Bool {
+  (self.value & ((1).reinterpret_as_uint() << 0)) != 0
+}
+
+///|
+pub fn Os2Flags::oblique(self : Os2Flags) -> Bool {
+  (self.value & ((1).reinterpret_as_uint() << 9)) != 0
 }
 
 ///|

@@ -233,11 +233,15 @@ pub fn Os2::typographic_ascender(Self) -> Int
 pub fn Os2::typographic_descender(Self) -> Int
 pub fn Os2::typographic_line_gap(Self) -> Int
 pub fn Os2::version(Self) -> UInt
+pub fn Os2::weight_class(Self) -> Int
+pub fn Os2::width_class(Self) -> Int
 pub fn Os2::x_height(Self) -> Int
 
 pub struct Os2Flags {
   value : UInt
 }
+pub fn Os2Flags::italic(Self) -> Bool
+pub fn Os2Flags::oblique(Self) -> Bool
 pub fn Os2Flags::use_typographic_metrics(Self) -> Bool
 
 pub struct Post {
