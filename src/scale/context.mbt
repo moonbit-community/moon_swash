@@ -125,10 +125,43 @@ pub fn Scaler::scale_outline_into(
   glyph_id : @swash.GlyphId,
   outline : Outline,
 ) -> Bool {
-  match self.scale_outline(glyph_id) {
+  outline.clear()
+  self.scale_outline_layer_into(glyph_id, None, outline)
+}
+
+///|
+pub fn Scaler::scale_color_outline_into(
+  self : Scaler,
+  glyph_id : @swash.GlyphId,
+  outline : Outline,
+) -> Bool {
+  outline.clear()
+  if !self.has_color_outlines() {
+    return false
+  }
+  let skrifa_font = match to_skrifa_font(self.font) {
+    None => return false
+    Some(f) => f
+  }
+  match skrifa_font.color_glyphs().layers(@skrifa.GlyphId::new(glyph_id)) {
     None => false
-    Some(o) => {
-      outline.copy_from(o)
+    Some(layers) => {
+      for layer in layers {
+        let palette_index = layer.palette_index()
+        let color_index = if palette_index < 0 {
+          None
+        } else {
+          Some(palette_index.reinterpret_as_uint().to_uint16())
+        }
+        if !self.scale_outline_layer_into(
+            layer.glyph_id().to_u16(),
+            color_index,
+            outline,
+          ) {
+          return false
+        }
+      }
+      outline.set_color(true)
       true
     }
   }
@@ -169,17 +202,8 @@ struct OutlineWriter {
 }
 
 ///|
-fn OutlineWriter::new() -> OutlineWriter {
-  let outline = Outline::new()
-  outline.set_color(false)
-  outline.begin_layer(None)
+fn OutlineWriter::new(outline : Outline) -> OutlineWriter {
   OutlineWriter::{ outline, }
-}
-
-///|
-fn OutlineWriter::finish(self : OutlineWriter) -> Outline {
-  self.outline.finish()
-  self.outline
 }
 
 ///|
@@ -231,9 +255,12 @@ fn outline_from_skrifa(
   glyph_id : @swash.GlyphId,
   ppem : Double,
   hint : Bool,
-) -> Outline? {
+) -> (Bool, Outline) {
+  let outline = Outline::new()
+  outline.set_color(false)
+  outline.begin_layer(None)
   match to_skrifa_font(font) {
-    None => None
+    None => (false, outline)
     Some(skrifa_font) => {
       let outlines = @skrifa_outline.OutlineGlyphCollection::from_font(
         skrifa_font,
@@ -258,12 +285,13 @@ fn outline_from_skrifa(
       } else {
         @skrifa_outline.DrawSettings::unhinted(size, loc)
       }
-      let pen = OutlineWriter::new()
+      let pen = OutlineWriter::new(outline)
       let gid = @skrifa.GlyphId::new(glyph_id)
       if outlines.draw(gid, settings, pen) {
-        Some(pen.finish())
+        pen.outline.finish()
+        (true, pen.outline)
       } else {
-        None
+        (false, pen.outline)
       }
     }
   }
@@ -274,42 +302,115 @@ pub fn Scaler::scale_outline(
   _self : Scaler,
   _glyph_id : @swash.GlyphId,
 ) -> Outline? {
-  // NOTE: Upstream swash uses skrifa for outline extraction. Per current plan,
-  // we decode TrueType glyf outlines directly from font tables for now.
   let self = _self
   let glyph_id = _glyph_id
+  let outline = Outline::new()
+  if self.scale_outline_into(glyph_id, outline) {
+    Some(outline)
+  } else {
+    None
+  }
+}
+
+///|
+pub fn Scaler::scale_color_outline(
+  self : Scaler,
+  glyph_id : @swash.GlyphId,
+) -> Outline? {
+  let outline = Outline::new()
+  if self.scale_color_outline_into(glyph_id, outline) {
+    Some(outline)
+  } else {
+    None
+  }
+}
+
+///|
+pub fn Scaler::has_color_outlines(self : Scaler) -> Bool {
+  let colr = @internal.table_offset(self.font, 0x434f4c52) // "COLR"
+  let cpal = @internal.table_offset(self.font, 0x4350414c) // "CPAL"
+  colr != 0 && cpal != 0
+}
+
+///|
+pub fn Scaler::has_outlines(self : Scaler) -> Bool {
+  match to_skrifa_font(self.font) {
+    None => {
+      let loca = @internal.table_offset(self.font, @internal.LOCA)
+      let glyf = @internal.table_offset(self.font, @internal.GLYF)
+      loca != 0 && glyf != 0
+    }
+    Some(skrifa_font) =>
+      @skrifa_outline.OutlineGlyphCollection::from_font(skrifa_font).format()
+      is Some(_)
+  }
+}
+
+///|
+fn Scaler::scale_outline_layer_into(
+  self : Scaler,
+  glyph_id : @swash.GlyphId,
+  color_index : UInt16?,
+  outline : Outline,
+) -> Bool {
   let head = match @internal.Head::from_font(self.font) {
-    None => return None
+    None => return false
     Some(h) => h
   }
   let units_per_em = head.units_per_em()
   if units_per_em == 0 {
-    return None
+    return false
+  }
+  outline.begin_layer(color_index)
+
+  // Try skrifa first.
+  let (ok, o) = outline_from_skrifa(self.font, glyph_id, self.size, self.hint)
+  if ok {
+    // Copy points/verbs from the produced outline (single layer) into `outline`.
+    for p in o.points() {
+      outline.points.push(p)
+    }
+    for v in o.verbs() {
+      outline.verbs.push(v)
+    }
+    outline.maybe_close()
+    outline.finish()
+    return true
   }
   let scale = if self.size <= 0.0 {
     1.0
   } else {
     self.size / units_per_em.to_double()
   }
-  match outline_from_skrifa(self.font, glyph_id, self.size, self.hint) {
-    Some(o) => return Some(o)
-    None => ()
-  }
   let loca_fmt = head.index_to_location_format()
   let loca = @internal.table_offset(self.font, @internal.LOCA)
   let glyf = @internal.table_offset(self.font, @internal.GLYF)
   if loca == 0 || glyf == 0 {
-    return None
+    return false
   }
-  decode_glyph_outline(
-    self.font.data(),
-    loca_fmt,
-    loca,
-    glyf,
-    glyph_id.to_int().reinterpret_as_uint(),
-    scale,
-    0,
-  )
+  match
+    decode_glyph_outline(
+      self.font.data(),
+      loca_fmt,
+      loca,
+      glyf,
+      glyph_id.to_int().reinterpret_as_uint(),
+      scale,
+      0,
+    ) {
+    None => false
+    Some(o2) => {
+      for p in o2.points() {
+        outline.points.push(p)
+      }
+      for v in o2.verbs() {
+        outline.verbs.push(v)
+      }
+      outline.maybe_close()
+      outline.finish()
+      true
+    }
+  }
 }
 
 ///|
@@ -946,6 +1047,154 @@ fn mk_min_ttf_with_one_simple_glyph() -> Bytes {
       b'\x00'
     },
   )
+}
+
+///|
+fn ttf_test_set_u16be(buf : Array[Byte], idx : Int, v : Int) -> Unit {
+  let u = v.reinterpret_as_uint()
+  let mask = (255).reinterpret_as_uint()
+  buf[idx] = ((u >> 8) & mask).to_byte()
+  buf[idx + 1] = (u & mask).to_byte()
+}
+
+///|
+fn ttf_test_set_u32be(buf : Array[Byte], idx : Int, v : UInt) -> Unit {
+  let mask = (255).reinterpret_as_uint()
+  buf[idx] = ((v >> 24) & mask).to_byte()
+  buf[idx + 1] = ((v >> 16) & mask).to_byte()
+  buf[idx + 2] = ((v >> 8) & mask).to_byte()
+  buf[idx + 3] = (v & mask).to_byte()
+}
+
+///|
+fn ttf_test_set_record(
+  buf : Array[Byte],
+  record_index : Int,
+  tag : UInt,
+  offset : Int,
+  length : Int,
+) -> Unit {
+  let base = 12 + record_index * 16
+  ttf_test_set_u32be(buf, base, tag)
+  ttf_test_set_u32be(buf, base + 4, 0)
+  ttf_test_set_u32be(buf, base + 8, offset.reinterpret_as_uint())
+  ttf_test_set_u32be(buf, base + 12, length.reinterpret_as_uint())
+}
+
+///|
+fn mk_min_ttf_with_colr_two_layer_glyph() -> Bytes {
+  // Table directory with 5 tables: COLR, CPAL, glyf, head, loca (sorted by tag).
+  // This is a minimal synthetic font used only by tests.
+  let total : Int = 0x148
+  let out : Array[Byte] = Array::makei(total, _ => b'\x00')
+
+  // sfntVersion 0x00010000
+  ttf_test_set_u32be(out, 0, 0x00010000)
+  // numTables = 5
+  ttf_test_set_u16be(out, 4, 5)
+
+  // Table records (tag, checksum=0, offset, length).
+  let tag_colr : UInt = 0x434f4c52 // "COLR"
+  let tag_cpal : UInt = 0x4350414c // "CPAL"
+  let tag_glyf : UInt = 0x676c7966 // "glyf"
+  let tag_head : UInt = 0x68656164 // "head"
+  let tag_loca : UInt = 0x6c6f6361 // "loca"
+  let colr_off : Int = 0x60
+  let colr_len : Int = 28
+  let cpal_off : Int = 0x80
+  let cpal_len : Int = 22
+  let glyf_off : Int = 0xA0
+  let glyf_len : Int = 70
+  let head_off : Int = 0x100
+  let head_len : Int = 54
+  let loca_off : Int = 0x140
+  let loca_len : Int = 8
+  ttf_test_set_record(out, 0, tag_colr, colr_off, colr_len)
+  ttf_test_set_record(out, 1, tag_cpal, cpal_off, cpal_len)
+  ttf_test_set_record(out, 2, tag_glyf, glyf_off, glyf_len)
+  ttf_test_set_record(out, 3, tag_head, head_off, head_len)
+  ttf_test_set_record(out, 4, tag_loca, loca_off, loca_len)
+
+  // COLR v0 table.
+  ttf_test_set_u16be(out, colr_off + 0, 0) // version
+  ttf_test_set_u16be(out, colr_off + 2, 1) // numBaseGlyphRecords
+  ttf_test_set_u32be(out, colr_off + 4, 14 |> Int::reinterpret_as_uint) // baseGlyphRecordsOffset
+  ttf_test_set_u32be(out, colr_off + 8, 20 |> Int::reinterpret_as_uint) // layerRecordsOffset
+  ttf_test_set_u16be(out, colr_off + 12, 2) // numLayerRecords
+  // Base glyph record for glyph 0 -> 2 layers starting at layer 0.
+  ttf_test_set_u16be(out, colr_off + 14, 0) // glyphId
+  ttf_test_set_u16be(out, colr_off + 16, 0) // firstLayer
+  ttf_test_set_u16be(out, colr_off + 18, 2) // numLayers
+  // Layer records: glyph 1 (palette 0), glyph 2 (palette 1).
+  ttf_test_set_u16be(out, colr_off + 20, 1)
+  ttf_test_set_u16be(out, colr_off + 22, 0)
+  ttf_test_set_u16be(out, colr_off + 24, 2)
+  ttf_test_set_u16be(out, colr_off + 26, 1)
+
+  // CPAL v0 table (1 palette, 2 entries).
+  ttf_test_set_u16be(out, cpal_off + 0, 0) // version
+  ttf_test_set_u16be(out, cpal_off + 2, 2) // numPaletteEntries
+  ttf_test_set_u16be(out, cpal_off + 4, 1) // numPalettes
+  ttf_test_set_u16be(out, cpal_off + 6, 2) // numColorRecords
+  ttf_test_set_u32be(out, cpal_off + 8, 14 |> Int::reinterpret_as_uint) // offsetFirstColorRecord
+  ttf_test_set_u16be(out, cpal_off + 12, 0) // colorRecordIndices[0]
+  // ColorRecord[0] = red (BGRA).
+  out[cpal_off + 14 + 0] = (0).to_byte()
+  out[cpal_off + 14 + 1] = (0).to_byte()
+  out[cpal_off + 14 + 2] = (255).to_byte()
+  out[cpal_off + 14 + 3] = (255).to_byte()
+  // ColorRecord[1] = green (BGRA).
+  out[cpal_off + 18 + 0] = (0).to_byte()
+  out[cpal_off + 18 + 1] = (255).to_byte()
+  out[cpal_off + 18 + 2] = (0).to_byte()
+  out[cpal_off + 18 + 3] = (255).to_byte()
+
+  // glyf table: 3 glyphs (g0 empty, g1 triangle, g2 triangle shifted).
+  // g0 at glyf_off + 0: numberOfContours=0, bounds all zero.
+  ttf_test_set_u16be(out, glyf_off + 0, 0)
+  // g1 at glyf_off + 10: same as mk_min_ttf_with_one_simple_glyph.
+  let g1 : Int = glyf_off + 10
+  ttf_test_set_u16be(out, g1 + 0, 1) // contours
+  ttf_test_set_u16be(out, g1 + 6, 50) // xMax
+  ttf_test_set_u16be(out, g1 + 8, 50) // yMax
+  ttf_test_set_u16be(out, g1 + 10, 2) // endPt=2
+  ttf_test_set_u16be(out, g1 + 12, 0) // instrLen=0
+  out[g1 + 14] = (1).to_byte()
+  out[g1 + 15] = (1).to_byte()
+  out[g1 + 16] = (1).to_byte()
+  ttf_test_set_u16be(out, g1 + 17, 0)
+  ttf_test_set_u16be(out, g1 + 19, 50)
+  ttf_test_set_u16be(out, g1 + 21, -50)
+  ttf_test_set_u16be(out, g1 + 23, 0)
+  ttf_test_set_u16be(out, g1 + 25, 0)
+  ttf_test_set_u16be(out, g1 + 27, 50)
+  // g2 at glyf_off + 40.
+  let g2 : Int = glyf_off + 40
+  ttf_test_set_u16be(out, g2 + 0, 1) // contours
+  ttf_test_set_u16be(out, g2 + 6, 50) // xMax
+  ttf_test_set_u16be(out, g2 + 8, 50) // yMax
+  ttf_test_set_u16be(out, g2 + 10, 2) // endPt=2
+  ttf_test_set_u16be(out, g2 + 12, 0) // instrLen=0
+  out[g2 + 14] = (1).to_byte()
+  out[g2 + 15] = (1).to_byte()
+  out[g2 + 16] = (1).to_byte()
+  ttf_test_set_u16be(out, g2 + 17, 0)
+  ttf_test_set_u16be(out, g2 + 19, 50)
+  ttf_test_set_u16be(out, g2 + 21, 0)
+  ttf_test_set_u16be(out, g2 + 23, 0)
+  ttf_test_set_u16be(out, g2 + 25, 0)
+  ttf_test_set_u16be(out, g2 + 27, 50)
+
+  // head table: unitsPerEm=1000 at +18, indexToLocFormat=0 at +50.
+  ttf_test_set_u16be(out, head_off + 18, 1000)
+  ttf_test_set_u16be(out, head_off + 50, 0)
+
+  // loca table (format 0): [0, 5, 20, 35]
+  ttf_test_set_u16be(out, loca_off + 0, 0)
+  ttf_test_set_u16be(out, loca_off + 2, 5)
+  ttf_test_set_u16be(out, loca_off + 4, 20)
+  ttf_test_set_u16be(out, loca_off + 6, 35)
+  Bytes::from_array(out.op_as_view())
 }
 
 ///|

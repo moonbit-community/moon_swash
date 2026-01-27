@@ -160,6 +160,88 @@ pub fn Render::render_into(
         image.source = Source::Outline
         return true
       }
+      Source::ColorOutline(palette_index) => {
+        let outline = scaler.state.val.outline
+        outline.clear()
+        if !scaler.scale_color_outline_into(glyph_id, outline) {
+          continue
+        }
+        if self.transform is Some(t) {
+          outline.transform(t)
+        }
+        let palettes = match to_skrifa_font(scaler.font) {
+          None => None
+          Some(skrifa_font) => Some(skrifa_font.color_palettes())
+        }
+        let total_bounds = outline.bounds()
+        // Take offset into account when placing glyph.
+        let base_x = (total_bounds.min.x() + self.offset.x()).floor().to_int()
+        let base_y = (total_bounds.min.y() + self.offset.y()).ceil().to_int()
+        let base_w = total_bounds.width().ceil().to_int().reinterpret_as_uint()
+        let base_h = total_bounds.height().ceil().to_int().reinterpret_as_uint()
+        let base_size = (base_w * base_h * 4U).reinterpret_as_int()
+        image.data = Array::makei(base_size, _ => b'\x00')
+        image.placement = Placement::{
+          left: base_x,
+          top: base_h.reinterpret_as_int() + base_y,
+          width: base_w,
+          height: base_h,
+        }
+        let mut ok = true
+        for i in 0..<outline.len() {
+          match outline.get(i) {
+            None => {
+              ok = false
+              break
+            }
+            Some(layer) => {
+              scaler.state.val._scratch0.clear()
+              let placement = @zeno.Mask::with_scratch(
+                  layer.path(),
+                  scaler.state.val.rcx,
+                )
+                .format(@zeno.Format::Alpha)
+                .origin(@zeno.Origin::BottomLeft)
+                .style(self.style)
+                .offset(self.offset)
+                .render_offset(self.offset)
+                .inspect((fmt, w, h) => {
+                  let n = fmt.buffer_size(w, h)
+                  scaler.state.val._scratch0 = Array::makei(n, _ => b'\x00')
+                })
+                .render_into(scaler.state.val._scratch0)
+              let color = match layer.color_index() {
+                None => self.foreground
+                Some(ci) =>
+                  match palettes {
+                    None => self.foreground
+                    Some(ps) =>
+                      match ps.color(palette_index.to_int(), ci.to_int()) {
+                        None => self.foreground
+                        Some(c) => [c.r(), c.g(), c.b(), c.a()]
+                      }
+                  }
+              }
+              blit(
+                scaler.state.val._scratch0,
+                placement.width,
+                placement.height,
+                placement.left - base_x,
+                base_h.reinterpret_as_int() + base_y - placement.top,
+                color,
+                image.data,
+                base_w,
+                base_h,
+              )
+            }
+          }
+        }
+        if ok {
+          image.source = Source::ColorOutline(palette_index)
+          image.content = Content::Color
+          return true
+        }
+      }
       _ => continue
     }
   }
@@ -203,6 +285,45 @@ test "Render renders outline into an alpha mask" {
   let mut sum = 0
   for b in img.data() {
     sum = sum + b.to_int()
+  }
+  inspect(sum > 0, content="true")
+}
+
+///|
+test "Render renders COLR/CPAL layers into an RGBA image" {
+  let data = mk_min_ttf_with_colr_two_layer_glyph()
+  let font = @swash.FontRef::from_offset(data, 0).unwrap()
+  let cx = ScaleContext::new()
+  let scaler = cx.builder(font).size(1000.0).build()
+  let r = Render::new([Source::ColorOutline((0).to_uint16())]).format(
+    @zeno.Format::Alpha,
+  )
+  let img = r.render(scaler, (0).to_uint16()).unwrap()
+  inspect(
+    match img.source() {
+      ColorOutline(_) => true
+      _ => false
+    },
+    content="true",
+  )
+  inspect(
+    match img.content() {
+      Color => true
+      _ => false
+    },
+    content="true",
+  )
+  // RGBA buffer size should match placement.
+  let p = img.placement()
+  let expected = (p.width * p.height * 4U).reinterpret_as_int()
+  inspect(img.data().length(), content=expected.to_string())
+  // Ensure some non-zero alpha got blended in.
+  let mut sum = 0
+  let data = img.data()
+  let mut i = 3
+  while i < data.length() {
+    sum = sum + data[i].to_int()
+    i = i + 4
   }
   inspect(sum > 0, content="true")
 }

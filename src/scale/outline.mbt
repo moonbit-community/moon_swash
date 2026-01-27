@@ -38,6 +38,42 @@ pub struct Outline {
 }
 
 ///|
+/// Reference to a layer in a scaled outline.
+///
+/// MoonBit does not currently expose slice borrows, so this is materialized as
+/// owned point/verb arrays.
+pub struct Layer {
+  points : Array[Point]
+  verbs : Array[Verb]
+  color_index : UInt16?
+}
+
+///|
+pub fn Layer::points(self : Layer) -> Array[Point] {
+  self.points
+}
+
+///|
+pub fn Layer::verbs(self : Layer) -> Array[Verb] {
+  self.verbs
+}
+
+///|
+pub fn Layer::path(self : Layer) -> (Array[Point], Array[Verb]) {
+  (self.points, self.verbs)
+}
+
+///|
+pub fn Layer::bounds(self : Layer) -> Bounds {
+  Bounds::from_points(self.points)
+}
+
+///|
+pub fn Layer::color_index(self : Layer) -> UInt16? {
+  self.color_index
+}
+
+///|
 pub fn Outline::new() -> Outline {
   Outline::{ layers: [], points: [], verbs: [], is_color: false }
 }
@@ -63,6 +99,36 @@ pub fn Outline::layer_data(self : Outline, index : Int) -> LayerData? {
     None
   } else {
     Some(self.layers[index])
+  }
+}
+
+///|
+pub fn Outline::get(self : Outline, index : Int) -> Layer? {
+  match self.layer_data(index) {
+    None => None
+    Some(layer) => {
+      let ps = layer.points_start
+      let pe = layer.points_end
+      let vs = layer.verbs_start
+      let ve = layer.verbs_end
+      guard ps >= 0 &&
+        pe >= ps &&
+        pe <= self.points.length() &&
+        vs >= 0 &&
+        ve >= vs &&
+        ve <= self.verbs.length() else {
+        None
+      }
+      let points : Array[Point] = []
+      for i in ps..<pe {
+        points.push(self.points[i])
+      }
+      let verbs : Array[Verb] = []
+      for i in vs..<ve {
+        verbs.push(self.verbs[i])
+      }
+      Some(Layer::{ points, verbs, color_index: layer.color_index })
+    }
   }
 }
 
@@ -276,20 +342,6 @@ pub fn Outline::clear(self : Outline) -> Unit {
 }
 
 ///|
-fn Outline::copy_from(self : Outline, other : Outline) -> Unit {
-  self.clear()
-  for l in other.layers {
-    self.layers.push(l)
-  }
-  for p in other.points {
-    self.points.push(p)
-  }
-  for v in other.verbs {
-    self.verbs.push(v)
-  }
-  self.is_color = other.is_color
-}
-
 // ---- internal builders (ported from `pub(super)` APIs) ----
 
 ///|

@@ -9,6 +9,8 @@ import {
 }
 
 // Values
+pub fn blit(Array[Byte], UInt, UInt, Int, Int, Array[Byte], Array[Byte], UInt, UInt) -> Unit
+
 pub fn inflate_zlib(Bytes) -> Array[Byte] raise @moon_yazi.YaziError
 
 pub fn is_png(Bytes) -> Bool
@@ -36,6 +38,17 @@ pub fn Image::new() -> Self
 pub fn Image::placement(Self) -> @moon_zeno.Placement
 pub fn Image::source(Self) -> Source
 
+pub struct Layer {
+  points : Array[@moon_zeno.Vector]
+  verbs : Array[@moon_zeno.Verb]
+  color_index : UInt16?
+}
+pub fn Layer::bounds(Self) -> @moon_zeno.Bounds
+pub fn Layer::color_index(Self) -> UInt16?
+pub fn Layer::path(Self) -> (Array[@moon_zeno.Vector], Array[@moon_zeno.Verb])
+pub fn Layer::points(Self) -> Array[@moon_zeno.Vector]
+pub fn Layer::verbs(Self) -> Array[@moon_zeno.Verb]
+
 pub struct LayerData {
   points_start : Int
   points_end : Int
@@ -57,6 +70,7 @@ pub fn Outline::close(Self) -> Unit
 pub fn Outline::curve_to(Self, @moon_zeno.Vector, @moon_zeno.Vector, @moon_zeno.Vector) -> Unit
 pub fn Outline::embolden(Self, Double, Double) -> Unit
 pub fn Outline::finish(Self) -> Unit
+pub fn Outline::get(Self, Int) -> Layer?
 pub fn Outline::is_color(Self) -> Bool
 pub fn Outline::is_empty(Self) -> Bool
 pub fn Outline::layer_data(Self, Int) -> LayerData?
@@ -105,7 +119,11 @@ pub struct Scaler {
   size : Double
   hint : Bool
 }
+pub fn Scaler::has_color_outlines(Self) -> Bool
+pub fn Scaler::has_outlines(Self) -> Bool
 pub fn Scaler::hint(Self) -> Bool
+pub fn Scaler::scale_color_outline(Self, UInt16) -> Outline?
+pub fn Scaler::scale_color_outline_into(Self, UInt16, Outline) -> Bool
 pub fn Scaler::scale_outline(Self, UInt16) -> Outline?
 pub fn Scaler::scale_outline_into(Self, UInt16, Outline) -> Bool
 pub fn Scaler::size(Self) -> Double
