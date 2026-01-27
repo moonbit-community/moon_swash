@@ -60,6 +60,8 @@ pub fn ScaleContext::builder(
     state: self.state,
     hinting_cache: self.hinting_cache,
     font,
+    coords: [],
+    var_settings: [],
     size: 0.0,
     hint: false,
   }
@@ -71,6 +73,8 @@ pub struct ScalerBuilder {
   state : Ref[State]
   hinting_cache : Ref[HintingCache]
   font : @swash.FontRef
+  coords : Array[Int]
+  var_settings : Array[@skrifa.VariationSetting]
   size : Double
   hint : Bool
 }
@@ -84,6 +88,8 @@ pub fn ScalerBuilder::size(
     state: self.state,
     hinting_cache: self.hinting_cache,
     font: self.font,
+    coords: self.coords,
+    var_settings: self.var_settings,
     size: if ppem < 0.0 {
       0.0
     } else {
@@ -99,9 +105,62 @@ pub fn ScalerBuilder::hint(self : ScalerBuilder, yes : Bool) -> ScalerBuilder {
     state: self.state,
     hinting_cache: self.hinting_cache,
     font: self.font,
+    coords: self.coords,
+    var_settings: self.var_settings,
     size: self.size,
     hint: yes,
   }
+}
+
+///|
+pub fn ScalerBuilder::variations(
+  self : ScalerBuilder,
+  settings : ArrayView[@swash.VariationSetting],
+) -> ScalerBuilder {
+  for s in settings.iter() {
+    let selector = @skrifa.Tag::from_uint(s.tag)
+    let next = @skrifa.Setting::new(selector, s.value)
+    let mut found = false
+    for i in 0..<self.var_settings.length() {
+      let cur = self.var_settings.at(i)
+      if cur.selector.to_uint() == selector.to_uint() {
+        self.var_settings.set(i, next)
+        found = true
+        break
+      }
+    }
+    if !found {
+      self.var_settings.push(next)
+    }
+  }
+  match to_skrifa_font(self.font) {
+    None => ()
+    Some(skrifa_font) => {
+      let axes = @skrifa.AxisCollection::new(skrifa_font)
+      if axes.is_empty() {
+        return self
+      }
+      let loc = axes.location(self.var_settings.op_as_view())
+      self.coords.clear()
+      for c in loc.coords().iter() {
+        self.coords.push(c)
+      }
+    }
+  }
+  self
+}
+
+///|
+pub fn ScalerBuilder::normalized_coords(
+  self : ScalerBuilder,
+  coords : ArrayView[Int],
+) -> ScalerBuilder {
+  self.var_settings.clear()
+  self.coords.clear()
+  for c in coords.iter() {
+    self.coords.push(c)
+  }
+  self
 }
 
 ///|
@@ -123,7 +182,11 @@ pub fn ScalerBuilder::build(self : ScalerBuilder) -> Scaler {
   } else {
     @skrifa.Size::unscaled()
   }
-  let loc = @skrifa.LocationRef::default()
+  let loc = if self.coords.is_empty() {
+    @skrifa.LocationRef::default()
+  } else {
+    @skrifa.LocationRef::new(self.coords.op_as_view())
+  }
   let skrifa_font = to_skrifa_font(self.font)
   let outlines = match skrifa_font {
     None => None
@@ -143,9 +206,9 @@ pub fn ScalerBuilder::build(self : ScalerBuilder) -> Scaler {
     font: self.font,
     outlines: outlines0,
     hinting_instance,
+    coords: self.coords,
     size: self.size,
     skrifa_size,
-    loc,
     hint: self.hint,
   }
 }
@@ -157,9 +220,9 @@ pub struct Scaler {
   font : @swash.FontRef
   outlines : @skrifa_outline.OutlineGlyphCollection?
   hinting_instance : @skrifa_outline.HintingInstance?
+  coords : Array[Int]
   size : Double
   skrifa_size : @skrifa.Size
-  loc : @skrifa.LocationRef
   hint : Bool
 }
 
@@ -748,9 +811,13 @@ fn Scaler::scale_outline_layer_into(
   match self.outlines {
     None => ()
     Some(outlines) => {
+      let loc = if self.coords.is_empty() {
+        @skrifa.LocationRef::default()
+      } else {
+        @skrifa.LocationRef::new(self.coords.op_as_view())
+      }
       let settings = match self.hinting_instance {
-        None =>
-          @skrifa_outline.DrawSettings::unhinted(self.skrifa_size, self.loc)
+        None => @skrifa_outline.DrawSettings::unhinted(self.skrifa_size, loc)
         Some(h) => @skrifa_outline.DrawSettings::hinted(h, false)
       }
       let gid = @skrifa.GlyphId::new(glyph_id)

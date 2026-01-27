@@ -123,9 +123,9 @@ pub struct Scaler {
   font : @moon_swash.FontRef
   outlines : @outline.OutlineGlyphCollection?
   hinting_instance : @outline.HintingInstance?
+  coords : Array[Int]
   size : Double
   skrifa_size : @core.Size
-  loc : @core.LocationRef
   hint : Bool
 }
 pub fn Scaler::has_bitmaps(Self) -> Bool
@@ -147,12 +147,16 @@ pub struct ScalerBuilder {
   state : Ref[State]
   hinting_cache : Ref[HintingCache]
   font : @moon_swash.FontRef
+  coords : Array[Int]
+  var_settings : Array[@core.Setting[Double]]
   size : Double
   hint : Bool
 }
 pub fn ScalerBuilder::build(Self) -> Scaler
 pub fn ScalerBuilder::hint(Self, Bool) -> Self
+pub fn ScalerBuilder::normalized_coords(Self, ArrayView[Int]) -> Self
 pub fn ScalerBuilder::size(Self, Double) -> Self
+pub fn ScalerBuilder::variations(Self, ArrayView[@moon_swash.Setting[Double]]) -> Self
 
 pub(all) enum Source {
   Outline

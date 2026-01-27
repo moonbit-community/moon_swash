@@ -61,10 +61,24 @@ pub fn FontRef::offset(Self) -> Int
 pub fn FontRef::table_data(Self, UInt) -> BytesView?
 pub impl @internal.RawFont for FontRef
 
+pub struct Setting[T] {
+  tag : UInt
+  value : T
+}
+pub fn[T] Setting::new(UInt, T) -> Self[T]
+pub fn Setting::parse_feature(String) -> Self[UInt16]?
+pub fn Setting::parse_feature_list(String) -> Iter[Self[UInt16]]
+pub fn Setting::parse_variation(String) -> Self[Double]?
+pub fn Setting::parse_variation_list(String) -> Iter[Self[Double]]
+
 // Type aliases
+pub type FeatureSetting = Setting[UInt16]
+
 pub type GlyphId = UInt16
 
 pub type Tag = UInt
+
+pub type VariationSetting = Setting[Double]
 
 // Traits
 
