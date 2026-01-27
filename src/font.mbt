@@ -128,6 +128,42 @@ pub fn FontRef::table_data(self : FontRef, tag : Tag) -> BytesView? {
 }
 
 ///|
+/// Returns the byte offset of the table with the specified tag.
+pub fn FontRef::table_offset(self : FontRef, tag : Tag) -> UInt {
+  @internal.table_offset(self, tag)
+}
+
+///|
+pub fn FontRef::head(self : FontRef) -> @internal.Head? {
+  @internal.Head::from_font(self)
+}
+
+///|
+pub fn FontRef::os2(self : FontRef) -> @internal.Os2? {
+  @internal.Os2::from_font(self)
+}
+
+///|
+pub fn FontRef::post(self : FontRef) -> @internal.Post? {
+  @internal.Post::from_font(self)
+}
+
+///|
+pub fn FontRef::maxp(self : FontRef) -> @internal.Maxp? {
+  @internal.Maxp::from_font(self)
+}
+
+///|
+pub fn FontRef::hhea(self : FontRef) -> @internal.Hhea? {
+  @internal.Hhea::from_font(self)
+}
+
+///|
+pub fn FontRef::vhea(self : FontRef) -> @internal.Vhea? {
+  @internal.Vhea::from_font(self)
+}
+
+///|
 test "FontDataRef/FontRef basic collection support" {
   // Collection with one font at offset 0x20.
   let data = Bytes::makei(36, i => if i == 0 {

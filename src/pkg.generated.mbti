@@ -67,13 +67,35 @@ pub struct FontRef {
 pub fn FontRef::data(Self) -> Bytes
 pub fn FontRef::from_index(Bytes, Int) -> Self?
 pub fn FontRef::from_offset(Bytes, Int) -> Self?
+pub fn FontRef::glyph_metrics(Self, ArrayView[Int]) -> GlyphMetrics
+pub fn FontRef::head(Self) -> @internal.Head?
+pub fn FontRef::hhea(Self) -> @internal.Hhea?
 pub fn FontRef::instances(Self) -> Iter[Instance]
 pub fn FontRef::key(Self) -> CacheKey
 pub fn FontRef::localized_strings(Self) -> LocalizedStrings
+pub fn FontRef::maxp(Self) -> @internal.Maxp?
+pub fn FontRef::metrics(Self, ArrayView[Int]) -> Metrics
 pub fn FontRef::offset(Self) -> Int
+pub fn FontRef::os2(Self) -> @internal.Os2?
+pub fn FontRef::post(Self) -> @internal.Post?
 pub fn FontRef::table_data(Self, UInt) -> BytesView?
+pub fn FontRef::table_offset(Self, UInt) -> UInt
 pub fn FontRef::variations(Self) -> Iter[Variation]
+pub fn FontRef::vhea(Self) -> @internal.Vhea?
 pub impl @internal.RawFont for FontRef
+
+type GlyphMetrics
+pub fn GlyphMetrics::advance_height(Self, UInt16) -> Double
+pub fn GlyphMetrics::advance_width(Self, UInt16) -> Double
+pub fn GlyphMetrics::glyph_count(Self) -> UInt16
+pub fn GlyphMetrics::has_variations(Self) -> Bool
+pub fn GlyphMetrics::has_vertical_metrics(Self) -> Bool
+pub fn GlyphMetrics::linear_scale(Self, Double) -> Self
+pub fn GlyphMetrics::lsb(Self, UInt16) -> Double
+pub fn GlyphMetrics::scale(Self, Double) -> Self
+pub fn GlyphMetrics::tsb(Self, UInt16) -> Double
+pub fn GlyphMetrics::units_per_em(Self) -> UInt16
+pub fn GlyphMetrics::vertical_origin(Self, UInt16) -> Double
 
 type Instance
 pub fn Instance::index(Self) -> Int
@@ -104,6 +126,35 @@ pub struct LocalizedStrings {
 pub fn LocalizedStrings::find_by_id(Self, StringId, String?) -> LocalizedString?
 pub fn LocalizedStrings::iter(Self) -> Iter[LocalizedString]
 pub fn LocalizedStrings::len(Self) -> Int
+
+pub struct Metrics {
+  units_per_em : UInt16
+  glyph_count : UInt16
+  is_monospace : Bool
+  has_vertical_metrics : Bool
+  ascent : Double
+  descent : Double
+  leading : Double
+  vertical_ascent : Double
+  vertical_descent : Double
+  vertical_leading : Double
+  cap_height : Double
+  x_height : Double
+  average_width : Double
+  max_width : Double
+  underline_offset : Double
+  strikeout_offset : Double
+  stroke_size : Double
+}
+pub fn Metrics::linear_scale(Self, Double) -> Self
+pub fn Metrics::scale(Self, Double) -> Self
+
+type MetricsProxy
+pub fn MetricsProxy::from_font(FontRef) -> Self
+pub fn MetricsProxy::glyph_count(Self) -> UInt16
+pub fn MetricsProxy::materialize_glyph_metrics(Self, FontRef, ArrayView[Int]) -> GlyphMetrics
+pub fn MetricsProxy::materialize_metrics(Self, FontRef, ArrayView[Int]) -> Metrics
+pub fn MetricsProxy::units_per_em(Self) -> UInt16
 
 pub struct Setting[T] {
   tag : UInt

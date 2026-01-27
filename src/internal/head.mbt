@@ -133,6 +133,121 @@ pub fn Head::glyph_data_format(self : Head) -> Int {
 }
 
 ///|
+/// OS/2 and Windows metrics table.
+pub struct Os2 {
+  data : BytesView
+}
+
+///|
+pub fn Os2::new(data : BytesView) -> Os2 {
+  Os2::{ data, }
+}
+
+///|
+pub fn[T : RawFont] Os2::from_font(font : T) -> Os2? {
+  table_data(font, OS_2).map(Os2::new)
+}
+
+///|
+pub fn Os2::version(self : Os2) -> UInt {
+  BeBytes::from_view(self.data).read_u16(0).unwrap_or(0)
+}
+
+///|
+pub fn Os2::average_char_width(self : Os2) -> Int {
+  BeBytes::from_view(self.data).read_i16(2).unwrap_or(0)
+}
+
+///|
+pub fn Os2::strikeout_position(self : Os2) -> Int {
+  BeBytes::from_view(self.data).read_i16(28).unwrap_or(0)
+}
+
+///|
+pub fn Os2::strikeout_size(self : Os2) -> Int {
+  BeBytes::from_view(self.data).read_i16(26).unwrap_or(0)
+}
+
+///|
+pub struct Os2Flags {
+  value : UInt
+}
+
+///|
+pub fn Os2Flags::use_typographic_metrics(self : Os2Flags) -> Bool {
+  (self.value & ((1).reinterpret_as_uint() << 7)) != 0
+}
+
+///|
+pub fn Os2::selection_flags(self : Os2) -> Os2Flags {
+  Os2Flags::{ value: BeBytes::from_view(self.data).read_u16(62).unwrap_or(0) }
+}
+
+///|
+pub fn Os2::typographic_ascender(self : Os2) -> Int {
+  BeBytes::from_view(self.data).read_i16(68).unwrap_or(0)
+}
+
+///|
+pub fn Os2::typographic_descender(self : Os2) -> Int {
+  BeBytes::from_view(self.data).read_i16(70).unwrap_or(0)
+}
+
+///|
+pub fn Os2::typographic_line_gap(self : Os2) -> Int {
+  BeBytes::from_view(self.data).read_i16(72).unwrap_or(0)
+}
+
+///|
+pub fn Os2::x_height(self : Os2) -> Int {
+  if self.version() < 2 {
+    0
+  } else {
+    BeBytes::from_view(self.data).read_i16(86).unwrap_or(0)
+  }
+}
+
+///|
+pub fn Os2::cap_height(self : Os2) -> Int {
+  if self.version() < 2 {
+    0
+  } else {
+    BeBytes::from_view(self.data).read_i16(88).unwrap_or(0)
+  }
+}
+
+///|
+/// PostScript table.
+pub struct Post {
+  data : BytesView
+}
+
+///|
+pub fn Post::new(data : BytesView) -> Post {
+  Post::{ data, }
+}
+
+///|
+pub fn[T : RawFont] Post::from_font(font : T) -> Post? {
+  table_data(font, POST).map(Post::new)
+}
+
+///|
+pub fn Post::underline_position(self : Post) -> Int {
+  BeBytes::from_view(self.data).read_i16(8).unwrap_or(0)
+}
+
+///|
+pub fn Post::underline_size(self : Post) -> Int {
+  BeBytes::from_view(self.data).read_i16(10).unwrap_or(0)
+}
+
+///|
+pub fn Post::is_fixed_pitch(self : Post) -> Bool {
+  BeBytes::from_view(self.data).read_u32(12).unwrap_or(0) != 0
+}
+
+///|
 /// Maximum profile table.
 pub struct Maxp {
   data : BytesView

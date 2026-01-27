@@ -2,15 +2,25 @@
 package "Milky2018/moon_swash/internal"
 
 // Values
+pub const AVAR : UInt = 0x61766172
+
+pub const CPHT : UInt = 0x63706874
+
 pub const CVAR : UInt = 0x63766172
 
 pub const CVT_ : UInt = 0x63767420
 
 pub const FPGM : UInt = 0x6670676D
 
+pub const FVAR : UInt = 0x66766172
+
 pub const GLYF : UInt = 0x676C7966
 
 pub const GVAR : UInt = 0x67766172
+
+pub const HASC : UInt = 0x68617363
+
+pub const HDSC : UInt = 0x68647363
 
 pub const HEAD : UInt = 0x68656164
 
@@ -18,11 +28,17 @@ pub const HEAD_MAGIC : UInt = 0x5F0F3CF5
 
 pub const HHEA : UInt = 0x68686561
 
+pub const HLGP : UInt = 0x686C6770
+
 pub const HMTX : UInt = 0x686D7478
+
+pub const HVAR : UInt = 0x48564152
 
 pub const LOCA : UInt = 0x6C6F6361
 
 pub const MAXP : UInt = 0x6D617870
+
+pub const MVAR : UInt = 0x4D564152
 
 pub const OS_2 : UInt = 0x4F532F32
 
@@ -30,11 +46,31 @@ pub const POST : UInt = 0x706F7374
 
 pub const PREP : UInt = 0x70726570
 
+pub const STRO : UInt = 0x7374726F
+
+pub const UNDO : UInt = 0x756E646F
+
+pub const UNDS : UInt = 0x756E6473
+
+pub const VASC : UInt = 0x76617363
+
+pub const VDSC : UInt = 0x76647363
+
 pub const VHEA : UInt = 0x76686561
+
+pub const VLGP : UInt = 0x766C6770
 
 pub const VMTX : UInt = 0x766D7478
 
+pub const VORG : UInt = 0x564F5247
+
+pub const VVAR : UInt = 0x56564152
+
+pub const XHGT : UInt = 0x78686774
+
 pub fn advance(Bytes, UInt, UInt, UInt) -> UInt
+
+pub fn advance_delta(Bytes, UInt, UInt, ArrayView[Int]) -> Double
 
 pub fn ceil(Int) -> Int
 
@@ -52,6 +88,8 @@ pub fn is_collection(Bytes) -> Bool
 
 pub fn is_font(Bytes, Int) -> Bool
 
+pub fn item_delta(Bytes, UInt, UInt, UInt, ArrayView[Int]) -> Fixed?
+
 pub fn map(Bytes, UInt, UInt, UInt) -> UInt?
 
 pub fn mul(Int, Int) -> Int
@@ -60,11 +98,15 @@ pub fn muldiv(Int, Int, Int) -> Int
 
 pub fn offset(Bytes, Int) -> Int?
 
+pub fn origin(Bytes, UInt, UInt) -> Int?
+
 pub fn raw_tag(Bytes) -> UInt?
 
 pub fn round(Int) -> Int
 
 pub fn sb(Bytes, UInt, UInt, UInt) -> Int
+
+pub fn sb_delta(Bytes, UInt, UInt, ArrayView[Int]) -> Double
 
 pub fn[T : RawFont] subtable(T) -> (UInt, UInt, Bool)?
 
@@ -165,6 +207,47 @@ pub fn Maxp::glyph_count(Self) -> UInt
 pub fn Maxp::is_truetype(Self) -> Bool
 pub fn Maxp::new(BytesView) -> Self
 pub fn Maxp::version(Self) -> UInt
+
+pub struct Mvar {
+  data : Bytes
+  coords : ArrayView[Int]
+  base : Int
+  rec_size : Int
+  rec_count : Int
+  store : UInt
+}
+pub fn Mvar::delta(Self, UInt) -> Double
+pub fn Mvar::new(Bytes, UInt, ArrayView[Int]) -> Self?
+
+pub struct Os2 {
+  data : BytesView
+}
+pub fn Os2::average_char_width(Self) -> Int
+pub fn Os2::cap_height(Self) -> Int
+pub fn[T : RawFont] Os2::from_font(T) -> Self?
+pub fn Os2::new(BytesView) -> Self
+pub fn Os2::selection_flags(Self) -> Os2Flags
+pub fn Os2::strikeout_position(Self) -> Int
+pub fn Os2::strikeout_size(Self) -> Int
+pub fn Os2::typographic_ascender(Self) -> Int
+pub fn Os2::typographic_descender(Self) -> Int
+pub fn Os2::typographic_line_gap(Self) -> Int
+pub fn Os2::version(Self) -> UInt
+pub fn Os2::x_height(Self) -> Int
+
+pub struct Os2Flags {
+  value : UInt
+}
+pub fn Os2Flags::use_typographic_metrics(Self) -> Bool
+
+pub struct Post {
+  data : BytesView
+}
+pub fn[T : RawFont] Post::from_font(T) -> Self?
+pub fn Post::is_fixed_pitch(Self) -> Bool
+pub fn Post::new(BytesView) -> Self
+pub fn Post::underline_position(Self) -> Int
+pub fn Post::underline_size(Self) -> Int
 
 pub struct Stream {
   data : BytesView
