@@ -6,6 +6,20 @@ import {
 }
 
 // Values
+pub const COMPOSE1_COUNT : Int = 63
+
+pub const UNICODE_VERSION_MAJOR : Int = 13
+
+pub const UNICODE_VERSION_MINOR : Int = 0
+
+pub const UNICODE_VERSION_PATCH : Int = 0
+
+pub fn compose_pair(Char, Char) -> Char?
+
+pub fn decompose(Char) -> Iter[Char]
+
+pub fn decompose_compat(Char) -> Iter[Char]
+
 pub fn desc_from_aat(UInt16, UInt16) -> (Int, UInt, String)?
 
 pub fn desc_from_at(UInt) -> (Int, String)?
@@ -13,6 +27,8 @@ pub fn desc_from_at(UInt) -> (Int, String)?
 pub fn tag_from_bytes(Bytes) -> UInt?
 
 pub fn tag_from_str_lossy(String) -> UInt
+
+pub fn unicode_version() -> (Int, Int, Int)
 
 // Errors
 
@@ -40,6 +56,33 @@ pub fn Attributes::synthesize(Self, Self) -> Synthesis
 pub fn Attributes::weight(Self) -> Weight
 pub impl Eq for Attributes
 pub impl Show for Attributes
+
+pub(all) enum BidiClass {
+  AL
+  AN
+  B
+  BN
+  CS
+  EN
+  ES
+  ET
+  FSI
+  L
+  LRE
+  LRI
+  LRO
+  NSM
+  ON
+  PDF
+  PDI
+  R
+  RLE
+  RLI
+  RLO
+  S
+  WS
+}
+pub fn BidiClass::needs_resolution(Self) -> Bool
 
 pub struct BitmapStrike {
   b : @internal.BeBytes
@@ -80,11 +123,370 @@ pub fn BitmapStrikesProxy::has_color(Self) -> Bool
 pub fn BitmapStrikesProxy::materialize_alpha(Self, FontRef) -> BitmapStrikes
 pub fn BitmapStrikesProxy::materialize_color(Self, FontRef) -> BitmapStrikes
 
+pub(all) enum Block {
+  Adlam
+  AegeanNumbers
+  Ahom
+  AlchemicalSymbols
+  AlphabeticPresentationForms
+  AnatolianHieroglyphs
+  AncientGreekMusicalNotation
+  AncientGreekNumbers
+  AncientSymbols
+  Arabic
+  ArabicExtendedA
+  ArabicMathematicalAlphabeticSymbols
+  ArabicPresentationFormsA
+  ArabicPresentationFormsB
+  ArabicSupplement
+  Armenian
+  Arrows
+  BasicLatin
+  Avestan
+  Balinese
+  Bamum
+  BamumSupplement
+  BassaVah
+  Batak
+  Bengali
+  Bhaiksuki
+  BlockElements
+  Bopomofo
+  BopomofoExtended
+  BoxDrawing
+  Brahmi
+  BraillePatterns
+  Buginese
+  Buhid
+  ByzantineMusicalSymbols
+  Carian
+  CaucasianAlbanian
+  Chakma
+  Cham
+  Cherokee
+  CherokeeSupplement
+  ChessSymbols
+  Chorasmian
+  CJKUnifiedIdeographs
+  CJKCompatibility
+  CJKCompatibilityForms
+  CJKCompatibilityIdeographs
+  CJKCompatibilityIdeographsSupplement
+  CJKUnifiedIdeographsExtensionA
+  CJKUnifiedIdeographsExtensionB
+  CJKUnifiedIdeographsExtensionC
+  CJKUnifiedIdeographsExtensionD
+  CJKUnifiedIdeographsExtensionE
+  CJKUnifiedIdeographsExtensionF
+  CJKUnifiedIdeographsExtensionG
+  CJKRadicalsSupplement
+  CJKStrokes
+  HangulCompatibilityJamo
+  ControlPictures
+  Coptic
+  CopticEpactNumbers
+  CountingRodNumerals
+  Cuneiform
+  CurrencySymbols
+  CypriotSyllabary
+  Cyrillic
+  CyrillicExtendedA
+  CyrillicExtendedB
+  CyrillicExtendedC
+  CyrillicSupplement
+  Deseret
+  Devanagari
+  DevanagariExtended
+  CombiningDiacriticalMarks
+  CombiningDiacriticalMarksExtended
+  CombiningDiacriticalMarksSupplement
+  Dingbats
+  DivesAkuru
+  Dogra
+  DominoTiles
+  Duployan
+  EarlyDynasticCuneiform
+  EgyptianHieroglyphFormatControls
+  EgyptianHieroglyphs
+  Elbasan
+  Elymaic
+  Emoticons
+  EnclosedAlphanumerics
+  EnclosedAlphanumericSupplement
+  EnclosedIdeographicSupplement
+  Ethiopic
+  EthiopicExtended
+  EthiopicExtendedA
+  EthiopicSupplement
+  GeometricShapes
+  GeometricShapesExtended
+  Georgian
+  GeorgianExtended
+  GeorgianSupplement
+  Glagolitic
+  GlagoliticSupplement
+  Gothic
+  Grantha
+  GreekExtended
+  Gujarati
+  GunjalaGondi
+  Gurmukhi
+  CombiningHalfMarks
+  HangulSyllables
+  HanifiRohingya
+  Hanunoo
+  Hatran
+  Hebrew
+  HighPrivateUseSurrogates
+  HighSurrogates
+  Hiragana
+  IdeographicDescriptionCharacters
+  ImperialAramaic
+  CommonIndicNumberForms
+  IndicSiyaqNumbers
+  InscriptionalPahlavi
+  InscriptionalParthian
+  IPAExtensions
+  HangulJamo
+  HangulJamoExtendedA
+  HangulJamoExtendedB
+  Javanese
+  Kaithi
+  KanaExtendedA
+  KanaSupplement
+  Kanbun
+  KangxiRadicals
+  Kannada
+  Katakana
+  KatakanaPhoneticExtensions
+  KayahLi
+  Kharoshthi
+  KhitanSmallScript
+  Khmer
+  KhmerSymbols
+  Khojki
+  Khudawadi
+  Lao
+  Latin1Supplement
+  LatinExtendedA
+  LatinExtendedAdditional
+  LatinExtendedB
+  LatinExtendedC
+  LatinExtendedD
+  LatinExtendedE
+  Lepcha
+  LetterlikeSymbols
+  Limbu
+  LinearA
+  LinearBIdeograms
+  LinearBSyllabary
+  Lisu
+  LisuSupplement
+  LowSurrogates
+  Lycian
+  Lydian
+  Mahajani
+  MahjongTiles
+  Makasar
+  Malayalam
+  Mandaic
+  Manichaean
+  Marchen
+  MasaramGondi
+  MathematicalAlphanumericSymbols
+  MathematicalOperators
+  MayanNumerals
+  Medefaidrin
+  MeeteiMayek
+  MeeteiMayekExtensions
+  MendeKikakui
+  MeroiticCursive
+  MeroiticHieroglyphs
+  Miao
+  MiscellaneousMathematicalSymbolsA
+  MiscellaneousMathematicalSymbolsB
+  MiscellaneousSymbols
+  MiscellaneousTechnical
+  Modi
+  SpacingModifierLetters
+  ModifierToneLetters
+  Mongolian
+  MongolianSupplement
+  Mro
+  Multani
+  MusicalSymbols
+  Myanmar
+  MyanmarExtendedA
+  MyanmarExtendedB
+  Nabataean
+  Nandinagari
+  NoBlock
+  NewTaiLue
+  Newa
+  NKo
+  NumberForms
+  Nushu
+  NyiakengPuachueHmong
+  OpticalCharacterRecognition
+  Ogham
+  OlChiki
+  OldHungarian
+  OldItalic
+  OldNorthArabian
+  OldPermic
+  OldPersian
+  OldSogdian
+  OldSouthArabian
+  OldTurkic
+  Oriya
+  OrnamentalDingbats
+  Osage
+  Osmanya
+  OttomanSiyaqNumbers
+  PahawhHmong
+  Palmyrene
+  PauCinHau
+  PhaistosDisc
+  Phoenician
+  PhoneticExtensions
+  PhoneticExtensionsSupplement
+  PlayingCards
+  PsalterPahlavi
+  PrivateUseArea
+  GeneralPunctuation
+  Rejang
+  RumiNumeralSymbols
+  Runic
+  Samaritan
+  Saurashtra
+  Sharada
+  Shavian
+  ShorthandFormatControls
+  Siddham
+  Sinhala
+  SinhalaArchaicNumbers
+  SmallFormVariants
+  SmallKanaExtension
+  Sogdian
+  SoraSompeng
+  Soyombo
+  Specials
+  Sundanese
+  SundaneseSupplement
+  SupplementalArrowsA
+  SupplementalArrowsB
+  SupplementalArrowsC
+  SupplementalMathematicalOperators
+  SupplementaryPrivateUseAreaA
+  SupplementaryPrivateUseAreaB
+  SupplementalPunctuation
+  SuttonSignWriting
+  SylotiNagri
+  Syriac
+  SyriacSupplement
+  Tagalog
+  Tagbanwa
+  Tags
+  TaiLe
+  TaiTham
+  TaiViet
+  TaiXuanJingSymbols
+  Takri
+  Tamil
+  TamilSupplement
+  Tangut
+  TangutComponents
+  TangutSupplement
+  Telugu
+  Thaana
+  Thai
+  Tibetan
+  Tifinagh
+  Tirhuta
+  UnifiedCanadianAboriginalSyllabics
+  UnifiedCanadianAboriginalSyllabicsExtended
+  Ugaritic
+  Vai
+  VedicExtensions
+  VerticalForms
+  VariationSelectors
+  VariationSelectorsSupplement
+  Wancho
+  WarangCiti
+  Yezidi
+  YiRadicals
+  YiSyllables
+  YijingHexagramSymbols
+  ZanabazarSquare
+  GreekandCoptic
+  SuperscriptsandSubscripts
+  CombiningDiacriticalMarksforSymbols
+  MiscellaneousSymbolsandArrows
+  CJKSymbolsandPunctuation
+  EnclosedCJKLettersandMonths
+  Phagspa
+  HalfwidthandFullwidthForms
+  CuneiformNumbersandPunctuation
+  IdeographicSymbolsandPunctuation
+  MiscellaneousSymbolsandPictographs
+  TransportandMapSymbols
+  SupplementalSymbolsandPictographs
+  SymbolsandPictographsExtendedA
+  SymbolsforLegacyComputing
+}
+
+pub(all) enum BracketType {
+  None
+  Open(Char)
+  Close(Char)
+}
+
 pub struct CacheKey {
   value : UInt64
 }
 pub fn CacheKey::new() -> Self
 pub fn CacheKey::value(Self) -> UInt64
+
+pub(all) enum Category {
+  Other
+  Control
+  Format
+  Unassigned
+  PrivateUse
+  Surrogate
+  Letter
+  CasedLetter
+  LowercaseLetter
+  ModifierLetter
+  OtherLetter
+  TitlecaseLetter
+  UppercaseLetter
+  Mark
+  SpacingMark
+  EnclosingMark
+  NonspacingMark
+  Number
+  DecimalNumber
+  LetterNumber
+  OtherNumber
+  Punctuation
+  ConnectorPunctuation
+  DashPunctuation
+  ClosePunctuation
+  FinalPunctuation
+  InitialPunctuation
+  OtherPunctuation
+  OpenPunctuation
+  Symbol
+  CurrencySymbol
+  ModifierSymbol
+  MathSymbol
+  OtherSymbol
+  Separator
+  LineSeparator
+  ParagraphSeparator
+  SpaceSeparator
+}
 
 pub struct Charmap {
   data : Bytes
@@ -111,6 +513,23 @@ pub(all) enum Cjk {
   Korean
 }
 
+pub(all) enum ClusterBreak {
+  CN
+  CR
+  EX
+  L
+  LF
+  LV
+  LVT
+  PP
+  RI
+  SM
+  T
+  V
+  XX
+  ZWJ
+}
+
 pub struct ColorPalette {
   font : FontRef
   b : @internal.BeBytes
@@ -135,6 +554,67 @@ pub struct ColorPalettes {
 pub fn ColorPalettes::from_font(FontRef) -> Self
 pub fn ColorPalettes::iter(Self) -> Iter[ColorPalette]
 pub fn ColorPalettes::len(Self) -> Int
+
+pub(all) enum CombiningClass {
+  NotReordered
+  Overlay
+  HanReading
+  Nukta
+  KanaVoicing
+  Virama
+  Ccc10
+  Ccc11
+  Ccc12
+  Ccc13
+  Ccc14
+  Ccc15
+  Ccc16
+  Ccc17
+  Ccc18
+  Ccc19
+  Ccc20
+  Ccc21
+  Ccc22
+  Ccc23
+  Ccc24
+  Ccc25
+  Ccc26
+  Ccc27
+  Ccc28
+  Ccc29
+  Ccc30
+  Ccc31
+  Ccc32
+  Ccc33
+  Ccc34
+  Ccc35
+  Ccc36
+  Ccc84
+  Ccc91
+  Ccc103
+  Ccc107
+  Ccc118
+  Ccc122
+  Ccc129
+  Ccc130
+  Ccc132
+  Ccc133
+  AttachedBelowLeft
+  AttachedBelow
+  AttachedAbove
+  AttachedAboveRight
+  BelowLeft
+  Below
+  BelowRight
+  Left
+  Right
+  AboveLeft
+  Above
+  AboveRight
+  DoubleBelow
+  DoubleAbove
+  IotaSubscript
+}
 
 pub(all) enum Encoding {
   Unicode
@@ -221,6 +701,16 @@ pub fn Instance::postscript_name(Self, String?) -> LocalizedString?
 pub fn Instance::postscript_name_id(Self) -> StringId?
 pub fn Instance::values(Self) -> ArrayView[Double]
 
+pub(all) enum JoiningType {
+  U
+  L
+  R
+  D
+  Alaph
+  DalathRish
+  T
+}
+
 pub struct Language {
   language : Array[Byte]
   script : Array[Byte]
@@ -242,6 +732,52 @@ pub fn Language::script(Self) -> String?
 pub fn Language::to_opentype(Self) -> UInt?
 pub fn Language::to_string(Self) -> String
 pub impl Show for Language
+
+pub(all) enum LineBreak {
+  AI
+  AL
+  B2
+  BA
+  BB
+  BK
+  CB
+  CJ
+  CL
+  CM
+  CP
+  CR
+  EB
+  EM
+  EX
+  GL
+  H2
+  H3
+  HL
+  HY
+  ID
+  IN
+  IS
+  JL
+  JT
+  JV
+  LF
+  NL
+  NS
+  NU
+  OP
+  PO
+  PR
+  QU
+  RI
+  SA
+  SG
+  SP
+  SY
+  WJ
+  XX
+  ZW
+  ZWJ
+}
 
 pub struct LocalizedString {
   b : @internal.BeBytes
@@ -293,6 +829,36 @@ pub fn MetricsProxy::materialize_glyph_metrics(Self, FontRef, ArrayView[Int]) ->
 pub fn MetricsProxy::materialize_metrics(Self, FontRef, ArrayView[Int]) -> Metrics
 pub fn MetricsProxy::units_per_em(Self) -> UInt16
 
+pub(all) enum MyanmarClass {
+  A
+  As
+  C
+  D
+  D0
+  DB
+  GB
+  H
+  IV
+  J
+  K
+  MH
+  MR
+  MW
+  MY
+  O
+  P
+  PT
+  R
+  S
+  V
+  VAbv
+  VBlw
+  VPre
+  VPst
+  VS
+  WJ
+}
+
 pub struct ObliqueAngle {
   value : UInt16
 }
@@ -301,6 +867,31 @@ pub fn ObliqueAngle::from_gradians(Double) -> Self
 pub fn ObliqueAngle::from_radians(Double) -> Self
 pub fn ObliqueAngle::from_turns(Double) -> Self
 pub fn ObliqueAngle::to_degrees(Self) -> Double
+
+pub struct Properties {
+  bits : UInt
+}
+pub fn Properties::bidi_class(Self) -> BidiClass
+pub fn Properties::block(Self) -> Block
+pub fn Properties::boundary(Self) -> UInt
+pub fn Properties::category(Self) -> Category
+pub fn Properties::cluster_break(Self) -> ClusterBreak
+pub fn Properties::cluster_class(Self) -> (ClusterBreak, Bool)
+pub fn Properties::combining_class(Self) -> UInt
+pub fn Properties::contributes_to_shaping(Self) -> Bool
+pub fn Properties::is_close_bracket(Self) -> Bool
+pub fn Properties::is_emoji(Self) -> Bool
+pub fn Properties::is_extended_pictographic(Self) -> Bool
+pub fn Properties::is_ignorable(Self) -> Bool
+pub fn Properties::is_open_bracket(Self) -> Bool
+pub fn Properties::is_variation_selector(Self) -> Bool
+pub fn Properties::joining_type(Self) -> JoiningType
+pub fn Properties::line_break(Self) -> LineBreak
+pub fn Properties::myanmar_class(Self) -> (MyanmarClass, Bool)
+pub fn Properties::script(Self) -> Script
+pub fn Properties::use_class(Self) -> (UseClass, Bool, Bool)
+pub fn Properties::with_boundary(Self, UInt) -> Self
+pub fn Properties::word_break(Self) -> WordBreak
 
 pub(all) enum Script {
   Adlam
@@ -567,6 +1158,46 @@ pub(all) enum Usability {
   Both
 }
 
+pub(all) enum UseClass {
+  B
+  CGJ
+  CMAbv
+  CMBlw
+  CS
+  FAbv
+  FBlw
+  FPst
+  FM
+  GB
+  H
+  HN
+  IND
+  MAbv
+  MBlw
+  MPre
+  MPst
+  N
+  O
+  R
+  Rsv
+  S
+  SMAbv
+  SMBlw
+  SUB
+  VAbv
+  VBlw
+  VPre
+  VPst
+  VMAbv
+  VMBlw
+  VMPre
+  VMPst
+  VS
+  WJ
+  ZWJ
+  ZWNJ
+}
+
 type Variation
 pub fn Variation::default_value(Self) -> Double
 pub fn Variation::index(Self) -> Int
@@ -596,6 +1227,28 @@ pub impl Compare for Weight
 pub impl Eq for Weight
 pub impl Show for Weight
 
+pub(all) enum WordBreak {
+  CR
+  DQ
+  EX
+  Extend
+  FO
+  HL
+  KA
+  LE
+  LF
+  MB
+  ML
+  MN
+  NL
+  NU
+  RI
+  SQ
+  WSegSpace
+  XX
+  ZWJ
+}
+
 type WritingSystem
 pub fn WritingSystem::features(Self) -> Features
 pub fn WritingSystem::language(Self) -> Language?
@@ -608,6 +1261,8 @@ pub fn WritingSystems::from_font(FontRef) -> Self
 pub fn WritingSystems::iter(Self) -> Iter[WritingSystem]
 
 // Type aliases
+pub type Decompose = Iter[Char]
+
 pub type FeatureSetting = Setting[UInt16]
 
 pub type GlyphId = UInt16
@@ -619,4 +1274,14 @@ pub type Tag = UInt
 pub type VariationSetting = Setting[Double]
 
 // Traits
+pub(open) trait Codepoint {
+  properties(Self) -> Properties
+  opening_bracket(Self) -> Char?
+  closing_bracket(Self) -> Char?
+  mirror(Self) -> Char?
+  bracket_type(Self) -> BracketType
+  decompose(Self) -> Iter[Char]
+  decompose_compatible(Self) -> Iter[Char]
+}
+pub impl Codepoint for Char
 
