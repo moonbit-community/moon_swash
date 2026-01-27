@@ -93,6 +93,14 @@ pub struct CharmapProxy {
 pub fn CharmapProxy::from_font(FontRef) -> Self
 pub fn CharmapProxy::materialize(Self, FontRef) -> Charmap
 
+pub(all) enum Cjk {
+  None
+  Traditional
+  Simplified
+  Japanese
+  Korean
+}
+
 pub struct ColorPalette {
   font : FontRef
   b : @internal.BeBytes
@@ -192,6 +200,28 @@ pub fn Instance::postscript_name(Self, String?) -> LocalizedString?
 pub fn Instance::postscript_name_id(Self) -> StringId?
 pub fn Instance::values(Self) -> ArrayView[Double]
 
+pub struct Language {
+  language : Array[Byte]
+  script : Array[Byte]
+  region : Array[Byte]
+  lang_len : Int
+  script_len : Int
+  region_len : Int
+  cjk : Cjk
+  name_index : Int
+  tag : UInt?
+}
+pub fn Language::cjk(Self) -> Cjk
+pub fn Language::from_opentype(UInt) -> Self?
+pub fn Language::language(Self) -> String
+pub fn Language::name(Self) -> String?
+pub fn Language::parse(String) -> Self?
+pub fn Language::region(Self) -> String?
+pub fn Language::script(Self) -> String?
+pub fn Language::to_opentype(Self) -> UInt?
+pub fn Language::to_string(Self) -> String
+pub impl Show for Language
+
 pub struct LocalizedString {
   b : @internal.BeBytes
   storage : Int
@@ -250,6 +280,171 @@ pub fn ObliqueAngle::from_gradians(Double) -> Self
 pub fn ObliqueAngle::from_radians(Double) -> Self
 pub fn ObliqueAngle::from_turns(Double) -> Self
 pub fn ObliqueAngle::to_degrees(Self) -> Double
+
+pub(all) enum Script {
+  Adlam
+  CaucasianAlbanian
+  Ahom
+  Arabic
+  ImperialAramaic
+  Armenian
+  Avestan
+  Balinese
+  Bamum
+  BassaVah
+  Batak
+  Bengali
+  Bhaiksuki
+  Bopomofo
+  Brahmi
+  Braille
+  Buginese
+  Buhid
+  Chakma
+  CanadianAboriginal
+  Carian
+  Cham
+  Cherokee
+  Chorasmian
+  Coptic
+  Cypriot
+  Cyrillic
+  Devanagari
+  DivesAkuru
+  Dogra
+  Deseret
+  Duployan
+  EgyptianHieroglyphs
+  Elbasan
+  Elymaic
+  Ethiopic
+  Georgian
+  Glagolitic
+  GunjalaGondi
+  MasaramGondi
+  Gothic
+  Grantha
+  Greek
+  Gujarati
+  Gurmukhi
+  Hangul
+  Han
+  Hanunoo
+  Hatran
+  Hebrew
+  Hiragana
+  AnatolianHieroglyphs
+  PahawhHmong
+  NyiakengPuachueHmong
+  OldHungarian
+  OldItalic
+  Javanese
+  KayahLi
+  Katakana
+  Kharoshthi
+  Khmer
+  Khojki
+  KhitanSmallScript
+  Kannada
+  Kaithi
+  TaiTham
+  Lao
+  Latin
+  Lepcha
+  Limbu
+  LinearA
+  LinearB
+  Lisu
+  Lycian
+  Lydian
+  Mahajani
+  Makasar
+  Mandaic
+  Manichaean
+  Marchen
+  Medefaidrin
+  MendeKikakui
+  MeroiticCursive
+  MeroiticHieroglyphs
+  Malayalam
+  Modi
+  Mongolian
+  Mro
+  MeeteiMayek
+  Multani
+  Myanmar
+  Nandinagari
+  OldNorthArabian
+  Nabataean
+  Newa
+  Nko
+  Nushu
+  Ogham
+  OlChiki
+  OldTurkic
+  Oriya
+  Osage
+  Osmanya
+  Palmyrene
+  PauCinHau
+  OldPermic
+  PhagsPa
+  InscriptionalPahlavi
+  PsalterPahlavi
+  Phoenician
+  Miao
+  InscriptionalParthian
+  Rejang
+  HanifiRohingya
+  Runic
+  Samaritan
+  OldSouthArabian
+  Saurashtra
+  SignWriting
+  Shavian
+  Sharada
+  Siddham
+  Khudawadi
+  Sinhala
+  Sogdian
+  OldSogdian
+  SoraSompeng
+  Soyombo
+  Sundanese
+  SylotiNagri
+  Syriac
+  Tagbanwa
+  Takri
+  TaiLe
+  NewTaiLue
+  Tamil
+  Tangut
+  TaiViet
+  Telugu
+  Tifinagh
+  Tagalog
+  Thaana
+  Thai
+  Tibetan
+  Tirhuta
+  Ugaritic
+  Vai
+  WarangCiti
+  Wancho
+  OldPersian
+  Cuneiform
+  Yezidi
+  Yi
+  ZanabazarSquare
+  Inherited
+  Common
+  Unknown
+}
+pub fn Script::from_opentype(UInt) -> Self?
+pub fn Script::is_complex(Self) -> Bool
+pub fn Script::is_joined(Self) -> Bool
+pub fn Script::name(Self) -> String
+pub fn Script::to_opentype(Self) -> UInt
 
 pub struct Setting[T] {
   tag : UInt
