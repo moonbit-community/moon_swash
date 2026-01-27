@@ -77,6 +77,12 @@ pub fn Outline::verbs(self : Outline) -> Array[Verb] {
 }
 
 ///|
+/// Returns path data for the outline.
+pub fn Outline::path(self : Outline) -> (Array[Point], Array[Verb]) {
+  (self.points, self.verbs)
+}
+
+///|
 pub fn Outline::bounds(self : Outline) -> Bounds {
   Bounds::from_points(self.points)
 }
@@ -89,11 +95,199 @@ pub fn Outline::transform(self : Outline, transform : Transform) -> Unit {
 }
 
 ///|
+fn compute_winding(points : Array[Point], start : Int, end : Int) -> UInt {
+  if end <= start {
+    return 0
+  }
+  let last = end - 1
+  let mut area = 0.0
+  let mut prev = points[last]
+  for i in start..<end {
+    let cur = points[i]
+    area = area + (cur.y() - prev.y()) * (cur.x() + prev.x())
+    prev = cur
+  }
+  if area > 0.0 {
+    1
+  } else {
+    0
+  }
+}
+
+///|
+fn embolden_contour(
+  points : Array[Point],
+  start : Int,
+  end : Int,
+  winding : UInt,
+  x_strength : Double,
+  y_strength : Double,
+) -> Unit {
+  if end <= start {
+    return
+  }
+  let len = end - start
+  if len <= 0 {
+    return
+  }
+  let last = len - 1
+  let mut i = last
+  let mut j = 0
+  let mut k = -1
+  let mut out_len = 0.0
+  let mut in_len = 0.0
+  let mut anchor_len = 0.0
+  let mut anchor = Vector::zero()
+  let mut out = Vector::zero()
+  let mut in_ = Vector::zero()
+  while j != i && i != k {
+    if j != k {
+      out = points[start + j] - points[start + i]
+      out_len = out.length()
+      if out_len == 0.0 {
+        j = if j < last { j + 1 } else { 0 }
+        continue
+      } else {
+        out = out.div_scalar(out_len)
+      }
+    } else {
+      out = anchor
+      out_len = anchor_len
+    }
+    if in_len != 0.0 {
+      if k == -1 {
+        k = i
+        anchor = in_
+        anchor_len = in_len
+      }
+      let mut d = in_.dot(out)
+      let shift = if d > -0.9396 {
+        d = d + 1.0
+        let mut sx = in_.y() + out.y()
+        let mut sy = in_.x() + out.x()
+        if winding == 0 {
+          sx = -sx
+        } else {
+          sy = -sy
+        }
+        let mut q = out.x() * in_.y() - out.y() * in_.x()
+        if winding == 0 {
+          q = -q
+        }
+        let l = if in_len < out_len { in_len } else { out_len }
+        if x_strength * q <= l * d {
+          sx = sx * x_strength / d
+        } else {
+          sx = sx * l / q
+        }
+        if y_strength * q <= l * d {
+          sy = sy * y_strength / d
+        } else {
+          sy = sy * l / q
+        }
+        Vector::new(sx, sy)
+      } else {
+        Vector::zero()
+      }
+      while i != j {
+        let abs_i = start + i
+        let p = points[abs_i]
+        points[abs_i] = Vector::new(
+          p.x() + x_strength + shift.x(),
+          p.y() + y_strength + shift.y(),
+        )
+        i = if i < last { i + 1 } else { 0 }
+      }
+    } else {
+      i = j
+    }
+    in_ = out
+    in_len = out_len
+    j = if j < last { j + 1 } else { 0 }
+  }
+}
+
+///|
+/// Applies a faux bold to the outline with the specified strengths in the x and y directions.
+pub fn Outline::embolden(
+  self : Outline,
+  x_strength : Double,
+  y_strength : Double,
+) -> Unit {
+  for li in 0..<self.layers.length() {
+    let layer = self.layers[li]
+    let ps = layer.points_start
+    let pe = layer.points_end
+    let vs = layer.verbs_start
+    let ve = layer.verbs_end
+    if ps >= pe || vs >= ve {
+      continue
+    }
+    let winding = compute_winding(self.points, ps, pe)
+    let mut point_start = ps
+    let mut pos = ps
+    for vi in vs..<ve {
+      let verb = self.verbs[vi]
+      match verb {
+        Verb::MoveTo | Verb::Close => {
+          let is_move_to = match verb {
+            Verb::MoveTo => true
+            _ => false
+          }
+          if pos > point_start {
+            embolden_contour(
+              self.points,
+              point_start,
+              pos,
+              winding,
+              x_strength,
+              y_strength,
+            )
+          }
+          point_start = pos
+          if is_move_to {
+            pos = pos + 1
+          }
+        }
+        Verb::LineTo => pos = pos + 1
+        Verb::QuadTo => pos = pos + 2
+        Verb::CurveTo => pos = pos + 3
+      }
+    }
+    if pos > point_start {
+      embolden_contour(
+        self.points,
+        point_start,
+        pos,
+        winding,
+        x_strength,
+        y_strength,
+      )
+    }
+  }
+}
+
+///|
 pub fn Outline::clear(self : Outline) -> Unit {
   self.points.clear()
   self.verbs.clear()
   self.layers.clear()
   self.is_color = false
+}
+
+///|
+fn Outline::copy_from(self : Outline, other : Outline) -> Unit {
+  self.clear()
+  for l in other.layers {
+    self.layers.push(l)
+  }
+  for p in other.points {
+    self.points.push(p)
+  }
+  for v in other.verbs {
+    self.verbs.push(v)
+  }
+  self.is_color = other.is_color
 }
 
 // ---- internal builders (ported from `pub(super)` APIs) ----

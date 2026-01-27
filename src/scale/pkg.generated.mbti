@@ -27,7 +27,7 @@ pub struct Image {
   mut source : Source
   mut content : Content
   mut placement : @moon_zeno.Placement
-  mut data : Bytes
+  mut data : Array[Byte]
 }
 pub fn Image::clear(Self) -> Unit
 pub fn Image::content(Self) -> Content
@@ -55,6 +55,7 @@ pub fn Outline::bounds(Self) -> @moon_zeno.Bounds
 pub fn Outline::clear(Self) -> Unit
 pub fn Outline::close(Self) -> Unit
 pub fn Outline::curve_to(Self, @moon_zeno.Vector, @moon_zeno.Vector, @moon_zeno.Vector) -> Unit
+pub fn Outline::embolden(Self, Double, Double) -> Unit
 pub fn Outline::finish(Self) -> Unit
 pub fn Outline::is_color(Self) -> Bool
 pub fn Outline::is_empty(Self) -> Bool
@@ -63,6 +64,7 @@ pub fn Outline::len(Self) -> Int
 pub fn Outline::line_to(Self, @moon_zeno.Vector) -> Unit
 pub fn Outline::move_to(Self, @moon_zeno.Vector) -> Unit
 pub fn Outline::new() -> Self
+pub fn Outline::path(Self) -> (Array[@moon_zeno.Vector], Array[@moon_zeno.Verb])
 pub fn Outline::points(Self) -> Array[@moon_zeno.Vector]
 pub fn Outline::quad_to(Self, @moon_zeno.Vector, @moon_zeno.Vector) -> Unit
 pub fn Outline::set_color(Self, Bool) -> Unit
@@ -76,27 +78,40 @@ pub struct Render {
   sources : Array[Source]
   format : @moon_zeno.Format
   offset : @moon_zeno.Vector
+  transform : @moon_zeno.Transform?
+  embolden : Double
+  foreground : Array[Byte]
+  style : @moon_zeno.Style
 }
+pub fn Render::default_color(Self, Array[Byte]) -> Self
+pub fn Render::embolden(Self, Double) -> Self
 pub fn Render::format(Self, @moon_zeno.Format) -> Self
 pub fn Render::new(Array[Source]) -> Self
 pub fn Render::offset(Self, @moon_zeno.Vector) -> Self
-pub fn Render::render(Self, Scaler, UInt) -> Image?
+pub fn Render::render(Self, Scaler, UInt16) -> Image?
+pub fn Render::render_into(Self, Scaler, UInt16, Image) -> Bool
+pub fn Render::style(Self, @moon_zeno.Style) -> Self
+pub fn Render::transform(Self, @moon_zeno.Transform?) -> Self
 
 pub struct ScaleContext {
+  state : Ref[State]
 }
 pub fn ScaleContext::builder(Self, @moon_swash.FontRef) -> ScalerBuilder
 pub fn ScaleContext::new() -> Self
 
 pub struct Scaler {
+  state : Ref[State]
   font : @moon_swash.FontRef
   size : Double
   hint : Bool
 }
 pub fn Scaler::hint(Self) -> Bool
-pub fn Scaler::scale_outline(Self, UInt) -> Outline?
+pub fn Scaler::scale_outline(Self, UInt16) -> Outline?
+pub fn Scaler::scale_outline_into(Self, UInt16, Outline) -> Bool
 pub fn Scaler::size(Self) -> Double
 
 pub struct ScalerBuilder {
+  state : Ref[State]
   font : @moon_swash.FontRef
   size : Double
   hint : Bool
@@ -112,6 +127,8 @@ pub(all) enum Source {
   ColorBitmap(StrikeWith)
 }
 pub fn Source::default() -> Self
+
+type State
 
 pub(all) enum StrikeWith {
   ExactSize

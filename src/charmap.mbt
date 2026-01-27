@@ -63,27 +63,30 @@ pub fn Charmap::proxy(self : Charmap) -> CharmapProxy {
 
 ///|
 pub fn Charmap::map(self : Charmap, codepoint : UInt) -> GlyphId {
-  let mut glyph_id = @internal.map(
+  let mut glyph_id_u = @internal.map(
     self.data,
     self.proxy.offset,
     self.proxy.format,
     codepoint,
   ).unwrap_or(0)
   // Remap U+0000..=U+00FF to U+F000..=U+F0FF for symbol encodings.
-  if glyph_id == 0 && self.proxy.symbol && codepoint <= 0x00FF {
-    glyph_id = @internal.map(
+  if glyph_id_u == 0 && self.proxy.symbol && codepoint <= 0x00FF {
+    glyph_id_u = @internal.map(
       self.data,
       self.proxy.offset,
       self.proxy.format,
       codepoint + 0xF000,
     ).unwrap_or(0)
   }
-  glyph_id
+  glyph_id_u.to_uint16()
 }
 
 ///|
 pub fn Charmap::enumerate(self : Charmap, f : (UInt, GlyphId) -> Unit) -> Unit {
-  @internal.enumerate(self.data, self.proxy.offset, f)
+  @internal.enumerate(self.data, self.proxy.offset, (cp, gid_u) => f(
+    cp,
+    gid_u.to_uint16(),
+  ))
 }
 
 ///|

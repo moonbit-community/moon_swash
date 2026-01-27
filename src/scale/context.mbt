@@ -20,24 +20,45 @@
 /// but does not yet implement actual outline extraction, hinting, or rasterization.
 
 ///|
-pub struct ScaleContext {}
+pub struct ScaleContext {
+  state : Ref[State]
+}
+
+///|
+struct State {
+  mut _scratch0 : Array[Byte]
+  mut _scratch1 : Array[Byte]
+  outline : Outline
+  rcx : Ref[@zeno.Scratch]
+}
+
+///|
+fn State::new() -> State {
+  State::{
+    _scratch0: [],
+    _scratch1: [],
+    outline: Outline::new(),
+    rcx: Ref::new(@zeno.Scratch::new()),
+  }
+}
 
 ///|
 pub fn ScaleContext::new() -> ScaleContext {
-  ScaleContext::{  }
+  ScaleContext::{ state: Ref::new(State::new()) }
 }
 
 ///|
 pub fn ScaleContext::builder(
-  _self : ScaleContext,
+  self : ScaleContext,
   font : @swash.FontRef,
 ) -> ScalerBuilder {
-  ScalerBuilder::{ font, size: 0.0, hint: false }
+  ScalerBuilder::{ state: self.state, font, size: 0.0, hint: false }
 }
 
 ///|
 /// Builder for configuring a scaler.
 pub struct ScalerBuilder {
+  state : Ref[State]
   font : @swash.FontRef
   size : Double
   hint : Bool
@@ -49,6 +70,7 @@ pub fn ScalerBuilder::size(
   ppem : Double,
 ) -> ScalerBuilder {
   ScalerBuilder::{
+    state: self.state,
     font: self.font,
     size: if ppem < 0.0 {
       0.0
@@ -61,16 +83,27 @@ pub fn ScalerBuilder::size(
 
 ///|
 pub fn ScalerBuilder::hint(self : ScalerBuilder, yes : Bool) -> ScalerBuilder {
-  ScalerBuilder::{ font: self.font, size: self.size, hint: yes }
+  ScalerBuilder::{
+    state: self.state,
+    font: self.font,
+    size: self.size,
+    hint: yes,
+  }
 }
 
 ///|
 pub fn ScalerBuilder::build(self : ScalerBuilder) -> Scaler {
-  Scaler::{ font: self.font, size: self.size, hint: self.hint }
+  Scaler::{
+    state: self.state,
+    font: self.font,
+    size: self.size,
+    hint: self.hint,
+  }
 }
 
 ///|
 pub struct Scaler {
+  state : Ref[State]
   font : @swash.FontRef
   size : Double
   hint : Bool
@@ -84,6 +117,21 @@ pub fn Scaler::size(self : Scaler) -> Double {
 ///|
 pub fn Scaler::hint(self : Scaler) -> Bool {
   self.hint
+}
+
+///|
+pub fn Scaler::scale_outline_into(
+  self : Scaler,
+  glyph_id : @swash.GlyphId,
+  outline : Outline,
+) -> Bool {
+  match self.scale_outline(glyph_id) {
+    None => false
+    Some(o) => {
+      outline.copy_from(o)
+      true
+    }
+  }
 }
 
 ///|
@@ -211,7 +259,7 @@ fn outline_from_skrifa(
         @skrifa_outline.DrawSettings::unhinted(size, loc)
       }
       let pen = OutlineWriter::new()
-      let gid = @skrifa.GlyphId::new(glyph_id.to_uint16())
+      let gid = @skrifa.GlyphId::new(glyph_id)
       if outlines.draw(gid, settings, pen) {
         Some(pen.finish())
       } else {
@@ -258,7 +306,7 @@ pub fn Scaler::scale_outline(
     loca_fmt,
     loca,
     glyf,
-    glyph_id,
+    glyph_id.to_int().reinterpret_as_uint(),
     scale,
     0,
   )

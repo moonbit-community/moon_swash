@@ -19,4 +19,4 @@
 
 ///|
 /// Glyph identifier.
-pub type GlyphId = UInt
+pub type GlyphId = UInt16

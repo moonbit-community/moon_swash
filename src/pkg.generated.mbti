@@ -23,9 +23,9 @@ pub struct Charmap {
   data : Bytes
   proxy : CharmapProxy
 }
-pub fn Charmap::enumerate(Self, (UInt, UInt) -> Unit) -> Unit
+pub fn Charmap::enumerate(Self, (UInt, UInt16) -> Unit) -> Unit
 pub fn Charmap::from_font(FontRef) -> Self
-pub fn Charmap::map(Self, UInt) -> UInt
+pub fn Charmap::map(Self, UInt) -> UInt16
 pub fn Charmap::proxy(Self) -> CharmapProxy
 
 pub struct CharmapProxy {
@@ -62,7 +62,7 @@ pub fn FontRef::table_data(Self, UInt) -> BytesView?
 pub impl @internal.RawFont for FontRef
 
 // Type aliases
-pub type GlyphId = UInt
+pub type GlyphId = UInt16
 
 pub type Tag = UInt
 

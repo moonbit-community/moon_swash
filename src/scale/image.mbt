@@ -43,7 +43,7 @@ pub struct Image {
   /// Offset and size of the image.
   mut placement : Placement
   /// Raw image data.
-  mut data : Bytes
+  mut data : Array[Byte]
 }
 
 ///|
@@ -52,7 +52,7 @@ pub fn Image::new() -> Image {
     source: Source::default(),
     content: Content::default(),
     placement: Placement::{ left: 0, top: 0, width: 0U, height: 0U },
-    data: Bytes::from_array([]),
+    data: [],
   }
 }
 
@@ -61,7 +61,7 @@ pub fn Image::clear(self : Image) -> Unit {
   self.source = Source::default()
   self.content = Content::default()
   self.placement = Placement::{ left: 0, top: 0, width: 0U, height: 0U }
-  self.data = Bytes::from_array([])
+  self.data.clear()
 }
 
 ///|
@@ -81,7 +81,7 @@ pub fn Image::placement(self : Image) -> Placement {
 
 ///|
 pub fn Image::data(self : Image) -> Bytes {
-  self.data
+  Bytes::from_array(self.data)
 }
 
 ///|
