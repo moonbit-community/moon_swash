@@ -36,6 +36,10 @@ pub struct CharmapProxy {
 pub fn CharmapProxy::from_font(FontRef) -> Self
 pub fn CharmapProxy::materialize(Self, FontRef) -> Charmap
 
+type FontCache[T]
+pub fn[T] FontCache::get(Self[T], FontRef, (UInt64, UInt64)?, (FontRef) -> T) -> ((UInt64, UInt64), Ref[T])
+pub fn[T] FontCache::new(Int) -> Self[T]
+
 pub struct FontDataRef {
   data : Bytes
   len : Int
