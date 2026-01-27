@@ -136,12 +136,12 @@ fn OutlineWriter::finish(self : OutlineWriter) -> Outline {
 
 ///|
 pub impl @skrifa_outline.OutlinePen for OutlineWriter with move_to(self, x, y) {
-  self.outline.move_to(Vector::new(x.to_double(), y.to_double()))
+  self.outline.move_to(Vector::new(x, y))
 }
 
 ///|
 pub impl @skrifa_outline.OutlinePen for OutlineWriter with line_to(self, x, y) {
-  self.outline.line_to(Vector::new(x.to_double(), y.to_double()))
+  self.outline.line_to(Vector::new(x, y))
 }
 
 ///|
@@ -152,10 +152,7 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with quad_to(
   x,
   y,
 ) {
-  self.outline.quad_to(
-    Vector::new(cx0.to_double(), cy0.to_double()),
-    Vector::new(x.to_double(), y.to_double()),
-  )
+  self.outline.quad_to(Vector::new(cx0, cy0), Vector::new(x, y))
 }
 
 ///|
@@ -169,9 +166,9 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with curve_to(
   y,
 ) {
   self.outline.curve_to(
-    Vector::new(cx0.to_double(), cy0.to_double()),
-    Vector::new(cx1.to_double(), cy1.to_double()),
-    Vector::new(x.to_double(), y.to_double()),
+    Vector::new(cx0, cy0),
+    Vector::new(cx1, cy1),
+    Vector::new(x, y),
   )
 }
 
@@ -214,7 +211,8 @@ fn outline_from_skrifa(
         @skrifa_outline.DrawSettings::unhinted(size, loc)
       }
       let pen = OutlineWriter::new()
-      if outlines.draw(glyph_id, settings, pen) {
+      let gid = @skrifa.GlyphId::new(glyph_id.to_uint16())
+      if outlines.draw(gid, settings, pen) {
         Some(pen.finish())
       } else {
         None
