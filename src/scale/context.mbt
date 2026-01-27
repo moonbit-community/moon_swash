@@ -61,7 +61,6 @@ pub fn ScaleContext::builder(
     hinting_cache: self.hinting_cache,
     font,
     coords: [],
-    var_settings: [],
     size: 0.0,
     hint: false,
   }
@@ -74,7 +73,6 @@ pub struct ScalerBuilder {
   hinting_cache : Ref[HintingCache]
   font : @swash.FontRef
   coords : Array[Int]
-  var_settings : Array[@skrifa.VariationSetting]
   size : Double
   hint : Bool
 }
@@ -89,7 +87,6 @@ pub fn ScalerBuilder::size(
     hinting_cache: self.hinting_cache,
     font: self.font,
     coords: self.coords,
-    var_settings: self.var_settings,
     size: if ppem < 0.0 {
       0.0
     } else {
@@ -106,7 +103,6 @@ pub fn ScalerBuilder::hint(self : ScalerBuilder, yes : Bool) -> ScalerBuilder {
     hinting_cache: self.hinting_cache,
     font: self.font,
     coords: self.coords,
-    var_settings: self.var_settings,
     size: self.size,
     hint: yes,
   }
@@ -117,33 +113,26 @@ pub fn ScalerBuilder::variations(
   self : ScalerBuilder,
   settings : ArrayView[@swash.VariationSetting],
 ) -> ScalerBuilder {
-  for s in settings.iter() {
-    let selector = @skrifa.Tag::from_uint(s.tag)
-    let next = @skrifa.Setting::new(selector, s.value)
-    let mut found = false
-    for i in 0..<self.var_settings.length() {
-      let cur = self.var_settings.at(i)
-      if cur.selector.to_uint() == selector.to_uint() {
-        self.var_settings.set(i, next)
-        found = true
-        break
-      }
-    }
-    if !found {
-      self.var_settings.push(next)
-    }
+  let vars = self.font.variations().to_array()
+  if vars.is_empty() {
+    return self
   }
-  match to_skrifa_font(self.font) {
-    None => ()
-    Some(skrifa_font) => {
-      let axes = @skrifa.AxisCollection::new(skrifa_font)
-      if axes.is_empty() {
-        return self
-      }
-      let loc = axes.location(self.var_settings.op_as_view())
-      self.coords.clear()
-      for c in loc.coords().iter() {
-        self.coords.push(c)
+  let n = vars.length()
+  if self.coords.length() < n {
+    for _ in self.coords.length()..<n {
+      self.coords.push(0)
+    }
+  } else if self.coords.length() > n {
+    self.coords.truncate(n)
+  }
+  for s in settings.iter() {
+    for v in vars.iter() {
+      if v.tag() == s.tag {
+        let value = v.normalize(s.value)
+        let ix = v.index()
+        if ix >= 0 && ix < self.coords.length() {
+          self.coords.set(ix, value)
+        }
       }
     }
   }
@@ -155,7 +144,6 @@ pub fn ScalerBuilder::normalized_coords(
   self : ScalerBuilder,
   coords : ArrayView[Int],
 ) -> ScalerBuilder {
-  self.var_settings.clear()
   self.coords.clear()
   for c in coords.iter() {
     self.coords.push(c)

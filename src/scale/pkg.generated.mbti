@@ -148,7 +148,6 @@ pub struct ScalerBuilder {
   hinting_cache : Ref[HintingCache]
   font : @moon_swash.FontRef
   coords : Array[Int]
-  var_settings : Array[@core.Setting[Double]]
   size : Double
   hint : Bool
 }
