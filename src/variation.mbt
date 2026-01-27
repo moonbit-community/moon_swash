@@ -19,7 +19,7 @@
 ///
 /// Implementation note: we currently leverage `moon_skrifa`'s `AxisCollection`
 /// / `NamedInstanceCollection` to compute normalized coordinates (including
-/// AVAR remapping). Name resolution will be wired once `string.mbt` is ported.
+/// AVAR remapping).
 fn find_font_index_by_offset(data : Bytes, offset : Int) -> UInt? {
   match FontDataRef::new(data) {
     None => None
@@ -50,6 +50,7 @@ fn to_skrifa_font(font : FontRef) -> @skrifa.FontRef? {
 
 ///|
 struct Variation {
+  font : FontRef
   axes : Ref[@skrifa.AxisCollection]
   axis : @skrifa.Axis
 }
@@ -62,6 +63,19 @@ pub fn Variation::index(self : Variation) -> Int {
 ///|
 pub fn Variation::tag(self : Variation) -> Tag {
   self.axis.tag().to_uint()
+}
+
+///|
+pub fn Variation::name_id(self : Variation) -> StringId {
+  StringId::Other(self.axis.name_id())
+}
+
+///|
+pub fn Variation::name(
+  self : Variation,
+  language : String?,
+) -> LocalizedString? {
+  self.font.localized_strings().find_by_id(self.name_id(), language)
 }
 
 ///|
@@ -100,12 +114,42 @@ pub fn Variation::normalize(
 ///|
 struct Instance {
   index : Int
+  font : FontRef
   inner : @skrifa.NamedInstance
 }
 
 ///|
 pub fn Instance::index(self : Instance) -> Int {
   self.index
+}
+
+///|
+pub fn Instance::name_id(self : Instance) -> StringId {
+  StringId::Other(self.inner.subfamily_name_id())
+}
+
+///|
+pub fn Instance::name(self : Instance, language : String?) -> LocalizedString? {
+  self.font.localized_strings().find_by_id(self.name_id(), language)
+}
+
+///|
+pub fn Instance::postscript_name_id(self : Instance) -> StringId? {
+  match self.inner.postscript_name_id() {
+    None => None
+    Some(id) => Some(StringId::Other(id))
+  }
+}
+
+///|
+pub fn Instance::postscript_name(
+  self : Instance,
+  language : String?,
+) -> LocalizedString? {
+  match self.postscript_name_id() {
+    None => None
+    Some(id) => self.font.localized_strings().find_by_id(id, language)
+  }
 }
 
 ///|
@@ -125,6 +169,7 @@ pub fn FontRef::variations(self : FontRef) -> Iter[Variation] {
   match to_skrifa_font(self) {
     None => Iter::new(fn() { None })
     Some(f) => {
+      let font = self
       let axes = @skrifa.AxisCollection::new(f)
       let axes_ref = Ref::new(axes)
       let mut pos = 0
@@ -137,7 +182,7 @@ pub fn FontRef::variations(self : FontRef) -> Iter[Variation] {
         pos = pos + 1
         match axes_ref.val.get(i) {
           None => None
-          Some(axis) => Some(Variation::{ axes: axes_ref, axis })
+          Some(axis) => Some(Variation::{ font, axes: axes_ref, axis })
         }
       })
     }
@@ -149,6 +194,7 @@ pub fn FontRef::instances(self : FontRef) -> Iter[Instance] {
   match to_skrifa_font(self) {
     None => Iter::new(fn() { None })
     Some(f) => {
+      let font = self
       let coll = @skrifa.NamedInstanceCollection::new(f)
       let coll_ref = Ref::new(coll)
       let mut pos = 0
@@ -161,7 +207,7 @@ pub fn FontRef::instances(self : FontRef) -> Iter[Instance] {
         pos = pos + 1
         match coll_ref.val.get(i) {
           None => None
-          Some(inner) => Some(Instance::{ index: i, inner })
+          Some(inner) => Some(Instance::{ index: i, font, inner })
         }
       })
     }

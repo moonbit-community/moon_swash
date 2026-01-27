@@ -36,6 +36,13 @@ pub struct CharmapProxy {
 pub fn CharmapProxy::from_font(FontRef) -> Self
 pub fn CharmapProxy::materialize(Self, FontRef) -> Charmap
 
+pub(all) enum Encoding {
+  Unicode
+  MacRoman
+  Other(UInt16, UInt16)
+}
+pub fn Encoding::is_decodable(Self) -> Bool
+
 type FontCache[T]
 pub fn[T] FontCache::get(Self[T], FontRef, (UInt64, UInt64)?, (FontRef) -> T) -> ((UInt64, UInt64), Ref[T])
 pub fn[T] FontCache::new(Int) -> Self[T]
@@ -62,6 +69,7 @@ pub fn FontRef::from_index(Bytes, Int) -> Self?
 pub fn FontRef::from_offset(Bytes, Int) -> Self?
 pub fn FontRef::instances(Self) -> Iter[Instance]
 pub fn FontRef::key(Self) -> CacheKey
+pub fn FontRef::localized_strings(Self) -> LocalizedStrings
 pub fn FontRef::offset(Self) -> Int
 pub fn FontRef::table_data(Self, UInt) -> BytesView?
 pub fn FontRef::variations(Self) -> Iter[Variation]
@@ -69,8 +77,33 @@ pub impl @internal.RawFont for FontRef
 
 type Instance
 pub fn Instance::index(Self) -> Int
+pub fn Instance::name(Self, String?) -> LocalizedString?
+pub fn Instance::name_id(Self) -> StringId
 pub fn Instance::normalized_coords(Self) -> ArrayView[Int]
+pub fn Instance::postscript_name(Self, String?) -> LocalizedString?
+pub fn Instance::postscript_name_id(Self) -> StringId?
 pub fn Instance::values(Self) -> ArrayView[Double]
+
+pub struct LocalizedString {
+  b : @internal.BeBytes
+  storage : Int
+  offset : Int
+}
+pub fn LocalizedString::chars(Self) -> Iter[Char]
+pub fn LocalizedString::id(Self) -> StringId
+pub fn LocalizedString::is_decodable(Self) -> Bool
+pub fn LocalizedString::is_unicode(Self) -> Bool
+pub fn LocalizedString::language(Self) -> String
+pub fn LocalizedString::to_string(Self) -> String
+
+pub struct LocalizedStrings {
+  b : @internal.BeBytes
+  len : Int
+  storage : Int
+}
+pub fn LocalizedStrings::find_by_id(Self, StringId, String?) -> LocalizedString?
+pub fn LocalizedStrings::iter(Self) -> Iter[LocalizedString]
+pub fn LocalizedStrings::len(Self) -> Int
 
 pub struct Setting[T] {
   tag : UInt
@@ -82,12 +115,45 @@ pub fn Setting::parse_feature_list(String) -> Iter[Self[UInt16]]
 pub fn Setting::parse_variation(String) -> Self[Double]?
 pub fn Setting::parse_variation_list(String) -> Iter[Self[Double]]
 
+pub(all) enum StringId {
+  Copyright
+  Family
+  SubFamily
+  UniqueId
+  Full
+  Version
+  PostScript
+  Trademark
+  Manufacturer
+  Designer
+  Description
+  VendorUrl
+  DesignerUrl
+  License
+  LicenseUrl
+  TypographicFamily
+  TypographicSubFamily
+  CompatibleFull
+  SampleText
+  PostScriptCid
+  WwsFamily
+  WwsSubFamily
+  LightBackgroundPalette
+  DarkBackgroundPalette
+  VariationsPostScriptNamePrefix
+  Other(UInt16)
+}
+pub fn StringId::from_raw(UInt16) -> Self
+pub fn StringId::to_raw(Self) -> UInt16
+
 type Variation
 pub fn Variation::default_value(Self) -> Double
 pub fn Variation::index(Self) -> Int
 pub fn Variation::is_hidden(Self) -> Bool
 pub fn Variation::max_value(Self) -> Double
 pub fn Variation::min_value(Self) -> Double
+pub fn Variation::name(Self, String?) -> LocalizedString?
+pub fn Variation::name_id(Self) -> StringId
 pub fn Variation::normalize(Self, Double) -> Int
 pub fn Variation::tag(Self) -> UInt
 
