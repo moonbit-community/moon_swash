@@ -87,6 +87,9 @@ pub fn Gdef::has_classes(self : Gdef) -> Bool {
 ///|
 /// Returns the class for the specified glyph id.
 pub fn Gdef::class(self : Gdef, glyph_id : UInt16) -> UInt16 {
+  if self.classes == 0 {
+    return (0).to_uint16()
+  }
   classdef(
     self.data,
     (self.base + self.classes.to_int()).reinterpret_as_uint(),
@@ -103,6 +106,9 @@ pub fn Gdef::has_mark_classes(self : Gdef) -> Bool {
 ///|
 /// Returns the mark class for the specified glyph id.
 pub fn Gdef::mark_class(self : Gdef, glyph_id : UInt16) -> UInt16 {
+  if self.mark_classes == 0 {
+    return (0).to_uint16()
+  }
   classdef(
     self.data,
     (self.base + self.mark_classes.to_int()).reinterpret_as_uint(),
