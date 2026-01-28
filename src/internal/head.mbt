@@ -268,6 +268,47 @@ pub fn Post::is_fixed_pitch(self : Post) -> Bool {
 }
 
 ///|
+pub fn Post::data(self : Post) -> BytesView {
+  self.data
+}
+
+///|
+pub fn Post::version(self : Post) -> UInt {
+  BeBytes::from_view(self.data).read_u32(0).unwrap_or(0)
+}
+
+///|
+pub fn Post::italic_angle(self : Post) -> UInt {
+  BeBytes::from_view(self.data).read_u32(4).unwrap_or(0)
+}
+
+///|
+/// Returns true if the table can provide glyph names. Only versions 1.0 and 2.0.
+pub fn Post::has_names(self : Post) -> Bool {
+  let v = self.version()
+  v == 0x00010000 || v == 0x00020000
+}
+
+///|
+fn post_ascii_string(bytes : BytesView) -> String? {
+  let chars : Array[Char] = []
+  for i in 0..<bytes.length() {
+    let b = match bytes.get(i) {
+      None => return None
+      Some(v) => v.to_int()
+    }
+    if b < 0 || b >= 128 {
+      return None
+    }
+    match b.to_char() {
+      None => return None
+      Some(c) => chars.push(c)
+    }
+  }
+  Some(String::from_array(chars.op_as_view()))
+}
+
+///|
 /// Maximum profile table.
 pub struct Maxp {
   data : BytesView
@@ -296,6 +337,71 @@ pub fn Maxp::glyph_count(self : Maxp) -> UInt {
 ///|
 pub fn Maxp::is_truetype(self : Maxp) -> Bool {
   self.version() == 0x00010000
+}
+
+///|
+pub fn Maxp::max_points(self : Maxp) -> UInt {
+  BeBytes::from_view(self.data).read_u16(6).unwrap_or(0)
+}
+
+///|
+pub fn Maxp::max_contours(self : Maxp) -> UInt {
+  BeBytes::from_view(self.data).read_u16(8).unwrap_or(0)
+}
+
+///|
+pub fn Maxp::max_composite_points(self : Maxp) -> UInt {
+  BeBytes::from_view(self.data).read_u16(10).unwrap_or(0)
+}
+
+///|
+pub fn Maxp::max_composite_contours(self : Maxp) -> UInt {
+  BeBytes::from_view(self.data).read_u16(12).unwrap_or(0)
+}
+
+///|
+pub fn Maxp::max_zones(self : Maxp) -> UInt {
+  BeBytes::from_view(self.data).read_u16(14).unwrap_or(0)
+}
+
+///|
+pub fn Maxp::max_twilight_points(self : Maxp) -> UInt {
+  BeBytes::from_view(self.data).read_u16(16).unwrap_or(0)
+}
+
+///|
+pub fn Maxp::max_storage(self : Maxp) -> UInt {
+  BeBytes::from_view(self.data).read_u16(18).unwrap_or(0)
+}
+
+///|
+pub fn Maxp::max_function_definitions(self : Maxp) -> UInt {
+  BeBytes::from_view(self.data).read_u16(20).unwrap_or(0)
+}
+
+///|
+pub fn Maxp::max_instruction_definitions(self : Maxp) -> UInt {
+  BeBytes::from_view(self.data).read_u16(22).unwrap_or(0)
+}
+
+///|
+pub fn Maxp::max_stack_depth(self : Maxp) -> UInt {
+  BeBytes::from_view(self.data).read_u16(24).unwrap_or(0)
+}
+
+///|
+pub fn Maxp::max_instructions_size(self : Maxp) -> UInt {
+  BeBytes::from_view(self.data).read_u16(26).unwrap_or(0)
+}
+
+///|
+pub fn Maxp::max_component_elements(self : Maxp) -> UInt {
+  BeBytes::from_view(self.data).read_u16(28).unwrap_or(0)
+}
+
+///|
+pub fn Maxp::max_component_depth(self : Maxp) -> UInt {
+  BeBytes::from_view(self.data).read_u16(30).unwrap_or(0)
 }
 
 ///|
@@ -378,4 +484,89 @@ pub fn Vhea::max_advance(self : Vhea) -> UInt {
 ///|
 pub fn Vhea::num_long_metrics(self : Vhea) -> UInt {
   BeBytes::from_view(self.data).read_u16(34).unwrap_or(0)
+}
+
+///|
+let default_glyph_names : ReadOnlyArray[String] = [
+  ".notdef", ".null", "nonmarkingreturn", "space", "exclam", "quotedbl", "numbersign",
+  "dollar", "percent", "ampersand", "quotesingle", "parenleft", "parenright", "asterisk",
+  "plus", "comma", "hyphen", "period", "slash", "zero", "one", "two", "three", "four",
+  "five", "six", "seven", "eight", "nine", "colon", "semicolon", "less", "equal",
+  "greater", "question", "at", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+  "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+  "bracketleft", "backslash", "bracketright", "asciicircum", "underscore", "grave",
+  "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p",
+  "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "braceleft", "bar", "braceright",
+  "asciitilde", "Adieresis", "Aring", "Ccedilla", "Eacute", "Ntilde", "Odieresis",
+  "Udieresis", "aacute", "agrave", "acircumflex", "adieresis", "atilde", "aring",
+  "ccedilla", "eacute", "egrave", "ecircumflex", "edieresis", "iacute", "igrave",
+  "icircumflex", "idieresis", "ntilde", "oacute", "ograve", "ocircumflex", "odieresis",
+  "otilde", "uacute", "ugrave", "ucircumflex", "udieresis", "dagger", "degree", "cent",
+  "sterling", "section", "bullet", "paragraph", "germandbls", "registered", "copyright",
+  "trademark", "acute", "dieresis", "notequal", "AE", "Oslash", "infinity", "plusminus",
+  "lessequal", "greaterequal", "yen", "mu", "partialdiff", "summation", "product",
+  "pi", "integral", "ordfeminine", "ordmasculine", "Omega", "ae", "oslash", "questiondown",
+  "exclamdown", "logicalnot", "radical", "florin", "approxequal", "Delta", "guillemotleft",
+  "guillemotright", "ellipsis", "nonbreakingspace", "Agrave", "Atilde", "Otilde",
+  "OE", "oe", "endash", "emdash", "quotedblleft", "quotedblright", "quoteleft", "quoteright",
+  "divide", "lozenge", "ydieresis", "Ydieresis", "fraction", "currency", "guilsinglleft",
+  "guilsinglright", "fi", "fl", "daggerdbl", "periodcentered", "quotesinglbase",
+  "quotedblbase", "perthousand", "Acircumflex", "Ecircumflex", "Aacute", "Edieresis",
+  "Egrave", "Iacute", "Icircumflex", "Idieresis", "Igrave", "Oacute", "Ocircumflex",
+  "apple", "Ograve", "Uacute", "Ucircumflex", "Ugrave", "dotlessi", "circumflex",
+  "tilde", "macron", "breve", "dotaccent", "ring", "cedilla", "hungarumlaut", "ogonek",
+  "caron", "Lslash", "lslash", "Scaron", "scaron", "Zcaron", "zcaron", "brokenbar",
+  "Eth", "eth", "Yacute", "yacute", "Thorn", "thorn", "minus", "multiply", "onesuperior",
+  "twosuperior", "threesuperior", "onehalf", "onequarter", "threequarters", "franc",
+  "Gbreve", "gbreve", "Idotaccent", "Scedilla", "scedilla", "Cacute", "cacute", "Ccaron",
+  "ccaron", "dcroat",
+]
+
+///|
+/// Returns the name of the specified glyph id if available.
+pub fn Post::name(self : Post, glyph_id : UInt16) -> String? {
+  if !self.has_names() {
+    return None
+  }
+  let v = self.version()
+  let gid = glyph_id.to_uint().reinterpret_as_int()
+  if v == 0x00010000 {
+    if gid < 0 || gid >= 258 {
+      return None
+    }
+    return Some(default_glyph_names[gid])
+  } else if v == 0x00020000 {
+    let b = BeBytes::from_view(self.data)
+    let count = b.read_u16(32).unwrap_or(0).reinterpret_as_int()
+    if gid < 0 || gid >= count {
+      return None
+    }
+    let mut index = match b.read_u16(34 + gid * 2) {
+      None => return None
+      Some(v) => v.reinterpret_as_int()
+    }
+    if index < 258 {
+      return Some(default_glyph_names[index])
+    }
+    index = index - 258
+    let mut base = 34 + count * 2
+    for _ in 0..<index {
+      let len = match b.read_u8(base) {
+        None => return None
+        Some(v) => v.to_int()
+      }
+      base = base + len + 1
+    }
+    let len = match b.read_u8(base) {
+      None => return None
+      Some(v) => v.to_int()
+    }
+    base = base + 1
+    if !b.check_range(base, len) {
+      return None
+    }
+    let bytes = b.data()[base:base + len]
+    return post_ascii_string(bytes)
+  }
+  None
 }

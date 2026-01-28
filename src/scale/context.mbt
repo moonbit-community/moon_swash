@@ -20,13 +20,14 @@
 /// but does not yet implement actual outline extraction, hinting, or rasterization.
 
 ///|
-pub struct ScaleContext {
+struct ScaleContext {
   state : Ref[State]
   hinting_cache : Ref[HintingCache]
+  _max_entries : Int
 }
 
 ///|
-struct State {
+priv struct State {
   mut _scratch0 : Array[Byte]
   mut _scratch1 : Array[Byte]
   outline : Outline
@@ -45,9 +46,25 @@ fn State::new() -> State {
 
 ///|
 pub fn ScaleContext::new() -> ScaleContext {
+  ScaleContext::with_max_entries(8)
+}
+
+///|
+/// Creates a new scaling context with the specified maximum number of cache entries.
+///
+/// This mirrors the upstream `swash-reference` API. The value is clamped to 1..=64.
+pub fn ScaleContext::with_max_entries(max_entries : Int) -> ScaleContext {
+  let max_entries = if max_entries < 1 {
+    1
+  } else if max_entries > 64 {
+    64
+  } else {
+    max_entries
+  }
   ScaleContext::{
     state: Ref::new(State::new()),
     hinting_cache: Ref::new(HintingCache::new()),
+    _max_entries: max_entries,
   }
 }
 
@@ -60,6 +77,28 @@ pub fn ScaleContext::builder(
     state: self.state,
     hinting_cache: self.hinting_cache,
     font,
+    id0: font.key().value(),
+    id1: (-1).to_int64().reinterpret_as_uint64(),
+    coords: [],
+    size: 0.0,
+    hint: false,
+  }
+}
+
+///|
+/// Creates a builder for constructing a scaler with this context, specified font and a
+/// custom unique identifier.
+pub fn ScaleContext::builder_with_id(
+  self : ScaleContext,
+  font : @swash.FontRef,
+  id : (UInt64, UInt64),
+) -> ScalerBuilder {
+  ScalerBuilder::{
+    state: self.state,
+    hinting_cache: self.hinting_cache,
+    font,
+    id0: id.0,
+    id1: id.1,
     coords: [],
     size: 0.0,
     hint: false,
@@ -68,10 +107,12 @@ pub fn ScaleContext::builder(
 
 ///|
 /// Builder for configuring a scaler.
-pub struct ScalerBuilder {
+struct ScalerBuilder {
   state : Ref[State]
   hinting_cache : Ref[HintingCache]
   font : @swash.FontRef
+  id0 : UInt64
+  id1 : UInt64
   coords : Array[Int]
   size : Double
   hint : Bool
@@ -86,6 +127,8 @@ pub fn ScalerBuilder::size(
     state: self.state,
     hinting_cache: self.hinting_cache,
     font: self.font,
+    id0: self.id0,
+    id1: self.id1,
     coords: self.coords,
     size: if ppem < 0.0 {
       0.0
@@ -102,6 +145,8 @@ pub fn ScalerBuilder::hint(self : ScalerBuilder, yes : Bool) -> ScalerBuilder {
     state: self.state,
     hinting_cache: self.hinting_cache,
     font: self.font,
+    id0: self.id0,
+    id1: self.id1,
     coords: self.coords,
     size: self.size,
     hint: yes,
@@ -182,15 +227,13 @@ pub fn ScalerBuilder::build(self : ScalerBuilder) -> Scaler {
   }
   let outlines0 = outlines
   let hinting_instance = if self.hint && outlines is Some(oc) {
-    let id0 = self.font.key().value()
-    let id1 = (-1).to_int64().reinterpret_as_uint64()
-    self.hinting_cache.val.get(id0, id1, oc, skrifa_size, loc)
+    self.hinting_cache.val.get(self.id0, self.id1, oc, skrifa_size, loc)
   } else {
     None
   }
   Scaler::{
     state: self.state,
-    hinting_cache: self.hinting_cache,
+    _hinting_cache: self.hinting_cache,
     font: self.font,
     outlines: outlines0,
     hinting_instance,
@@ -202,9 +245,9 @@ pub fn ScalerBuilder::build(self : ScalerBuilder) -> Scaler {
 }
 
 ///|
-pub struct Scaler {
+struct Scaler {
   state : Ref[State]
-  hinting_cache : Ref[HintingCache]
+  _hinting_cache : Ref[HintingCache]
   font : @swash.FontRef
   outlines : @skrifa_outline.OutlineGlyphCollection?
   hinting_instance : @skrifa_outline.HintingInstance?

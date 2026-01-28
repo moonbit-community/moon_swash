@@ -2,7 +2,6 @@
 package "Milky2018/moon_swash/scale"
 
 import {
-  "Milky2018/moon_skrifa/core",
   "Milky2018/moon_skrifa/outline",
   "Milky2018/moon_swash",
   "Milky2018/moon_yazi",
@@ -25,8 +24,6 @@ pub(all) enum Content {
   Color
 }
 pub fn Content::default() -> Self
-
-type HintingCache
 
 pub struct Image {
   mut source : Source
@@ -110,24 +107,13 @@ pub fn Render::render_into(Self, Scaler, UInt16, Image) -> Bool
 pub fn Render::style(Self, @moon_zeno.Style) -> Self
 pub fn Render::transform(Self, @moon_zeno.Transform?) -> Self
 
-pub struct ScaleContext {
-  state : Ref[State]
-  hinting_cache : Ref[HintingCache]
-}
+type ScaleContext
 pub fn ScaleContext::builder(Self, @moon_swash.FontRef) -> ScalerBuilder
+pub fn ScaleContext::builder_with_id(Self, @moon_swash.FontRef, (UInt64, UInt64)) -> ScalerBuilder
 pub fn ScaleContext::new() -> Self
+pub fn ScaleContext::with_max_entries(Int) -> Self
 
-pub struct Scaler {
-  state : Ref[State]
-  hinting_cache : Ref[HintingCache]
-  font : @moon_swash.FontRef
-  outlines : @outline.OutlineGlyphCollection?
-  hinting_instance : @outline.HintingInstance?
-  coords : Array[Int]
-  size : Double
-  skrifa_size : @core.Size
-  hint : Bool
-}
+type Scaler
 pub fn Scaler::has_bitmaps(Self) -> Bool
 pub fn Scaler::has_color_bitmaps(Self) -> Bool
 pub fn Scaler::has_color_outlines(Self) -> Bool
@@ -143,14 +129,7 @@ pub fn Scaler::scale_outline(Self, UInt16) -> Outline?
 pub fn Scaler::scale_outline_into(Self, UInt16, Outline) -> Bool
 pub fn Scaler::size(Self) -> Double
 
-pub struct ScalerBuilder {
-  state : Ref[State]
-  hinting_cache : Ref[HintingCache]
-  font : @moon_swash.FontRef
-  coords : Array[Int]
-  size : Double
-  hint : Bool
-}
+type ScalerBuilder
 pub fn ScalerBuilder::build(Self) -> Scaler
 pub fn ScalerBuilder::hint(Self, Bool) -> Self
 pub fn ScalerBuilder::normalized_coords(Self, ArrayView[Int]) -> Self
@@ -164,8 +143,6 @@ pub(all) enum Source {
   ColorBitmap(StrikeWith)
 }
 pub fn Source::default() -> Self
-
-type State
 
 pub(all) enum StrikeWith {
   ExactSize

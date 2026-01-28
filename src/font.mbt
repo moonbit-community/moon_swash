@@ -81,6 +81,18 @@ pub struct FontRef {
 }
 
 ///|
+/// Source that can provide table data by tag.
+pub(open) trait TableProvider {
+  /// Returns the table for the specified tag.
+  table_by_tag(Self, tag : Tag) -> BytesView?
+}
+
+///|
+pub impl TableProvider for FontRef with table_by_tag(self, tag) {
+  self.table_data(tag)
+}
+
+///|
 pub fn FontRef::data(self : FontRef) -> Bytes {
   self.data
 }
@@ -146,6 +158,17 @@ pub fn FontRef::os2(self : FontRef) -> @internal.Os2? {
 ///|
 pub fn FontRef::post(self : FontRef) -> @internal.Post? {
   @internal.Post::from_font(self)
+}
+
+///|
+/// Returns the name for the specified glyph identifier.
+///
+/// Note: upstream marks this API as unstable and uses it for testing only.
+pub fn FontRef::glyph_name(self : FontRef, glyph_id : GlyphId) -> String? {
+  match self.post() {
+    None => None
+    Some(p) => p.name(glyph_id)
+  }
 }
 
 ///|

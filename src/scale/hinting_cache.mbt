@@ -70,7 +70,7 @@ fn effective_coords(loc : @skrifa.LocationRef) -> Array[Int] {
 }
 
 ///|
-struct HintingCache {
+priv struct HintingCache {
   glyf_entries : Array[HintingEntry]
   cff_entries : Array[HintingEntry]
   mut serial : UInt64

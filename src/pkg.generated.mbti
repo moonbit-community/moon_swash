@@ -746,6 +746,7 @@ pub fn FontRef::features(Self) -> Features
 pub fn FontRef::from_index(Bytes, Int) -> Self?
 pub fn FontRef::from_offset(Bytes, Int) -> Self?
 pub fn FontRef::glyph_metrics(Self, ArrayView[Int]) -> GlyphMetrics
+pub fn FontRef::glyph_name(Self, UInt16) -> String?
 pub fn FontRef::head(Self) -> @internal.Head?
 pub fn FontRef::hhea(Self) -> @internal.Hhea?
 pub fn FontRef::instances(Self) -> Iter[Instance]
@@ -761,6 +762,7 @@ pub fn FontRef::table_offset(Self, UInt) -> UInt
 pub fn FontRef::variations(Self) -> Iter[Variation]
 pub fn FontRef::vhea(Self) -> @internal.Vhea?
 pub fn FontRef::writing_systems(Self) -> WritingSystems
+pub impl TableProvider for FontRef
 pub impl @internal.RawFont for FontRef
 
 type GlyphMetrics
@@ -1429,4 +1431,8 @@ pub(open) trait Codepoint {
   decompose_compatible(Self) -> Iter[Char]
 }
 pub impl Codepoint for Char
+
+pub(open) trait TableProvider {
+  table_by_tag(Self, UInt) -> BytesView?
+}
 

@@ -14,13 +14,13 @@
 
 ///|
 /// Minimal end-to-end tests for AAT shaping paths (black-box).
-
 fn push_u16_be(out : Array[Byte], v : Int) -> Unit {
   let u = v.reinterpret_as_uint()
   out.push(((u >> 8) & 0xFFU).to_byte())
   out.push((u & 0xFFU).to_byte())
 }
 
+///|
 fn push_u32_be(out : Array[Byte], v : UInt) -> Unit {
   out.push(((v >> 24) & 0xFFU).to_byte())
   out.push(((v >> 16) & 0xFFU).to_byte())
@@ -30,6 +30,8 @@ fn push_u32_be(out : Array[Byte], v : UInt) -> Unit {
 
 // kern table: version=1 (AAT-style header) with a single Format0 subtable
 // that kerns glyph 1 followed by glyph 2 by -20 units.
+
+///|
 fn make_kern_format0_data() -> Bytes {
   let bytes : Array[Byte] = []
   bytes.push((0).to_byte()) // pad so the table isn't at offset 0
@@ -62,10 +64,10 @@ fn make_kern_format0_data() -> Bytes {
   bytes[sub_start + 1] = ((sub_size >> 16) & 0xFFU).to_byte()
   bytes[sub_start + 2] = ((sub_size >> 8) & 0xFFU).to_byte()
   bytes[sub_start + 3] = (sub_size & 0xFFU).to_byte()
-
   Bytes::from_array(bytes)
 }
 
+///|
 fn make_buffer_ab() -> Buffer {
   let buf = Buffer::new()
   let tokens : Array[@swash.Token] = []
@@ -95,6 +97,7 @@ fn make_buffer_ab() -> Buffer {
   buf
 }
 
+///|
 test "apply_kern format0 pair" {
   let data = make_kern_format0_data()
   let buf = make_buffer_ab()
@@ -103,4 +106,3 @@ test "apply_kern format0 pair" {
   inspect(pos[0].advance, content="-20")
   inspect(pos[1].advance, content="0")
 }
-

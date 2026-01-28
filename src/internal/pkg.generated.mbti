@@ -482,6 +482,19 @@ pub struct Maxp {
 pub fn[T : RawFont] Maxp::from_font(T) -> Self?
 pub fn Maxp::glyph_count(Self) -> UInt
 pub fn Maxp::is_truetype(Self) -> Bool
+pub fn Maxp::max_component_depth(Self) -> UInt
+pub fn Maxp::max_component_elements(Self) -> UInt
+pub fn Maxp::max_composite_contours(Self) -> UInt
+pub fn Maxp::max_composite_points(Self) -> UInt
+pub fn Maxp::max_contours(Self) -> UInt
+pub fn Maxp::max_function_definitions(Self) -> UInt
+pub fn Maxp::max_instruction_definitions(Self) -> UInt
+pub fn Maxp::max_instructions_size(Self) -> UInt
+pub fn Maxp::max_points(Self) -> UInt
+pub fn Maxp::max_stack_depth(Self) -> UInt
+pub fn Maxp::max_storage(Self) -> UInt
+pub fn Maxp::max_twilight_points(Self) -> UInt
+pub fn Maxp::max_zones(Self) -> UInt
 pub fn Maxp::new(BytesView) -> Self
 pub fn Maxp::version(Self) -> UInt
 
@@ -655,11 +668,16 @@ pub fn Os2Flags::use_typographic_metrics(Self) -> Bool
 pub struct Post {
   data : BytesView
 }
+pub fn Post::data(Self) -> BytesView
 pub fn[T : RawFont] Post::from_font(T) -> Self?
+pub fn Post::has_names(Self) -> Bool
 pub fn Post::is_fixed_pitch(Self) -> Bool
+pub fn Post::italic_angle(Self) -> UInt
+pub fn Post::name(Self, UInt16) -> String?
 pub fn Post::new(BytesView) -> Self
 pub fn Post::underline_position(Self) -> Int
 pub fn Post::underline_size(Self) -> Int
+pub fn Post::version(Self) -> UInt
 
 pub(all) struct StateTable {
   b : BeBytes
