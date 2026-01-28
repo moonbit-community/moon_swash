@@ -1,0 +1,12 @@
+{
+  "import": [
+    "moonbitlang/core/array",
+    "moonbitlang/core/bytes",
+    "moonbitlang/core/option",
+    "moonbitlang/core/ref",
+    {
+      "path": "Milky2018/moon_swash",
+      "alias": "swash"
+    }
+  ]
+}

@@ -588,6 +588,7 @@ pub fn ClusterChar::data(Self) -> UInt
 pub fn ClusterChar::glyph_id(Self) -> UInt16
 pub fn ClusterChar::is_ignorable(Self) -> Bool
 pub fn ClusterChar::joining_type(Self) -> JoiningType
+pub fn ClusterChar::new(Char, UInt, ShapeClass, JoiningType, Bool, Bool, UInt16, UInt) -> Self
 pub fn ClusterChar::offset(Self) -> UInt
 pub fn ClusterChar::shape_class(Self) -> ShapeClass
 

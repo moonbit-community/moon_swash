@@ -1,0 +1,267 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/moon_swash/shape"
+
+import {
+  "Milky2018/moon_swash",
+}
+
+// Values
+pub const COMPONENT : UInt16 = 4
+
+pub const CURSIVE_ATTACH : UInt16 = 16
+
+pub const IGNORABLE : UInt16 = 64
+
+pub const LIGATED : UInt16 = 2
+
+pub const MARK_ATTACH : UInt16 = 8
+
+pub const MAX_CLUSTER_SIZE : Int = 32
+
+pub const SUBSTITUTED : UInt16 = 1
+
+pub fn reorder_complex(Array[GlyphData], Array[GlyphData], Array[Int]) -> Unit
+
+pub fn reorder_myanmar(ArrayView[@moon_swash.ClusterChar], Array[Int]) -> Unit
+
+pub fn[S : Selector, O : ShapeOptions] shape(ShapeContext, S, O, Iter[@moon_swash.Token], (SelectedFont, Shaper) -> Unit) -> Unit
+
+// Errors
+
+// Types and methods
+pub struct Buffer {
+  glyphs : Array[GlyphData]
+  positions : Array[PositionData]
+  infos : Array[(@moon_swash.ClusterInfo, Bool, UInt)]
+  ranges : Array[@moon_swash.SourceRange]
+  shaped_glyphs : Array[Glyph]
+  mut is_rtl : Bool
+  mut dotted_circle : UInt16?
+  mut has_cursive : Bool
+  mut has_marks : Bool
+  mut reversed : Bool
+  mut next_cluster : UInt
+  mut skip_state : SkipState
+  sub_args : Array[UInt16]
+  pos_args : Array[UInt16]
+}
+pub fn Buffer::_push_hangul(Self, @moon_swash.CharCluster) -> IndexRange
+pub fn Buffer::clear(Self) -> Unit
+pub fn Buffer::clear_flags(Self, UInt16, IndexRange?) -> Unit
+pub fn Buffer::default() -> Self
+pub fn Buffer::ensure_order(Self, Bool) -> Unit
+pub fn Buffer::glyphs(Self) -> ArrayView[GlyphData]
+pub fn Buffer::len(Self) -> Int
+pub fn Buffer::multiply(Self, Int, Int) -> Unit
+pub fn Buffer::new() -> Self
+pub fn Buffer::position(Self, Int, Double, Double, Double, Double) -> Unit
+pub fn Buffer::position_cursive(Self, Int, Int, Double, Double) -> Unit
+pub fn Buffer::position_mark(Self, Int, Int, Double, Double) -> Unit
+pub fn Buffer::positions(Self) -> ArrayView[PositionData]
+pub fn Buffer::push(Self, @moon_swash.CharCluster) -> IndexRange
+pub fn Buffer::push_order(Self, @moon_swash.CharCluster, ArrayView[Int]) -> IndexRange
+pub fn Buffer::ranges(Self) -> ArrayView[@moon_swash.SourceRange]
+pub fn Buffer::set_join_masks(Self) -> Unit
+pub fn Buffer::setup_positions(Self, Bool) -> Unit
+pub fn Buffer::substitute(Self, Int, UInt16) -> Unit
+pub fn Buffer::substitute_ligature(Self, Int, UInt16, ArrayView[Int]) -> Unit
+pub fn Buffer::substitute_multiple(Self, Int, ArrayView[UInt16]) -> Unit
+
+pub(all) enum Direction {
+  LeftToRight
+  RightToLeft
+}
+pub impl Eq for Direction
+
+pub struct Glyph {
+  id : UInt16
+  info : GlyphInfo
+  x : Double
+  y : Double
+  advance : Double
+  data : UInt
+}
+pub fn Glyph::advance(Self) -> Double
+pub fn Glyph::data(Self) -> UInt
+pub fn Glyph::default() -> Self
+pub fn Glyph::id(Self) -> UInt16
+pub fn Glyph::info(Self) -> GlyphInfo
+pub fn Glyph::x(Self) -> Double
+pub fn Glyph::y(Self) -> Double
+
+pub struct GlyphCluster {
+  source : @moon_swash.SourceRange
+  info : @moon_swash.ClusterInfo
+  glyphs : ArrayView[Glyph]
+  components : ArrayView[@moon_swash.SourceRange]
+  data : UInt
+}
+pub fn GlyphCluster::advance(Self) -> Double
+pub fn GlyphCluster::components(Self) -> ArrayView[@moon_swash.SourceRange]
+pub fn GlyphCluster::data(Self) -> UInt
+pub fn GlyphCluster::glyphs(Self) -> ArrayView[Glyph]
+pub fn GlyphCluster::info(Self) -> @moon_swash.ClusterInfo
+pub fn GlyphCluster::is_complex(Self) -> Bool
+pub fn GlyphCluster::is_empty(Self) -> Bool
+pub fn GlyphCluster::is_ligature(Self) -> Bool
+pub fn GlyphCluster::is_simple(Self) -> Bool
+pub fn GlyphCluster::source(Self) -> @moon_swash.SourceRange
+
+pub struct GlyphData {
+  mut id : UInt16
+  mut flags : UInt16
+  mut class : Byte
+  mut char_class : @moon_swash.ShapeClass
+  mut mark_type : Byte
+  joining_type : Byte
+  mut mask : Byte
+  mut skip : Bool
+  mut component : Byte
+  mut cluster : UInt
+  data : UInt
+}
+pub fn GlyphData::cluster(Self) -> UInt
+pub fn GlyphData::default() -> Self
+pub fn GlyphData::flags(Self) -> UInt16
+pub fn GlyphData::id(Self) -> UInt16
+pub fn GlyphData::is_component(Self) -> Bool
+
+pub struct GlyphInfo {
+  bits : UInt16
+}
+pub fn GlyphInfo::default() -> Self
+pub fn GlyphInfo::is_mark(Self) -> Bool
+pub fn GlyphInfo::new(UInt16) -> Self
+
+pub struct IndexRange {
+  start : Int
+  end : Int
+}
+pub fn IndexRange::end(Self) -> Int
+pub fn IndexRange::new(Int, Int) -> Self
+pub fn IndexRange::start(Self) -> Int
+
+pub struct PositionData {
+  mut base : Byte
+  mut flags : UInt16
+  mut x : Double
+  mut y : Double
+  mut advance : Double
+}
+pub fn PositionData::default() -> Self
+
+pub struct SelectedFont {
+  font : @moon_swash.FontRef
+  id_override : (UInt64, UInt64)?
+  synthesis : @moon_swash.Synthesis?
+}
+pub fn SelectedFont::font(Self) -> @moon_swash.FontRef
+pub fn SelectedFont::id_override(Self) -> (UInt64, UInt64)?
+pub fn SelectedFont::new(@moon_swash.FontRef) -> Self
+pub fn SelectedFont::synthesis(Self) -> @moon_swash.Synthesis?
+pub fn SelectedFont::with_id_override(Self, (UInt64, UInt64)) -> Self
+pub fn SelectedFont::with_synthesis(Self, @moon_swash.Synthesis) -> Self
+
+pub struct ShapeContext {
+  state : Ref[State]
+}
+pub fn ShapeContext::builder(Self, @moon_swash.FontRef) -> ShaperBuilder
+pub fn ShapeContext::builder_with_id(Self, @moon_swash.FontRef, (UInt64, UInt64)) -> ShaperBuilder
+pub fn ShapeContext::new() -> Self
+
+pub struct Shaper {
+  state : Ref[State]
+  font : @moon_swash.FontRef
+  id0 : UInt64
+  id1 : UInt64
+  size : Double
+  script : @moon_swash.Script
+  language : @moon_swash.Language?
+  direction : Direction
+  retain_ignorables : Bool
+  features : Array[@moon_swash.Setting[UInt16]]
+  variations : Array[@moon_swash.Setting[Double]]
+}
+pub fn Shaper::add_cluster(Self, @moon_swash.CharCluster) -> Unit
+
+pub struct ShaperBuilder {
+  state : Ref[State]
+  font : @moon_swash.FontRef
+  id0 : UInt64
+  id1 : UInt64
+  size : Double
+  script : @moon_swash.Script
+  language : @moon_swash.Language?
+  direction : Direction
+  dotted_circle : UInt16?
+  retain_ignorables : Bool
+  features : Array[@moon_swash.Setting[UInt16]]
+  variations : Array[@moon_swash.Setting[Double]]
+}
+pub fn ShaperBuilder::build(Self) -> Shaper
+pub fn ShaperBuilder::direction(Self, Direction) -> Self
+pub fn ShaperBuilder::features(Self, Iter[@moon_swash.Setting[UInt16]]) -> Self
+pub fn ShaperBuilder::insert_dotted_circles(Self, Bool) -> Self
+pub fn ShaperBuilder::language(Self, @moon_swash.Language?) -> Self
+pub fn ShaperBuilder::retain_ignorables(Self, Bool) -> Self
+pub fn ShaperBuilder::script(Self, @moon_swash.Script) -> Self
+pub fn ShaperBuilder::size(Self, Double) -> Self
+pub fn ShaperBuilder::variations(Self, Iter[@moon_swash.Setting[Double]]) -> Self
+
+pub struct SimpleShapeOptions {
+  script : @moon_swash.Script
+  language : @moon_swash.Language?
+  direction : Direction
+  size : Double
+  features : Array[@moon_swash.Setting[UInt16]]
+  variations : Array[@moon_swash.Setting[Double]]
+  insert_dotted_circles : Bool
+}
+pub fn SimpleShapeOptions::default() -> Self
+pub impl ShapeOptions for SimpleShapeOptions
+
+pub struct SkipState {
+  flags : Byte
+  mask : Byte
+  mark_check : Byte
+  mark_class : Byte
+  mark_set : UInt
+}
+pub fn SkipState::default() -> Self
+
+type State
+
+// Type aliases
+pub using @moon_swash {type CharCluster}
+
+pub using @moon_swash {type ClusterChar}
+
+pub using @moon_swash {type ClusterInfo}
+
+pub type GlyphId = UInt16
+
+pub using @moon_swash {type JoiningType}
+
+pub using @moon_swash {type ShapeClass}
+
+pub using @moon_swash {type SourceRange}
+
+pub type Tag = UInt
+
+pub type UserData = UInt
+
+// Traits
+pub(open) trait Selector {
+  select_font(Self, @moon_swash.CharCluster) -> SelectedFont?
+}
+
+pub(open) trait ShapeOptions {
+  script(Self) -> @moon_swash.Script
+  language(Self) -> @moon_swash.Language?
+  direction(Self) -> Direction
+  size(Self) -> Double
+  features(Self) -> Iter[@moon_swash.Setting[UInt16]]
+  variations(Self) -> Iter[@moon_swash.Setting[Double]]
+  insert_dotted_circles(Self) -> Bool
+}
+

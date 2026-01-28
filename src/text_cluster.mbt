@@ -371,6 +371,29 @@ struct ClusterChar {
 }
 
 ///|
+pub fn ClusterChar::new(
+  ch : Char,
+  offset : UInt,
+  shape_class : ShapeClass,
+  joining_type : JoiningType,
+  ignorable : Bool,
+  contributes_to_shaping : Bool,
+  glyph_id : GlyphId,
+  data : UserData,
+) -> ClusterChar {
+  ClusterChar::{
+    ch,
+    offset,
+    shape_class,
+    joining_type,
+    ignorable,
+    contributes_to_shaping,
+    glyph_id,
+    data,
+  }
+}
+
+///|
 pub fn ClusterChar::ch(self : ClusterChar) -> Char {
   self.ch
 }
