@@ -18,6 +18,18 @@ pub fn is_png(Bytes) -> Bool
 // Errors
 
 // Types and methods
+type ColorProxy
+pub fn ColorProxy::from_font(@moon_swash.FontRef) -> Self
+pub fn ColorProxy::layers(Self, Bytes, UInt16) -> ColrLayers?
+
+type ColrLayer
+pub fn ColrLayer::color_index(Self) -> UInt16?
+pub fn ColrLayer::glyph_id(Self) -> UInt16
+
+type ColrLayers
+pub fn ColrLayers::get(Self, UInt16) -> ColrLayer?
+pub fn ColrLayers::len(Self) -> UInt16
+
 pub(all) enum Content {
   Mask
   SubpixelMask
@@ -135,6 +147,9 @@ pub fn ScalerBuilder::hint(Self, Bool) -> Self
 pub fn ScalerBuilder::normalized_coords(Self, ArrayView[Int]) -> Self
 pub fn ScalerBuilder::size(Self, Double) -> Self
 pub fn ScalerBuilder::variations(Self, ArrayView[@moon_swash.Setting[Double]]) -> Self
+
+type ScalerProxy
+pub fn ScalerProxy::from_font(@moon_swash.FontRef) -> Self
 
 pub(all) enum Source {
   Outline

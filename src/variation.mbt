@@ -140,6 +140,11 @@ pub fn Variations::normalized_coords(
 }
 
 ///|
+pub fn Variations::len(self : Variations) -> Int {
+  self.len
+}
+
+///|
 pub fn Variations::next(self : Variations) -> Variation? {
   if self.pos >= self.len {
     return None

@@ -21,9 +21,9 @@
 
 ///|
 struct ScaleContext {
+  fonts : Ref[@swash.FontCache[ScalerProxy]]
   state : Ref[State]
   hinting_cache : Ref[HintingCache]
-  _max_entries : Int
 }
 
 ///|
@@ -62,9 +62,9 @@ pub fn ScaleContext::with_max_entries(max_entries : Int) -> ScaleContext {
     max_entries
   }
   ScaleContext::{
+    fonts: Ref::new(@swash.FontCache::new(max_entries)),
     state: Ref::new(State::new()),
     hinting_cache: Ref::new(HintingCache::new()),
-    _max_entries: max_entries,
   }
 }
 
@@ -73,12 +73,14 @@ pub fn ScaleContext::builder(
   self : ScaleContext,
   font : @swash.FontRef,
 ) -> ScalerBuilder {
+  let (id, proxy) = self.fonts.val.get(font, None, ScalerProxy::from_font)
   ScalerBuilder::{
     state: self.state,
     hinting_cache: self.hinting_cache,
     font,
-    id0: font.key().value(),
-    id1: (-1).to_int64().reinterpret_as_uint64(),
+    proxy,
+    id0: id.0,
+    id1: id.1,
     coords: [],
     size: 0.0,
     hint: false,
@@ -93,12 +95,14 @@ pub fn ScaleContext::builder_with_id(
   font : @swash.FontRef,
   id : (UInt64, UInt64),
 ) -> ScalerBuilder {
+  let (id2, proxy) = self.fonts.val.get(font, Some(id), ScalerProxy::from_font)
   ScalerBuilder::{
     state: self.state,
     hinting_cache: self.hinting_cache,
     font,
-    id0: id.0,
-    id1: id.1,
+    proxy,
+    id0: id2.0,
+    id1: id2.1,
     coords: [],
     size: 0.0,
     hint: false,
@@ -111,6 +115,7 @@ struct ScalerBuilder {
   state : Ref[State]
   hinting_cache : Ref[HintingCache]
   font : @swash.FontRef
+  proxy : Ref[ScalerProxy]
   id0 : UInt64
   id1 : UInt64
   coords : Array[Int]
@@ -127,6 +132,7 @@ pub fn ScalerBuilder::size(
     state: self.state,
     hinting_cache: self.hinting_cache,
     font: self.font,
+    proxy: self.proxy,
     id0: self.id0,
     id1: self.id1,
     coords: self.coords,
@@ -145,6 +151,7 @@ pub fn ScalerBuilder::hint(self : ScalerBuilder, yes : Bool) -> ScalerBuilder {
     state: self.state,
     hinting_cache: self.hinting_cache,
     font: self.font,
+    proxy: self.proxy,
     id0: self.id0,
     id1: self.id1,
     coords: self.coords,
@@ -158,6 +165,9 @@ pub fn ScalerBuilder::variations(
   self : ScalerBuilder,
   settings : ArrayView[@swash.VariationSetting],
 ) -> ScalerBuilder {
+  if self.proxy.val.coord_count == 0 {
+    return self
+  }
   let vars = self.font.variations().iter().to_array()
   if vars.is_empty() {
     return self
@@ -198,18 +208,7 @@ pub fn ScalerBuilder::normalized_coords(
 
 ///|
 pub fn ScalerBuilder::build(self : ScalerBuilder) -> Scaler {
-  let head_opt = @internal.Head::from_font(self.font)
-  let upem = match head_opt {
-    None => 1
-    Some(h) => {
-      let v = h.units_per_em().reinterpret_as_int()
-      if v == 0 {
-        1
-      } else {
-        v
-      }
-    }
-  }
+  let upem = self.proxy.val.metrics.units_per_em().to_int()
   let skrifa_size = if self.size != 0.0 && upem != 0 {
     @skrifa.Size::new(self.size)
   } else {
@@ -237,6 +236,7 @@ pub fn ScalerBuilder::build(self : ScalerBuilder) -> Scaler {
     font: self.font,
     outlines: outlines0,
     hinting_instance,
+    proxy: self.proxy,
     coords: self.coords,
     size: self.size,
     skrifa_size,
@@ -251,6 +251,7 @@ struct Scaler {
   font : @swash.FontRef
   outlines : @skrifa_outline.OutlineGlyphCollection?
   hinting_instance : @skrifa_outline.HintingInstance?
+  proxy : Ref[ScalerProxy]
   coords : Array[Int]
   size : Double
   skrifa_size : @skrifa.Size
@@ -265,6 +266,27 @@ pub fn Scaler::size(self : Scaler) -> Double {
 ///|
 pub fn Scaler::hint(self : Scaler) -> Bool {
   self.hint
+}
+
+///|
+test "ScaleContext caches ScalerProxy per font id (LRU eviction)" {
+  let data = b"\x00\x01\x00\x00"
+  let f0 = @swash.FontRef::from_offset(data, 0).unwrap()
+  let f1 = @swash.FontRef::from_offset(data, 0).unwrap()
+  let ctx = ScaleContext::with_max_entries(1)
+  let s0 = ctx.builder(f0).build()
+  let uid0 = s0.proxy.val.uid
+  let s0_again = ctx.builder(f0).build()
+  inspect(s0_again.proxy.val.uid == uid0, content="true")
+
+  // Insert a different font id (different CacheKey), which should evict f0
+  // because max_entries=1.
+  let s1 = ctx.builder(f1).build()
+  inspect(s1.proxy.val.uid != uid0, content="true")
+
+  // f0 was evicted, so a new proxy should be constructed.
+  let s0_new = ctx.builder(f0).build()
+  inspect(s0_new.proxy.val.uid != uid0, content="true")
 }
 
 ///|
@@ -287,23 +309,19 @@ pub fn Scaler::scale_color_outline_into(
   if !self.has_color_outlines() {
     return false
   }
-  let skrifa_font = match to_skrifa_font(self.font) {
-    None => return false
-    Some(f) => f
-  }
-  match skrifa_font.color_glyphs().layers(@skrifa.GlyphId::new(glyph_id)) {
+  let layers_opt = self.proxy.val.color.layers(self.font.data(), glyph_id)
+  match layers_opt {
     None => false
     Some(layers) => {
-      for layer in layers {
-        let palette_index = layer.palette_index()
-        let color_index = if palette_index < 0 {
-          None
-        } else {
-          Some(palette_index.reinterpret_as_uint().to_uint16())
+      let len = layers.len().to_int()
+      for i in 0..<len {
+        let layer = match layers.get(i.to_uint16()) {
+          None => return false
+          Some(v) => v
         }
         if !self.scale_outline_layer_into(
-            layer.glyph_id().to_u16(),
-            color_index,
+            layer.glyph_id(),
+            layer.color_index(),
             outline,
           ) {
           return false
@@ -429,9 +447,7 @@ pub fn Scaler::scale_color_outline(
 
 ///|
 pub fn Scaler::has_color_outlines(self : Scaler) -> Bool {
-  let colr = @internal.table_offset(self.font, 0x434f4c52) // "COLR"
-  let cpal = @internal.table_offset(self.font, 0x4350414c) // "CPAL"
-  colr != 0 && cpal != 0
+  self.proxy.val.color.colr != 0 && self.proxy.val.color.cpal != 0
 }
 
 ///|
@@ -448,26 +464,12 @@ pub fn Scaler::has_outlines(self : Scaler) -> Bool {
 
 ///|
 pub fn Scaler::has_bitmaps(self : Scaler) -> Bool {
-  let eblc = @internal.table_offset(self.font, 0x45424C43) // "EBLC"
-  if eblc == 0 {
-    return false
-  }
-  let ebdt = @internal.table_offset(self.font, 0x45424454) // "EBDT"
-  ebdt != 0
+  self.proxy.val.bitmaps.has_alpha()
 }
 
 ///|
 pub fn Scaler::has_color_bitmaps(self : Scaler) -> Bool {
-  let sbix = @internal.table_offset(self.font, 0x73626978) // "sbix"
-  if sbix != 0 {
-    return true
-  }
-  let cblc = @internal.table_offset(self.font, 0x43424C43) // "CBLC"
-  if cblc == 0 {
-    return false
-  }
-  let cbdt = @internal.table_offset(self.font, 0x43424454) // "CBDT"
-  cbdt != 0
+  self.proxy.val.bitmaps.has_color()
 }
 
 ///|

@@ -1347,6 +1347,7 @@ pub fn Variation::tag(Self) -> UInt
 type Variations
 pub fn Variations::find_by_tag(Self, UInt) -> Variation?
 pub fn Variations::iter(Self) -> Iter[Variation]
+pub fn Variations::len(Self) -> Int
 pub fn Variations::next(Self) -> Variation?
 pub fn Variations::normalized_coords(Self, Iter[Setting[Double]]) -> Iter[Int]
 
