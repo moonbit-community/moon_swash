@@ -1183,6 +1183,7 @@ pub(all) enum ShapeClass {
 
 type SourceRange
 pub fn SourceRange::end(Self) -> UInt
+pub fn SourceRange::new(UInt, UInt) -> Self
 pub fn SourceRange::start(Self) -> UInt
 
 pub(all) enum Status {

@@ -318,12 +318,17 @@ pub struct Shaper {
   language : @moon_swash.Language?
   direction : Direction
   retain_ignorables : Bool
+  joined : Bool
   engine : Engine
   store : Ref[FeatureStore]?
   sub_mask : FeatureMask
   pos_mask : FeatureMask
 }
 pub fn Shaper::add_cluster(Self, @moon_swash.CharCluster) -> Unit
+pub fn Shaper::add_str(Self, String) -> Unit
+pub fn Shaper::metrics(Self) -> @moon_swash.Metrics
+pub fn Shaper::normalized_coords(Self) -> ArrayView[Int]
+pub fn Shaper::shape_with(Self, (GlyphCluster) -> Unit) -> Unit
 
 pub struct ShaperBuilder {
   cx : Ref[ContextState]

@@ -449,6 +449,11 @@ struct SourceRange {
 }
 
 ///|
+pub fn SourceRange::new(start : UInt, end : UInt) -> SourceRange {
+  SourceRange::{ start, end }
+}
+
+///|
 pub fn SourceRange::start(self : SourceRange) -> UInt {
   self.start
 }
