@@ -23,6 +23,12 @@ pub const SUBSTITUTED : UInt16 = 1
 
 pub fn apply(Byte, Bytes, UInt, ArrayView[Int], @internal.Gdef, Storage, FeatureStore, FeatureMask, Buffer, IndexRange?) -> Bool?
 
+pub fn apply_kern(Bytes, UInt, Buffer) -> Unit
+
+pub fn apply_kerx(Bytes, UInt, UInt, Buffer, Bool) -> Unit
+
+pub fn apply_morx(Bytes, UInt, Buffer, ArrayView[(UInt16, UInt16)]) -> Unit
+
 pub fn feature_bit_to_mask(UInt16?) -> FeatureMask
 
 pub fn reorder_complex(Array[GlyphData], Array[GlyphData], Array[Int]) -> Unit
@@ -105,9 +111,13 @@ pub struct Engine {
   mode : EngineMode
 }
 pub fn Engine::collect_features(Self, FeatureStoreBuilder, Ref[FeatureStore]) -> Unit
+pub fn Engine::collect_selectors(Self, ArrayView[@moon_swash.Setting[UInt16]], Array[(UInt16, UInt16)]) -> Unit
 pub fn Engine::gpos(Self, FeatureStore, FeatureMask, Buffer, IndexRange?) -> Bool
 pub fn Engine::gsub(Self, FeatureStore, FeatureMask, Buffer, IndexRange?) -> Bool
 pub fn Engine::has_feature_vars(Self) -> Bool
+pub fn Engine::kern(Self, Buffer) -> Unit
+pub fn Engine::kerx(Self, Buffer, Bool) -> Unit
+pub fn Engine::morx(Self, Buffer, ArrayView[(UInt16, UInt16)]) -> Unit
 pub fn Engine::new(EngineMetadata, Bytes, ArrayView[Int], @moon_swash.Script, @moon_swash.Language?) -> Self
 pub fn Engine::set_classes(Self, Buffer, IndexRange?) -> Unit
 pub fn Engine::tags(Self) -> (UInt, UInt, UInt, UInt)

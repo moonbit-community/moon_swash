@@ -311,3 +311,61 @@ pub fn Engine::gpos(
   ) ==
   Some(true)
 }
+
+///|
+/// Converts feature settings into a sorted collection of AAT selectors.
+pub fn Engine::collect_selectors(
+  self : Engine,
+  features : ArrayView[@swash.FeatureSetting],
+  selectors : Array[(UInt16, UInt16)],
+) -> Unit {
+  ignore(self)
+  selectors.clear()
+  for s in features.iter() {
+    match @internal.morx_feature_from_tag(s.tag) {
+      None => ()
+      Some((selector, (on, off))) => {
+        let setting = if s.value == (0).to_uint16() { off } else { on }
+        selectors.push((selector, setting))
+      }
+    }
+  }
+  selectors.sort_by_key(fn(p) {
+    let (a, b) = p
+    (a.to_int().reinterpret_as_uint() << 16) | b.to_int().reinterpret_as_uint()
+  })
+}
+
+///|
+/// Applies the extended metamorphosis table.
+pub fn Engine::morx(
+  self : Engine,
+  buffer : Buffer,
+  selectors : ArrayView[(UInt16, UInt16)],
+) -> Unit {
+  if self.morx != 0U {
+    apply_morx(self.data, self.morx, buffer, selectors)
+    buffer.ensure_order(false)
+  }
+}
+
+///|
+/// Applies the extended kerning table.
+pub fn Engine::kerx(
+  self : Engine,
+  buffer : Buffer,
+  disable_kern : Bool,
+) -> Unit {
+  if self.kerx != 0U {
+    apply_kerx(self.data, self.kerx, self.ankr, buffer, disable_kern)
+    buffer.ensure_order(false)
+  }
+}
+
+///|
+/// Applies the kerning table.
+pub fn Engine::kern(self : Engine, buffer : Buffer) -> Unit {
+  if self.kern != 0U {
+    apply_kern(self.data, self.kern, buffer)
+  }
+}

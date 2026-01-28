@@ -13,9 +13,29 @@
 // limitations under the License.
 
 ///|
-/// Apple Advanced Typography helpers (minimal subset).
+/// Apple Advanced Typography (AAT) tables.
 ///
-/// Ported from `swash/src/internal/aat.rs` (module `morx` only; chains + features).
+/// Ported from `swash-reference/src/internal/aat.rs`.
+
+///|
+pub const MORX : UInt = 0x6D6F7278 // "morx"
+
+///|
+pub const LTAG : UInt = 0x6C746167 // "ltag"
+
+///|
+pub const KERX : UInt = 0x6B657278 // "kerx"
+
+///|
+pub const ANKR : UInt = 0x616E6B72 // "ankr"
+
+///|
+pub const KERN : UInt = 0x6B65726E // "kern"
+
+// Maximum number of times we allow consecutive DONT_ADVANCE states.
+
+///|
+const MAX_CYCLES : Int = 16
 
 ///|
 fn aat_empty_view() -> BytesView {
@@ -33,84 +53,10 @@ fn aat_slice_from(data : Bytes, start : UInt) -> BytesView {
 }
 
 ///|
-pub struct MorxChains {
-  b : BeBytes
-  offset : Int
-  len : UInt
-  cur : UInt
-}
-
-///|
-pub fn morx_chains(data : Bytes, offset : UInt) -> MorxChains {
-  let view = if offset == 0U {
+fn aat_subview(view : BytesView, start : Int) -> BytesView {
+  if start < 0 || start > view.length() {
     aat_empty_view()
   } else {
-    aat_slice_from(data, offset)
+    view.sub(start~)
   }
-  let b = BeBytes::from_view(view)
-  let len = b.read_u32(4).unwrap_or(0)
-  MorxChains::{ b, offset: 8, len, cur: 0U }
-}
-
-///|
-pub struct MorxChain {
-  b : BeBytes
-  offset : Int
-  feature_count : UInt
-}
-
-///|
-pub fn MorxChains::iter(self : MorxChains) -> Iter[MorxChain] {
-  let b = self.b
-  let mut offset = self.offset
-  let len = self.len
-  let mut cur = self.cur
-  Iter::new(fn() {
-    if cur >= len {
-      return None
-    }
-    cur = cur + 1U
-    let base = offset
-    let chain_len = match b.read_u32(base + 4) {
-      None => return None
-      Some(v) => v.reinterpret_as_int()
-    }
-    offset = offset + chain_len
-    let feature_count = match b.read_u32(base + 8) {
-      None => return None
-      Some(v) => v
-    }
-    Some(MorxChain::{ b, offset: base, feature_count })
-  })
-}
-
-///|
-pub struct MorxFeature {
-  selector : UInt16
-  setting_selector : UInt16
-}
-
-///|
-pub fn MorxChain::features(self : MorxChain) -> Iter[MorxFeature] {
-  let b = self.b
-  let base = self.offset + 16
-  let len = self.feature_count.reinterpret_as_int()
-  let mut cur = 0
-  Iter::new(fn() {
-    if cur >= len {
-      return None
-    }
-    let i = cur
-    cur = cur + 1
-    let off = base + i * 12
-    let selector = match b.read_u16(off) {
-      None => return None
-      Some(v) => v.to_uint16()
-    }
-    let setting_selector = match b.read_u16(off + 2) {
-      None => return None
-      Some(v) => v.to_uint16()
-    }
-    Some(MorxFeature::{ selector, setting_selector })
-  })
 }

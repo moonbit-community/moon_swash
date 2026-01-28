@@ -715,6 +715,13 @@ fn Shaper::finish(self : Shaper) -> Unit {
           }
           e.gsub(s, self.sub_mask, buf, None) |> ignore
         }
+        SubMode::Morx => {
+          e.collect_selectors(
+            self.cx.val.state.features.op_as_view(),
+            self.cx.val.state.selectors,
+          )
+          e.morx(buf, self.cx.val.state.selectors.op_as_view())
+        }
         _ => ()
       }
     EngineMode::Myanmar => {
@@ -739,7 +746,7 @@ fn Shaper::finish(self : Shaper) -> Unit {
       }
     }
   }
-  buf.setup_positions(false)
+  buf.setup_positions(e.sub_mode == SubMode::Morx)
   match e.pos_mode {
     PosMode::Gpos => {
       let sref = match self.store {
@@ -749,6 +756,13 @@ fn Shaper::finish(self : Shaper) -> Unit {
       let s = sref.val
       e.gpos(s, self.pos_mask, buf, None) |> ignore
     }
+    PosMode::Kerx => e.kerx(buf, self.cx.val.state.disable_kern)
+    PosMode::Kern =>
+      if !self.cx.val.state.disable_kern {
+        e.kern(buf)
+      } else {
+        ()
+      }
     _ => ()
   }
   let glyph_metrics = self.font_entry.val.metrics.materialize_glyph_metrics(
