@@ -16,6 +16,8 @@ pub const UNICODE_VERSION_MINOR : Int = 0
 
 pub const UNICODE_VERSION_PATCH : Int = 0
 
+pub fn analyze(Iter[Char]) -> Analyze
+
 pub fn compose_pair(Char, Char) -> Char?
 
 pub fn decompose(Char) -> Iter[Char]
@@ -40,6 +42,15 @@ pub(all) enum Action {
   Attachment
   Adjustment
 }
+
+pub struct Analyze {
+  chars : CharStream
+  state : BoundaryState
+}
+pub fn Analyze::iter(Self) -> Iter[(Properties, Boundary)]
+pub fn Analyze::needs_bidi_resolution(Self) -> Bool
+pub fn Analyze::next(Self) -> (Properties, Boundary)?
+pub fn Analyze::set_break_strength(Self, WordBreakStrength) -> Unit
 
 pub struct Attributes {
   value : UInt
@@ -444,6 +455,8 @@ pub(all) enum Boundary {
   Mandatory
 }
 
+type BoundaryState
+
 pub(all) enum BracketType {
   None
   Open(Char)
@@ -523,6 +536,8 @@ pub fn CharInfo::myanmar_class(Self) -> (MyanmarClass, Bool)
 pub fn CharInfo::new(Properties, Boundary) -> Self
 pub fn CharInfo::properties(Self) -> Properties
 pub fn CharInfo::use_class(Self) -> (UseClass, Bool, Bool)
+
+type CharStream
 
 pub struct Charmap {
   data : Bytes
@@ -1361,6 +1376,12 @@ pub(all) enum WordBreak {
   WSegSpace
   XX
   ZWJ
+}
+
+pub(all) enum WordBreakStrength {
+  Normal
+  BreakAll
+  KeepAll
 }
 
 type WritingSystem
