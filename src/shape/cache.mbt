@@ -28,7 +28,7 @@ pub struct FontEntry {
 
 ///|
 pub fn FontEntry::new(font : @swash.FontRef) -> FontEntry {
-  let coords = font.variations().to_array()
+  let coords = font.variations().iter().to_array()
   FontEntry::{
     metrics: @swash.MetricsProxy::from_font(font),
     charmap: @swash.CharmapProxy::from_font(font),

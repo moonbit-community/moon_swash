@@ -33,6 +33,288 @@ pub const VVAR : RawTag = 0x56564152 // "VVAR"
 pub const MVAR : RawTag = 0x4D564152 // "MVAR"
 
 ///|
+/// Font variations table.
+pub struct Fvar {
+  data : BytesView
+  axis_offset : UInt
+  axis_count : UInt
+  axis_size : UInt
+  inst_count : UInt
+  inst_size : UInt
+}
+
+///|
+pub fn Fvar::new(data : BytesView) -> Fvar {
+  let b = BeBytes::from_view(data)
+  Fvar::{
+    data,
+    axis_offset: b.read_u16(4).unwrap_or(0),
+    axis_count: b.read_u16(8).unwrap_or(0),
+    axis_size: b.read_u16(10).unwrap_or(0),
+    inst_count: b.read_u16(12).unwrap_or(0),
+    inst_size: b.read_u16(14).unwrap_or(0),
+  }
+}
+
+///|
+pub fn[T : RawFont] Fvar::from_font(font : T) -> Fvar? {
+  table_data(font, FVAR).map(Fvar::new)
+}
+
+///|
+pub fn Fvar::axis_count(self : Fvar) -> UInt {
+  self.axis_count
+}
+
+///|
+pub fn Fvar::instance_count(self : Fvar) -> UInt {
+  self.inst_count
+}
+
+///|
+fn fvar_fixed_at(b : BeBytes, offset : Int) -> Fixed? {
+  b.read_i32(offset).map(Fixed::from_raw)
+}
+
+///|
+/// Axis of variation in a variable font.
+pub struct VarAxis {
+  index : UInt
+  tag : RawTag
+  name_id : UInt
+  flags : UInt
+  min : Fixed
+  default : Fixed
+  max : Fixed
+}
+
+///|
+pub fn VarAxis::default() -> VarAxis {
+  VarAxis::{
+    index: 0,
+    tag: 0,
+    name_id: 0,
+    flags: 0,
+    min: Fixed::zero(),
+    default: Fixed::zero(),
+    max: Fixed::zero(),
+  }
+}
+
+///|
+pub fn VarAxis::is_hidden(self : VarAxis) -> Bool {
+  (self.flags & 1) != 0
+}
+
+///|
+/// Returns a normalized axis coordinate for the specified value in 2.14 fixed point format.
+pub fn VarAxis::normalized_coord(
+  self : VarAxis,
+  value0 : Fixed,
+  avar : (Bytes, UInt)?,
+) -> Int {
+  let mut value = value0
+  if fixed_raw(value) < fixed_raw(self.min) {
+    value = self.min
+  } else if fixed_raw(value) > fixed_raw(self.max) {
+    value = self.max
+  }
+  value = if fixed_raw(value) < fixed_raw(self.default) {
+    -((self.default - value) / (self.default - self.min))
+  } else if fixed_raw(value) > fixed_raw(self.default) {
+    (value - self.default) / (self.max - self.default)
+  } else {
+    Fixed::zero()
+  }
+  value = value.min(Fixed::one()).max(-Fixed::one())
+  value = match avar {
+    None => value
+    Some((data, avar_off)) =>
+      match adjust_axis(data, avar_off, self.index, value) {
+        None => value
+        Some(v) => v
+      }
+  }
+  value.to_f2dot14()
+}
+
+///|
+/// Named instance in a variable font.
+pub struct VarInstance {
+  index : UInt
+  name_id : UInt
+  postscript_name_id : UInt?
+  values : Array[Fixed]
+}
+
+///|
+pub fn Fvar::get_axis(self : Fvar, index : UInt) -> VarAxis? {
+  if index >= self.axis_count {
+    return None
+  }
+  let b = BeBytes::from_view(self.data)
+  let base = self.axis_offset.reinterpret_as_int()
+  let axis_size = self.axis_size.reinterpret_as_int()
+  let offset = base + index.reinterpret_as_int() * axis_size
+  let tag = match b.read_u32(offset) {
+    None => return None
+    Some(v) => v
+  }
+  let min = match fvar_fixed_at(b, offset + 4) {
+    None => return None
+    Some(v) => v
+  }
+  let default = match fvar_fixed_at(b, offset + 8) {
+    None => return None
+    Some(v) => v
+  }
+  let max = match fvar_fixed_at(b, offset + 12) {
+    None => return None
+    Some(v) => v
+  }
+  let flags = match b.read_u16(offset + 16) {
+    None => return None
+    Some(v) => v
+  }
+  let name_id = match b.read_u16(offset + 18) {
+    None => return None
+    Some(v) => v
+  }
+  Some(VarAxis::{ index, tag, name_id, flags, min, default, max })
+}
+
+///|
+pub fn Fvar::get_axis_by_tag(self : Fvar, tag : RawTag) -> VarAxis? {
+  let b = BeBytes::from_view(self.data)
+  let base = self.axis_offset.reinterpret_as_int()
+  let axis_size = self.axis_size.reinterpret_as_int()
+  let count = self.axis_count.reinterpret_as_int()
+  for i in 0..<count {
+    let tag_off = base + i * axis_size
+    if b.read_u32(tag_off) is Some(t) && t == tag {
+      return self.get_axis(i.reinterpret_as_uint())
+    }
+  }
+  None
+}
+
+///|
+pub fn Fvar::get_instance(self : Fvar, index : UInt) -> VarInstance? {
+  if index >= self.inst_count {
+    return None
+  }
+  let b = BeBytes::from_view(self.data)
+  let base = self.axis_offset.reinterpret_as_int() +
+    self.axis_count.reinterpret_as_int() * self.axis_size.reinterpret_as_int()
+  let offset = base +
+    index.reinterpret_as_int() * self.inst_size.reinterpret_as_int()
+  let name_id = match b.read_u16(offset) {
+    None => return None
+    Some(v) => v
+  }
+  let axis_count = self.axis_count.reinterpret_as_int()
+  let values : Array[Fixed] = []
+  for i in 0..<axis_count {
+    let v = match fvar_fixed_at(b, offset + 4 + i * 4) {
+      None => return None
+      Some(v) => v
+    }
+    values.push(v)
+  }
+  let ps_name_offset = 4 + axis_count * 4
+  let postscript_name_id = if ps_name_offset ==
+    self.inst_size.reinterpret_as_int() - 2 {
+    // NOTE: this matches the upstream `swash-reference` implementation.
+    b.read_u16(ps_name_offset)
+  } else {
+    None
+  }
+  Some(VarInstance::{ index, name_id, postscript_name_id, values })
+}
+
+///|
+/// Applies adjustments to a coordinate according to the optional axis variation table.
+pub fn adjust_axis(
+  data : Bytes,
+  avar : UInt,
+  axis : UInt,
+  coord0 : Fixed,
+) -> Fixed? {
+  if avar == 0 {
+    return None
+  }
+  let base = avar.reinterpret_as_int()
+  if base < 0 || base >= data.length() {
+    return None
+  }
+  let table = data[base:]
+  let b = BeBytes::from_view(table)
+  let major = b.read_u16(0).unwrap_or(0).reinterpret_as_int()
+  let minor = b.read_u16(2).unwrap_or(0).reinterpret_as_int()
+  if major != 1 || minor != 0 {
+    return None
+  }
+  let axis_count = b.read_u16(4).unwrap_or(0)
+  if axis >= axis_count {
+    return None
+  }
+  let map_off = match b.read_u16(8 + axis.reinterpret_as_int() * 2) {
+    None => return None
+    Some(v) => v.reinterpret_as_int()
+  }
+  if map_off < 0 || map_off + 2 > table.length() {
+    return None
+  }
+  let count = match b.read_u16(map_off) {
+    None => return None
+    Some(v) => v.reinterpret_as_int()
+  }
+  if count <= 0 {
+    return None
+  }
+  let from_coords : Array[Fixed] = []
+  let to_coords : Array[Fixed] = []
+  let mut off = map_off + 2
+  for _ in 0..<count {
+    let from = b.read_i16(off).unwrap_or(0)
+    let to = b.read_i16(off + 2).unwrap_or(0)
+    off = off + 4
+    from_coords.push(Fixed::from_f2dot14(from))
+    to_coords.push(Fixed::from_f2dot14(to))
+  }
+  if from_coords.length() != to_coords.length() || from_coords.is_empty() {
+    return None
+  }
+  let coord = coord0
+  let n = from_coords.length()
+  let from0 = from_coords.at(0)
+  let to0 = to_coords.at(0)
+  if fixed_raw(coord) <= fixed_raw(from0) {
+    return Some(to0)
+  }
+  let from_last = from_coords.at(n - 1)
+  let to_last = to_coords.at(n - 1)
+  if fixed_raw(coord) >= fixed_raw(from_last) {
+    return Some(to_last)
+  }
+  for i in 0..<(n - 1) {
+    let from_a = from_coords.at(i)
+    let from_b = from_coords.at(i + 1)
+    if fixed_raw(coord) >= fixed_raw(from_a) &&
+      fixed_raw(coord) <= fixed_raw(from_b) {
+      let to_a = to_coords.at(i)
+      let to_b = to_coords.at(i + 1)
+      let denom = from_b - from_a
+      if fixed_raw(denom) == 0 {
+        return Some(to_a)
+      }
+      return Some(to_a + (coord - from_a) * (to_b - to_a) / denom)
+    }
+  }
+  Some(coord)
+}
+
+///|
 /// Metrics variation table wrapper.
 pub struct Mvar {
   data : Bytes

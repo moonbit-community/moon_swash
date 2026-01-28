@@ -55,7 +55,7 @@ pub fn Attributes::new(
 pub fn Attributes::from_font(font : FontRef) -> Attributes {
   let attrs = Attributes::from_os2(font.os2())
   let mut var_bits : UInt = 0
-  for v in font.variations() {
+  for v in font.variations().iter() {
     match v.tag() {
       WDTH => var_bits = var_bits | 1
       WGHT => var_bits = var_bits | 2

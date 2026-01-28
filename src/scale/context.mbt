@@ -158,7 +158,7 @@ pub fn ScalerBuilder::variations(
   self : ScalerBuilder,
   settings : ArrayView[@swash.VariationSetting],
 ) -> ScalerBuilder {
-  let vars = self.font.variations().to_array()
+  let vars = self.font.variations().iter().to_array()
   if vars.is_empty() {
     return self
   }

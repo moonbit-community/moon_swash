@@ -4,10 +4,6 @@
     "moonbitlang/core/ref",
     "moonbitlang/core/string",
     "moonbitlang/core/strconv",
-    {
-      "path": "Milky2018/moon_skrifa/core",
-      "alias": "skrifa"
-    },
     "Milky2018/moon_swash/internal"
   ]
 }

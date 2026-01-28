@@ -86,6 +86,8 @@ pub const XHGT : UInt = 0x78686774
 
 pub fn aat_lookup_u16(BeBytes, Int, UInt16) -> UInt16?
 
+pub fn adjust_axis(Bytes, UInt, UInt, Fixed) -> Fixed?
+
 pub fn advance(Bytes, UInt, UInt, UInt) -> UInt
 
 pub fn advance_delta(Bytes, UInt, UInt, ArrayView[Int]) -> Double
@@ -251,6 +253,22 @@ pub impl Div for Fixed
 pub impl Mul for Fixed
 pub impl Neg for Fixed
 pub impl Sub for Fixed
+
+pub struct Fvar {
+  data : BytesView
+  axis_offset : UInt
+  axis_count : UInt
+  axis_size : UInt
+  inst_count : UInt
+  inst_size : UInt
+}
+pub fn Fvar::axis_count(Self) -> UInt
+pub fn[T : RawFont] Fvar::from_font(T) -> Self?
+pub fn Fvar::get_axis(Self, UInt) -> VarAxis?
+pub fn Fvar::get_axis_by_tag(Self, UInt) -> VarAxis?
+pub fn Fvar::get_instance(Self, UInt) -> VarInstance?
+pub fn Fvar::instance_count(Self) -> UInt
+pub fn Fvar::new(BytesView) -> Self
 
 pub struct Gdef {
   data : Bytes
@@ -739,6 +757,26 @@ pub(all) enum SubtableKind {
   ChainContext2
   ChainContext3
   RevChainContext1
+}
+
+pub struct VarAxis {
+  index : UInt
+  tag : UInt
+  name_id : UInt
+  flags : UInt
+  min : Fixed
+  default : Fixed
+  max : Fixed
+}
+pub fn VarAxis::default() -> Self
+pub fn VarAxis::is_hidden(Self) -> Bool
+pub fn VarAxis::normalized_coord(Self, Fixed, (Bytes, UInt)?) -> Int
+
+pub struct VarInstance {
+  index : UInt
+  name_id : UInt
+  postscript_name_id : UInt?
+  values : Array[Fixed]
 }
 
 pub struct Vhea {

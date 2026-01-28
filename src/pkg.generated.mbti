@@ -749,7 +749,7 @@ pub fn FontRef::glyph_metrics(Self, ArrayView[Int]) -> GlyphMetrics
 pub fn FontRef::glyph_name(Self, UInt16) -> String?
 pub fn FontRef::head(Self) -> @internal.Head?
 pub fn FontRef::hhea(Self) -> @internal.Hhea?
-pub fn FontRef::instances(Self) -> Iter[Instance]
+pub fn FontRef::instances(Self) -> Instances
 pub fn FontRef::key(Self) -> CacheKey
 pub fn FontRef::localized_strings(Self) -> LocalizedStrings
 pub fn FontRef::maxp(Self) -> @internal.Maxp?
@@ -759,7 +759,7 @@ pub fn FontRef::os2(Self) -> @internal.Os2?
 pub fn FontRef::post(Self) -> @internal.Post?
 pub fn FontRef::table_data(Self, UInt) -> BytesView?
 pub fn FontRef::table_offset(Self, UInt) -> UInt
-pub fn FontRef::variations(Self) -> Iter[Variation]
+pub fn FontRef::variations(Self) -> Variations
 pub fn FontRef::vhea(Self) -> @internal.Vhea?
 pub fn FontRef::writing_systems(Self) -> WritingSystems
 pub impl TableProvider for FontRef
@@ -786,6 +786,12 @@ pub fn Instance::normalized_coords(Self) -> ArrayView[Int]
 pub fn Instance::postscript_name(Self, String?) -> LocalizedString?
 pub fn Instance::postscript_name_id(Self) -> StringId?
 pub fn Instance::values(Self) -> ArrayView[Double]
+
+type Instances
+pub fn Instances::find_by_name(Self, String) -> Instance?
+pub fn Instances::find_by_postscript_name(Self, String) -> Instance?
+pub fn Instances::iter(Self) -> Iter[Instance]
+pub fn Instances::next(Self) -> Instance?
 
 pub(all) enum JoiningType {
   U
@@ -1337,6 +1343,16 @@ pub fn Variation::name(Self, String?) -> LocalizedString?
 pub fn Variation::name_id(Self) -> StringId
 pub fn Variation::normalize(Self, Double) -> Int
 pub fn Variation::tag(Self) -> UInt
+
+type Variations
+pub fn Variations::find_by_tag(Self, UInt) -> Variation?
+pub fn Variations::iter(Self) -> Iter[Variation]
+pub fn Variations::next(Self) -> Variation?
+pub fn Variations::normalized_coords(Self, Iter[Setting[Double]]) -> Iter[Int]
+
+type VariationsProxy
+pub fn VariationsProxy::from_font(FontRef) -> Self
+pub fn VariationsProxy::materialize(Self, FontRef) -> Variations
 
 pub struct Weight {
   value : UInt16

@@ -290,7 +290,7 @@ pub fn ShaperBuilder::variations(
   settings : Iter[@swash.VariationSetting],
 ) -> ShaperBuilder {
   if self.font_entry.val.coord_count != 0 {
-    let vars = self.font.variations().to_array()
+    let vars = self.font.variations().iter().to_array()
     self.cx.val.coords.resize(vars.length(), 0)
     for setting in settings {
       for axis in vars.iter() {
