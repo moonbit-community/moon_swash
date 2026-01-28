@@ -8,6 +8,8 @@ import {
 // Values
 pub const COMPOSE1_COUNT : Int = 63
 
+pub const MAX_CLUSTER_SIZE : Int = 32
+
 pub const UNICODE_VERSION_MAJOR : Int = 13
 
 pub const UNICODE_VERSION_MINOR : Int = 0
@@ -435,6 +437,13 @@ pub(all) enum Block {
   SymbolsforLegacyComputing
 }
 
+pub(all) enum Boundary {
+  None
+  Word
+  Line
+  Mandatory
+}
+
 pub(all) enum BracketType {
   None
   Open(Char)
@@ -488,6 +497,33 @@ pub(all) enum Category {
   SpaceSeparator
 }
 
+type CharCluster
+pub fn CharCluster::chars(Self) -> ArrayView[ClusterChar]
+pub fn CharCluster::clear(Self) -> Unit
+pub fn CharCluster::info(Self) -> ClusterInfo
+pub fn CharCluster::is_empty(Self) -> Bool
+pub fn CharCluster::map(Self, (Char) -> UInt16) -> Status
+pub fn CharCluster::mapped_chars(Self) -> ArrayView[ClusterChar]
+pub fn CharCluster::new() -> Self
+pub fn CharCluster::range(Self) -> SourceRange
+pub fn CharCluster::user_data(Self) -> UInt
+
+type CharInfo
+pub fn CharInfo::boundary(Self) -> Boundary
+pub fn CharInfo::category(Self) -> Category
+pub fn CharInfo::cluster_break(Self) -> ClusterBreak
+pub fn CharInfo::cluster_class(Self) -> (ClusterBreak, Bool)
+pub fn CharInfo::contributes_to_shaping(Self) -> Bool
+pub fn CharInfo::default() -> Self
+pub fn CharInfo::from_char(Char) -> Self
+pub fn CharInfo::is_ignorable(Self) -> Bool
+pub fn CharInfo::is_variation_selector(Self) -> Bool
+pub fn CharInfo::joining_type(Self) -> JoiningType
+pub fn CharInfo::myanmar_class(Self) -> (MyanmarClass, Bool)
+pub fn CharInfo::new(Properties, Boundary) -> Self
+pub fn CharInfo::properties(Self) -> Properties
+pub fn CharInfo::use_class(Self) -> (UseClass, Bool, Bool)
+
 pub struct Charmap {
   data : Bytes
   proxy : CharmapProxy
@@ -529,6 +565,25 @@ pub(all) enum ClusterBreak {
   XX
   ZWJ
 }
+
+type ClusterChar
+pub fn ClusterChar::ch(Self) -> Char
+pub fn ClusterChar::contributes_to_shaping(Self) -> Bool
+pub fn ClusterChar::data(Self) -> UInt
+pub fn ClusterChar::glyph_id(Self) -> UInt16
+pub fn ClusterChar::is_ignorable(Self) -> Bool
+pub fn ClusterChar::joining_type(Self) -> JoiningType
+pub fn ClusterChar::offset(Self) -> UInt
+pub fn ClusterChar::shape_class(Self) -> ShapeClass
+
+type ClusterInfo
+pub fn ClusterInfo::boundary(Self) -> Boundary
+pub fn ClusterInfo::emoji(Self) -> Emoji
+pub fn ClusterInfo::is_boundary(Self) -> Bool
+pub fn ClusterInfo::is_broken(Self) -> Bool
+pub fn ClusterInfo::is_emoji(Self) -> Bool
+pub fn ClusterInfo::is_whitespace(Self) -> Bool
+pub fn ClusterInfo::whitespace(Self) -> Whitespace
 
 pub struct ColorPalette {
   font : FontRef
@@ -614,6 +669,13 @@ pub(all) enum CombiningClass {
   DoubleBelow
   DoubleAbove
   IotaSubscript
+}
+
+pub(all) enum Emoji {
+  None
+  Default
+  Text
+  Color
 }
 
 pub(all) enum Encoding {
@@ -868,6 +930,10 @@ pub fn ObliqueAngle::from_radians(Double) -> Self
 pub fn ObliqueAngle::from_turns(Double) -> Self
 pub fn ObliqueAngle::to_degrees(Self) -> Double
 
+type Parser
+pub fn Parser::new(Script, Iter[Token]) -> Self
+pub fn Parser::next(Self, CharCluster) -> Bool
+
 pub struct Properties {
   bits : UInt
 }
@@ -1074,6 +1140,35 @@ pub fn Setting::parse_feature_list(String) -> Iter[Self[UInt16]]
 pub fn Setting::parse_variation(String) -> Self[Double]?
 pub fn Setting::parse_variation_list(String) -> Iter[Self[Double]]
 
+pub(all) enum ShapeClass {
+  Reph
+  Pref
+  Kinzi
+  Base
+  Mark
+  Halant
+  MedialRa
+  VMPre
+  VPre
+  VBlw
+  Anusvara
+  Zwj
+  Zwnj
+  Control
+  Vs
+  Other
+}
+
+type SourceRange
+pub fn SourceRange::end(Self) -> UInt
+pub fn SourceRange::start(Self) -> UInt
+
+pub(all) enum Status {
+  Discard
+  Keep
+  Complete
+}
+
 pub struct Stretch {
   value : UInt16
 }
@@ -1152,6 +1247,15 @@ pub fn Synthesis::skew(Self) -> Double?
 pub fn Synthesis::variations(Self) -> ArrayView[Setting[Double]]
 pub impl Eq for Synthesis
 
+type Token
+pub fn Token::ch(Self) -> Char
+pub fn Token::data(Self) -> UInt
+pub fn Token::default() -> Self
+pub fn Token::info(Self) -> CharInfo
+pub fn Token::len(Self) -> UInt
+pub fn Token::new(Char, UInt, UInt, CharInfo, UInt) -> Self
+pub fn Token::offset(Self) -> UInt
+
 pub(all) enum Usability {
   Light
   Dark
@@ -1227,6 +1331,16 @@ pub impl Compare for Weight
 pub impl Eq for Weight
 pub impl Show for Weight
 
+pub(all) enum Whitespace {
+  None
+  Space
+  NoBreakSpace
+  Tab
+  Newline
+  Other
+}
+pub fn Whitespace::is_space_or_nbsp(Self) -> Bool
+
 pub(all) enum WordBreak {
   CR
   DQ
@@ -1270,6 +1384,8 @@ pub type GlyphId = UInt16
 pub type NormalizedCoord = Int
 
 pub type Tag = UInt
+
+pub type UserData = UInt
 
 pub type VariationSetting = Setting[Double]
 
