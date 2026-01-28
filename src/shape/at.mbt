@@ -260,15 +260,170 @@ pub struct FeatureStore {
 }
 
 ///|
+/// A growable bitset used by the OT coverage cache builder.
+struct BitSet {
+  list : Array[UInt16]
+  bits : Array[UInt64]
+}
+
+///|
+fn BitSet::default() -> BitSet {
+  BitSet::{ list: ([] : Array[UInt16]), bits: ([] : Array[UInt64]) }
+}
+
+///|
+fn BitSet::clear(self : BitSet) -> Unit {
+  self.list.clear()
+  for i in 0..<self.bits.length() {
+    self.bits.set(i, (0).to_uint64())
+  }
+}
+
+///|
+fn BitSet::insert(self : BitSet, value : UInt16) -> Bool {
+  let v = value.to_int()
+  let index = v / 64
+  let shift = v & 63
+  let bit = (1).to_uint64() << shift
+  if index >= self.bits.length() {
+    self.bits.resize(index + 8, (0).to_uint64())
+    self.bits.set(index, self.bits[index] | bit)
+    self.list.push(value)
+    true
+  } else {
+    let word = self.bits[index]
+    if (word & bit) != 0 {
+      false
+    } else {
+      self.bits.set(index, word | bit)
+      self.list.push(value)
+      true
+    }
+  }
+}
+
+///|
+/// Builds a compact coverage cache used to cheaply skip lookups.
+///
+/// Format matches `swash-reference/src/shape/at.rs`:
+/// `[min, max, bitset words (u16)]`, keyed by base index into `FeatureStore.coverage`.
+struct CoverageBuilder {
+  coverage : BitSet
+  mut min : UInt16
+  mut max : UInt16
+}
+
+///|
+fn CoverageBuilder::default() -> CoverageBuilder {
+  CoverageBuilder::{
+    coverage: BitSet::default(),
+    min: 0xFFFFU.to_uint16(),
+    max: 0,
+  }
+}
+
+///|
+fn CoverageBuilder::begin(self : CoverageBuilder) -> Unit {
+  self.coverage.clear()
+  self.min = 0xFFFFU.to_uint16()
+  self.max = 0
+}
+
+///|
+fn CoverageBuilder::add(self : CoverageBuilder, glyph_id : UInt16) -> Unit {
+  if self.coverage.insert(glyph_id) {
+    if glyph_id < self.min {
+      self.min = glyph_id
+    }
+    if glyph_id > self.max {
+      self.max = glyph_id
+    }
+  }
+}
+
+///|
+fn CoverageBuilder::add_coverage(
+  self : CoverageBuilder,
+  data : Bytes,
+  base : Int,
+) -> Unit? {
+  let b = @internal.BeBytes::new(data)
+  let fmt = match b.read_u16(base) {
+    None => return None
+    Some(v) => v.reinterpret_as_int()
+  }
+  let len = match b.read_u16(base + 2) {
+    None => return None
+    Some(v) => v.reinterpret_as_int()
+  }
+  let arr = base + 4
+  if fmt == 1 {
+    for i in 0..<len {
+      let g = match b.read_u16(arr + i * 2) {
+        None => return None
+        Some(v) => v.to_uint16()
+      }
+      self.add(g)
+    }
+  } else if fmt == 2 {
+    for i in 0..<len {
+      let rec = arr + i * 6
+      let first = match b.read_u16(rec) {
+        None => return None
+        Some(v) => v.to_uint16()
+      }
+      let last = match b.read_u16(rec + 2) {
+        None => return None
+        Some(v) => v.to_uint16()
+      }
+      let mut g = first.to_int()
+      let end = last.to_int()
+      while g <= end {
+        self.add(g.to_uint16())
+        g = g + 1
+      }
+    }
+  } else {
+    return None
+  }
+  Some(())
+}
+
+///|
+fn CoverageBuilder::finish(self : CoverageBuilder, out : Array[UInt16]) -> UInt {
+  if self.coverage.list.length() == 0 {
+    return 0xFFFFFFFFU
+  }
+  let key = out.length().reinterpret_as_uint()
+  out.push(self.min)
+  out.push(self.max)
+  let bit_base = out.length()
+  let range_len = self.max.to_int() - self.min.to_int() + 1
+  out.resize(out.length() + (range_len + 15) / 16, (0).to_uint16())
+  for g in self.coverage.list.iter() {
+    let bit = g.to_int() - self.min.to_int()
+    let idx = bit_base + bit / 16
+    let word = out[idx]
+    out.set(idx, word | ((1).to_uint16() << (bit & 15)))
+  }
+  key
+}
+
+///|
 /// Builder for a feature cache.
 pub struct FeatureStoreBuilder {
   indices : Array[(UInt16, FeatureBit, Byte)]
+  coverage : CoverageBuilder
   mut next_bit : FeatureBit
 }
 
 ///|
 pub fn FeatureStoreBuilder::default() -> FeatureStoreBuilder {
-  FeatureStoreBuilder::{ indices: [], next_bit: 0 }
+  FeatureStoreBuilder::{
+    indices: [],
+    coverage: CoverageBuilder::default(),
+    next_bit: 0,
+  }
 }
 
 ///|
@@ -440,18 +595,19 @@ fn FeatureStoreBuilder::build_stage(
       None => ()
       Some(lookup0) => {
         let start = store.val.subtables.length()
+        self.coverage.begin()
         let lookup = lookup0
-        let (sub0, sub1) = FeatureStoreBuilder::collect_subtables(
-          self, store, data, lookup,
-        )
-        if sub1 > sub0 {
-          lookup.set_subtables(sub0, sub1)
-          lookup.set_feature(feature)
-          // Coverage key is left as the default "always true" sentinel for now.
-          store.val.lookups.push(lookup)
-          last_index = Some(index)
-        } else {
-          store.val.subtables.truncate(start)
+        match
+          FeatureStoreBuilder::collect_subtables(self, store, data, lookup) {
+          Some(true) => {
+            lookup.set_coverage(self.coverage.finish(store.val.coverage))
+            lookup.set_feature(feature)
+            store.val.lookups.push(lookup)
+            last_index = Some(index)
+          }
+          _ =>
+            // Failed to collect subtables or none were recognized.
+            store.val.subtables.truncate(start)
         }
       }
     }
@@ -460,21 +616,35 @@ fn FeatureStoreBuilder::build_stage(
 
 ///|
 fn FeatureStoreBuilder::collect_subtables(
-  _self : FeatureStoreBuilder,
+  self : FeatureStoreBuilder,
   store : Ref[FeatureStore],
   data : Bytes,
   lookup : @internal.LookupData,
-) -> (UInt16, UInt16) {
+) -> Bool? {
   let start = store.val.subtables.length()
+  if start >= 0xFFFF {
+    return None
+  }
   let count = lookup.count.to_int()
   for i in 0..<count {
     match lookup.subtable_data(data, i.to_uint16()) {
       None => ()
-      Some(s) => store.val.subtables.push(s)
+      Some(s) => {
+        let base = s.offset.reinterpret_as_int() + s.coverage.to_int()
+        match self.coverage.add_coverage(data, base) {
+          None => return None
+          Some(_) => ()
+        }
+        store.val.subtables.push(s)
+      }
     }
   }
   let end = store.val.subtables.length()
-  (start.to_uint16(), end.to_uint16())
+  if end >= 0xFFFF {
+    return None
+  }
+  lookup.set_subtables(start.to_uint16(), end.to_uint16())
+  Some(end > start)
 }
 
 ///|

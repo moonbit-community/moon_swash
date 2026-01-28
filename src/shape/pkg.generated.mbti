@@ -36,6 +36,8 @@ pub fn[S : Selector, O : ShapeOptions] shape(ShapeContext, S, O, Iter[@moon_swas
 // Types and methods
 type ApplyContext
 
+type BitSet
+
 pub struct Buffer {
   glyphs : Array[GlyphData]
   positions : Array[PositionData]
@@ -75,6 +77,8 @@ pub fn Buffer::substitute_ligature(Self, Int, UInt16, ArrayView[Int]) -> Unit
 pub fn Buffer::substitute_multiple(Self, Int, ArrayView[UInt16]) -> Unit
 
 type ContextState
+
+type CoverageBuilder
 
 pub(all) enum Direction {
   LeftToRight
@@ -179,6 +183,7 @@ pub fn FeatureStore::sub_bit(Self, UInt) -> UInt16?
 
 pub struct FeatureStoreBuilder {
   indices : Array[(UInt16, UInt16, Byte)]
+  coverage : CoverageBuilder
   mut next_bit : UInt16
 }
 pub fn FeatureStoreBuilder::build(Self, Ref[FeatureStore], Bytes, ArrayView[Int], @internal.Gdef, StageOffsets, StageOffsets) -> Unit
