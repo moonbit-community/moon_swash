@@ -7,6 +7,10 @@
     {
       "path": "Milky2018/moon_swash",
       "alias": "swash"
+    },
+    {
+      "path": "Milky2018/moon_swash/internal",
+      "alias": "internal"
     }
   ]
 }

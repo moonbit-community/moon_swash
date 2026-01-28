@@ -3,6 +3,7 @@ package "Milky2018/moon_swash/shape"
 
 import {
   "Milky2018/moon_swash",
+  "Milky2018/moon_swash/internal",
 }
 
 // Values
@@ -19,6 +20,10 @@ pub const MARK_ATTACH : UInt16 = 8
 pub const MAX_CLUSTER_SIZE : Int = 32
 
 pub const SUBSTITUTED : UInt16 = 1
+
+pub fn apply(Byte, Bytes, UInt, ArrayView[Int], @internal.Gdef, Storage, FeatureStore, FeatureMask, Buffer, IndexRange?) -> Bool?
+
+pub fn feature_bit_to_mask(UInt16?) -> FeatureMask
 
 pub fn reorder_complex(Array[GlyphData], Array[GlyphData], Array[Int]) -> Unit
 
@@ -67,11 +72,123 @@ pub fn Buffer::substitute(Self, Int, UInt16) -> Unit
 pub fn Buffer::substitute_ligature(Self, Int, UInt16, ArrayView[Int]) -> Unit
 pub fn Buffer::substitute_multiple(Self, Int, ArrayView[UInt16]) -> Unit
 
+type ContextState
+
 pub(all) enum Direction {
   LeftToRight
   RightToLeft
 }
 pub impl Eq for Direction
+
+pub struct Engine {
+  data : Bytes
+  gdef : @internal.Gdef
+  gsub : StageOffsets
+  gpos : StageOffsets
+  morx : UInt
+  kerx : UInt
+  ankr : UInt
+  kern : UInt
+  storage : Storage
+  coords : ArrayView[Int]
+  script : @moon_swash.Script
+  tags : (UInt, UInt, UInt, UInt)
+  sub_mode : SubMode
+  pos_mode : PosMode
+  use_ot : Bool
+  mode : EngineMode
+}
+pub fn Engine::collect_features(Self, FeatureStoreBuilder, Ref[FeatureStore]) -> Unit
+pub fn Engine::gpos(Self, FeatureStore, FeatureMask, Buffer, IndexRange?) -> Bool
+pub fn Engine::gsub(Self, FeatureStore, FeatureMask, Buffer, IndexRange?) -> Bool
+pub fn Engine::has_feature_vars(Self) -> Bool
+pub fn Engine::new(EngineMetadata, Bytes, ArrayView[Int], @moon_swash.Script, @moon_swash.Language?) -> Self
+pub fn Engine::set_classes(Self, Buffer, IndexRange?) -> Unit
+pub fn Engine::tags(Self) -> (UInt, UInt, UInt, UInt)
+
+pub struct EngineMetadata {
+  gdef : UInt
+  gsub : UInt
+  gpos : UInt
+  morx : UInt
+  kerx : UInt
+  ankr : UInt
+  kern : UInt
+  sub_mode : SubMode
+  pos_mode : PosMode
+}
+pub fn EngineMetadata::from_font(@moon_swash.FontRef) -> Self
+
+pub(all) enum EngineMode {
+  Simple
+  Myanmar
+  Complex
+}
+pub impl Eq for EngineMode
+
+type FeatureCache
+
+type FeatureCacheEntry
+
+pub struct FeatureGroups {
+  default : FeatureMask
+  mut reph : UInt16?
+  mut pref : UInt16?
+  stage1 : FeatureMask
+  stage2 : FeatureMask
+  basic : FeatureMask
+  position : FeatureMask
+  vert : FeatureMask
+  rtl : FeatureMask
+}
+pub fn FeatureGroups::default() -> Self
+
+pub struct FeatureMask {
+  mut b0 : UInt64
+  mut b1 : UInt64
+  mut b2 : UInt64
+  mut b3 : UInt64
+}
+pub fn FeatureMask::clear(Self, UInt16) -> Unit
+pub fn FeatureMask::default() -> Self
+pub fn FeatureMask::has(Self, UInt16) -> Bool
+pub fn FeatureMask::is_empty(Self) -> Bool
+pub fn FeatureMask::or(Self, Self) -> Self
+pub fn FeatureMask::or_assign(Self, Self) -> Unit
+pub fn FeatureMask::set(Self, UInt16) -> Unit
+
+pub struct FeatureStore {
+  sub_features : Array[(UInt, UInt16)]
+  pos_features : Array[(UInt, UInt16)]
+  lookups : Array[@internal.LookupData]
+  subtables : Array[@internal.SubtableData]
+  coverage : Array[UInt16]
+  mut pos_start : Int
+  mut sub_count : Int
+  mut truncated : Bool
+  mut groups : FeatureGroups
+}
+pub fn FeatureStore::clear(Self) -> Unit
+pub fn FeatureStore::custom_masks(Self, ArrayView[@moon_swash.Setting[UInt16]], Array[UInt16], Array[UInt16], Direction) -> (FeatureMask, FeatureMask)
+pub fn FeatureStore::default() -> Self
+pub fn FeatureStore::groups(Self, @moon_swash.Script) -> FeatureGroups
+pub fn FeatureStore::pos_bit(Self, UInt) -> UInt16?
+pub fn FeatureStore::sub_bit(Self, UInt) -> UInt16?
+
+pub struct FeatureStoreBuilder {
+  indices : Array[(UInt16, UInt16, Byte)]
+  mut next_bit : UInt16
+}
+pub fn FeatureStoreBuilder::build(Self, Ref[FeatureStore], Bytes, ArrayView[Int], @internal.Gdef, StageOffsets, StageOffsets) -> Unit
+pub fn FeatureStoreBuilder::default() -> Self
+
+pub struct FontEntry {
+  metrics : @moon_swash.MetricsProxy
+  charmap : @moon_swash.CharmapProxy
+  coord_count : UInt16
+  metadata : EngineMetadata
+}
+pub fn FontEntry::new(@moon_swash.FontRef) -> Self
 
 pub struct Glyph {
   id : UInt16
@@ -141,6 +258,14 @@ pub fn IndexRange::end(Self) -> Int
 pub fn IndexRange::new(Int, Int) -> Self
 pub fn IndexRange::start(Self) -> Int
 
+pub(all) enum PosMode {
+  None
+  Gpos
+  Kerx
+  Kern
+}
+pub impl Eq for PosMode
+
 pub struct PositionData {
   mut base : Byte
   mut flags : UInt16
@@ -163,29 +288,34 @@ pub fn SelectedFont::with_id_override(Self, (UInt64, UInt64)) -> Self
 pub fn SelectedFont::with_synthesis(Self, @moon_swash.Synthesis) -> Self
 
 pub struct ShapeContext {
-  state : Ref[State]
+  inner : Ref[ContextState]
 }
 pub fn ShapeContext::builder(Self, @moon_swash.FontRef) -> ShaperBuilder
 pub fn ShapeContext::builder_with_id(Self, @moon_swash.FontRef, (UInt64, UInt64)) -> ShaperBuilder
 pub fn ShapeContext::new() -> Self
+pub fn ShapeContext::with_max_entries(Int) -> Self
 
 pub struct Shaper {
-  state : Ref[State]
+  cx : Ref[ContextState]
   font : @moon_swash.FontRef
   id0 : UInt64
   id1 : UInt64
+  font_entry : Ref[FontEntry]
+  charmap : @moon_swash.Charmap
   size : Double
   script : @moon_swash.Script
   language : @moon_swash.Language?
   direction : Direction
   retain_ignorables : Bool
-  features : Array[@moon_swash.Setting[UInt16]]
-  variations : Array[@moon_swash.Setting[Double]]
+  engine : Engine
+  store : Ref[FeatureStore]?
+  sub_mask : FeatureMask
+  pos_mask : FeatureMask
 }
 pub fn Shaper::add_cluster(Self, @moon_swash.CharCluster) -> Unit
 
 pub struct ShaperBuilder {
-  state : Ref[State]
+  cx : Ref[ContextState]
   font : @moon_swash.FontRef
   id0 : UInt64
   id1 : UInt64
@@ -193,10 +323,10 @@ pub struct ShaperBuilder {
   script : @moon_swash.Script
   language : @moon_swash.Language?
   direction : Direction
+  font_entry : Ref[FontEntry]
+  charmap : @moon_swash.Charmap
   dotted_circle : UInt16?
   retain_ignorables : Bool
-  features : Array[@moon_swash.Setting[UInt16]]
-  variations : Array[@moon_swash.Setting[Double]]
 }
 pub fn ShaperBuilder::build(Self) -> Shaper
 pub fn ShaperBuilder::direction(Self, Direction) -> Self
@@ -229,7 +359,26 @@ pub struct SkipState {
 }
 pub fn SkipState::default() -> Self
 
+pub struct StageOffsets {
+  base : UInt
+  lang : UInt
+  vars : UInt
+}
+pub fn StageOffsets::default() -> Self
+pub fn StageOffsets::new(Bytes, UInt, UInt, UInt?) -> (Self, (UInt, UInt))?
+
 type State
+
+pub struct Storage {
+}
+pub fn Storage::default() -> Self
+
+pub(all) enum SubMode {
+  None
+  Gsub
+  Morx
+}
+pub impl Eq for SubMode
 
 // Type aliases
 pub using @moon_swash {type CharCluster}
@@ -237,6 +386,10 @@ pub using @moon_swash {type CharCluster}
 pub using @moon_swash {type ClusterChar}
 
 pub using @moon_swash {type ClusterInfo}
+
+pub type Epoch = UInt64
+
+pub type FeatureBit = UInt16
 
 pub type GlyphId = UInt16
 

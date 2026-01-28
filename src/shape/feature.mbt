@@ -141,6 +141,9 @@ const RTLM : Tag = 0x72746C6D // "rtlm"
 
 ///|
 /// Positioning features.
+const KERN : Tag = 0x6B65726E // "kern"
+
+///|
 const DIST : Tag = 0x64697374 // "dist"
 
 ///|
@@ -151,6 +154,12 @@ const BLWM : Tag = 0x626C776D // "blwm"
 
 ///|
 const CURS : Tag = 0x63757273 // "curs"
+
+///|
+const MARK : Tag = 0x6D61726B // "mark"
+
+///|
+const MKMK : Tag = 0x6D6B6D6B // "mkmk"
 
 ///|
 /// Arabic joining masks.

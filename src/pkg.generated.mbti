@@ -701,6 +701,8 @@ pub(all) enum Encoding {
 }
 pub fn Encoding::is_decodable(Self) -> Bool
 
+type Entry[T]
+
 type Feature
 pub fn Feature::action(Self) -> Action
 pub fn Feature::name(Self) -> String?
@@ -710,7 +712,11 @@ type Features
 pub fn Features::from_font(FontRef) -> Self
 pub fn Features::iter(Self) -> Iter[Feature]
 
-type FontCache[T]
+pub struct FontCache[T] {
+  entries : Array[Entry[T]]
+  max_entries : Int
+  mut epoch : UInt64
+}
 pub fn[T] FontCache::get(Self[T], FontRef, (UInt64, UInt64)?, (FontRef) -> T) -> ((UInt64, UInt64), Ref[T])
 pub fn[T] FontCache::new(Int) -> Self[T]
 

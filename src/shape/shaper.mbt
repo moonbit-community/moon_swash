@@ -38,18 +38,56 @@ pub impl Eq for Direction with equal(self, other) {
 }
 
 ///|
+const DEFAULT_SIZE : Int = 16
+
+///|
 struct State {
   buffer : Buffer
+  order : Array[Int]
+  glyphs : Array[GlyphData]
+  store_builder : FeatureStoreBuilder
+  mut disable_kern : Bool
+  features : Array[@swash.FeatureSetting]
+  selectors : Array[(UInt16, UInt16)]
 }
 
 ///|
 fn State::new() -> State {
-  State::{ buffer: Buffer::new() }
+  State::{
+    buffer: Buffer::new(),
+    order: [],
+    glyphs: [],
+    store_builder: FeatureStoreBuilder::default(),
+    disable_kern: false,
+    features: [],
+    selectors: [],
+  }
 }
 
 ///|
 fn State::reset(self : State) -> Unit {
   self.buffer.clear()
+  self.disable_kern = false
+  self.features.clear()
+  self.selectors.clear()
+}
+
+///|
+struct ContextState {
+  font_cache : @swash.FontCache[FontEntry]
+  feature_cache : FeatureCache
+  coords : Array[Int]
+  state : State
+}
+
+///|
+fn ContextState::new(max_entries : Int) -> ContextState {
+  ContextState::{
+    font_cache: @swash.FontCache::new(max_entries),
+    feature_cache: FeatureCache::new(max_entries),
+    coords: [],
+    state: State::new(),
+  }
 }
 
 ///|
@@ -58,13 +96,25 @@ fn State::reset(self : State) -> Unit {
 /// This is intentionally minimal for ro7.1: caches and engines are introduced
 /// in later shaping tasks.
 pub struct ShapeContext {
-  state : Ref[State]
+  inner : Ref[ContextState]
 }
 
 ///|
 /// Creates a new shaping context.
 pub fn ShapeContext::new() -> ShapeContext {
-  ShapeContext::{ state: Ref::new(State::new()) }
+  ShapeContext::with_max_entries(DEFAULT_SIZE)
+}
+
+///|
+/// Creates a new shaping context with the specified maximum number of cache entries.
+pub fn ShapeContext::with_max_entries(max_entries : Int) -> ShapeContext {
+  let mut max_entries0 = max_entries
+  if max_entries0 < 1 {
+    max_entries0 = 1
+  } else if max_entries0 > 64 {
+    max_entries0 = 64
+  }
+  ShapeContext::{ inner: Ref::new(ContextState::new(max_entries0)) }
 }
 
 ///|
@@ -85,27 +135,33 @@ pub fn ShapeContext::builder_with_id(
   font : @swash.FontRef,
   id : (UInt64, UInt64),
 ) -> ShaperBuilder {
-  self.state.val.reset()
-  ShaperBuilder::{
-    state: self.state,
+  let (font_id, font_entry) = self.inner.val.font_cache.get(
     font,
-    id0: id.0,
-    id1: id.1,
+    Some(id),
+    FontEntry::new,
+  )
+  self.inner.val.state.reset()
+  self.inner.val.coords.clear()
+  ShaperBuilder::{
+    cx: self.inner,
+    font,
+    id0: font_id.0,
+    id1: font_id.1,
     size: 0.0,
     script: @swash.Script::Latin,
     language: None,
     direction: Direction::LeftToRight,
+    charmap: font_entry.val.charmap.materialize(font),
     dotted_circle: None,
     retain_ignorables: false,
-    features: [],
-    variations: [],
+    font_entry,
   }
 }
 
 ///|
 /// Builder for configuring a shaper.
 pub struct ShaperBuilder {
-  state : Ref[State]
+  cx : Ref[ContextState]
   font : @swash.FontRef
   id0 : UInt64
   id1 : UInt64
@@ -113,10 +169,10 @@ pub struct ShaperBuilder {
   script : @swash.Script
   language : @swash.Language?
   direction : Direction
+  font_entry : Ref[FontEntry]
+  charmap : @swash.Charmap
   dotted_circle : GlyphId?
   retain_ignorables : Bool
-  features : Array[@swash.FeatureSetting]
-  variations : Array[@swash.VariationSetting]
 }
 
 ///|
@@ -126,7 +182,7 @@ pub fn ShaperBuilder::script(
   script : @swash.Script,
 ) -> ShaperBuilder {
   ShaperBuilder::{
-    state: self.state,
+    cx: self.cx,
     font: self.font,
     id0: self.id0,
     id1: self.id1,
@@ -134,10 +190,10 @@ pub fn ShaperBuilder::script(
     script,
     language: self.language,
     direction: self.direction,
+    font_entry: self.font_entry,
+    charmap: self.charmap,
     dotted_circle: self.dotted_circle,
     retain_ignorables: self.retain_ignorables,
-    features: self.features,
-    variations: self.variations,
   }
 }
 
@@ -148,7 +204,7 @@ pub fn ShaperBuilder::language(
   language : @swash.Language?,
 ) -> ShaperBuilder {
   ShaperBuilder::{
-    state: self.state,
+    cx: self.cx,
     font: self.font,
     id0: self.id0,
     id1: self.id1,
@@ -156,10 +212,10 @@ pub fn ShaperBuilder::language(
     script: self.script,
     language,
     direction: self.direction,
+    font_entry: self.font_entry,
+    charmap: self.charmap,
     dotted_circle: self.dotted_circle,
     retain_ignorables: self.retain_ignorables,
-    features: self.features,
-    variations: self.variations,
   }
 }
 
@@ -170,7 +226,7 @@ pub fn ShaperBuilder::direction(
   direction : Direction,
 ) -> ShaperBuilder {
   ShaperBuilder::{
-    state: self.state,
+    cx: self.cx,
     font: self.font,
     id0: self.id0,
     id1: self.id1,
@@ -178,10 +234,10 @@ pub fn ShaperBuilder::direction(
     script: self.script,
     language: self.language,
     direction,
+    font_entry: self.font_entry,
+    charmap: self.charmap,
     dotted_circle: self.dotted_circle,
     retain_ignorables: self.retain_ignorables,
-    features: self.features,
-    variations: self.variations,
   }
 }
 
@@ -193,7 +249,7 @@ pub fn ShaperBuilder::size(
   ppem : Double,
 ) -> ShaperBuilder {
   ShaperBuilder::{
-    state: self.state,
+    cx: self.cx,
     font: self.font,
     id0: self.id0,
     id1: self.id1,
@@ -205,10 +261,10 @@ pub fn ShaperBuilder::size(
     script: self.script,
     language: self.language,
     direction: self.direction,
+    font_entry: self.font_entry,
+    charmap: self.charmap,
     dotted_circle: self.dotted_circle,
     retain_ignorables: self.retain_ignorables,
-    features: self.features,
-    variations: self.variations,
   }
 }
 
@@ -219,7 +275,10 @@ pub fn ShaperBuilder::features(
   settings : Iter[@swash.FeatureSetting],
 ) -> ShaperBuilder {
   for s in settings {
-    self.features.push(s)
+    if s.tag == KERN {
+      self.cx.val.state.disable_kern = s.value == 0
+    }
+    self.cx.val.state.features.push(s)
   }
   self
 }
@@ -230,8 +289,20 @@ pub fn ShaperBuilder::variations(
   self : ShaperBuilder,
   settings : Iter[@swash.VariationSetting],
 ) -> ShaperBuilder {
-  for s in settings {
-    self.variations.push(s)
+  if self.font_entry.val.coord_count != 0 {
+    let vars = self.font.variations().to_array()
+    self.cx.val.coords.resize(vars.length(), 0)
+    for setting in settings {
+      for axis in vars.iter() {
+        if axis.tag() == setting.tag {
+          let value = axis.normalize(setting.value)
+          let ix = axis.index()
+          if ix >= 0 && ix < self.cx.val.coords.length() {
+            self.cx.val.coords[ix] = value
+          }
+        }
+      }
+    }
   }
   self
 }
@@ -244,8 +315,7 @@ pub fn ShaperBuilder::insert_dotted_circles(
   yes : Bool,
 ) -> ShaperBuilder {
   let dotted_circle = if yes {
-    let cm = @swash.Charmap::from_font(self.font)
-    let gid = cm.map(0x25CC)
+    let gid = self.charmap.map(0x25CC)
     if gid != 0 {
       Some(gid)
     } else {
@@ -255,7 +325,7 @@ pub fn ShaperBuilder::insert_dotted_circles(
     None
   }
   ShaperBuilder::{
-    state: self.state,
+    cx: self.cx,
     font: self.font,
     id0: self.id0,
     id1: self.id1,
@@ -263,10 +333,10 @@ pub fn ShaperBuilder::insert_dotted_circles(
     script: self.script,
     language: self.language,
     direction: self.direction,
+    font_entry: self.font_entry,
+    charmap: self.charmap,
     dotted_circle,
     retain_ignorables: self.retain_ignorables,
-    features: self.features,
-    variations: self.variations,
   }
 }
 
@@ -278,7 +348,7 @@ pub fn ShaperBuilder::retain_ignorables(
   yes : Bool,
 ) -> ShaperBuilder {
   ShaperBuilder::{
-    state: self.state,
+    cx: self.cx,
     font: self.font,
     id0: self.id0,
     id1: self.id1,
@@ -286,31 +356,67 @@ pub fn ShaperBuilder::retain_ignorables(
     script: self.script,
     language: self.language,
     direction: self.direction,
+    font_entry: self.font_entry,
+    charmap: self.charmap,
     dotted_circle: self.dotted_circle,
     retain_ignorables: yes,
-    features: self.features,
-    variations: self.variations,
   }
 }
 
 ///|
 /// Builds a shaper for the current configuration.
 pub fn ShaperBuilder::build(self : ShaperBuilder) -> Shaper {
-  self.state.val.reset()
-  self.state.val.buffer.dotted_circle = self.dotted_circle
-  self.state.val.buffer.is_rtl = self.direction == Direction::RightToLeft
+  let cx = self.cx
+  cx.val.state.buffer.dotted_circle = self.dotted_circle
+  cx.val.state.buffer.is_rtl = self.direction == Direction::RightToLeft
+  let engine = Engine::new(
+    self.font_entry.val.metadata,
+    self.font.data(),
+    cx.val.coords.op_as_view(),
+    self.script,
+    self.language,
+  )
+  let (store, sub_mask, pos_mask) = if engine.use_ot {
+    let entry = cx.val.feature_cache.entry(
+      (self.id0, self.id1),
+      cx.val.coords.op_as_view(),
+      engine.has_feature_vars(),
+      engine.tags(),
+    )
+    let store_ref = match entry {
+      FeatureCacheEntry::Present(s) => s
+      FeatureCacheEntry::New(s) => {
+        engine.collect_features(cx.val.state.store_builder, s)
+        s
+      }
+    }
+    let buf = cx.val.state.buffer
+    let (sub, pos) = store_ref.val.custom_masks(
+      cx.val.state.features.op_as_view(),
+      buf.sub_args,
+      buf.pos_args,
+      self.direction,
+    )
+    (Some(store_ref), sub, pos)
+  } else {
+    (None, FeatureMask::default(), FeatureMask::default())
+  }
   Shaper::{
-    state: self.state,
+    cx,
     font: self.font,
     id0: self.id0,
     id1: self.id1,
+    font_entry: self.font_entry,
+    charmap: self.charmap,
     size: self.size,
     script: self.script,
     language: self.language,
     direction: self.direction,
     retain_ignorables: self.retain_ignorables,
-    features: self.features,
-    variations: self.variations,
+    engine,
+    store,
+    sub_mask,
+    pos_mask,
   }
 }
 
@@ -319,17 +425,21 @@ pub fn ShaperBuilder::build(self : ShaperBuilder) -> Shaper {
 ///
 /// In ro7.1 this shaper only collects clusters into the underlying `Buffer`.
 pub struct Shaper {
-  state : Ref[State]
+  cx : Ref[ContextState]
   font : @swash.FontRef
   id0 : UInt64
   id1 : UInt64
+  font_entry : Ref[FontEntry]
+  charmap : @swash.Charmap
   size : Double
   script : @swash.Script
   language : @swash.Language?
   direction : Direction
   retain_ignorables : Bool
-  features : Array[@swash.FeatureSetting]
-  variations : Array[@swash.VariationSetting]
+  engine : Engine
+  store : Ref[FeatureStore]?
+  sub_mask : FeatureMask
+  pos_mask : FeatureMask
 }
 
 ///|
@@ -337,5 +447,5 @@ pub struct Shaper {
 pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
   // The cluster must have been mapped to nominal glyph ids by the caller
   // (e.g. a font fallback selector).
-  self.state.val.buffer.push(cluster) |> ignore
+  self.cx.val.state.buffer.push(cluster) |> ignore
 }

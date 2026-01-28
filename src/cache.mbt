@@ -43,14 +43,14 @@ pub fn CacheKey::value(self : CacheKey) -> UInt64 {
 /// Simple LRU cache keyed by a custom font identifier.
 ///
 /// Ported from `swash/src/cache.rs` (`FontCache<T>`).
-struct FontCache[T] {
+pub struct FontCache[T] {
   entries : Array[Entry[T]]
   max_entries : Int
   mut epoch : UInt64
 }
 
 ///|
-priv struct Entry[T] {
+struct Entry[T] {
   mut epoch : UInt64
   mut id0 : UInt64
   mut id1 : UInt64

@@ -80,7 +80,11 @@ pub fn advance_delta(Bytes, UInt, UInt, ArrayView[Int]) -> Double
 
 pub fn ceil(Int) -> Int
 
+pub fn classdef(Bytes, UInt, UInt16) -> UInt16
+
 pub fn count(Bytes) -> Int
+
+pub fn coverage(Bytes, UInt, UInt16) -> UInt16?
 
 pub fn div(Int, Int) -> Int
 
@@ -103,6 +107,8 @@ pub fn item_delta(Bytes, UInt, UInt, UInt, ArrayView[Int]) -> Fixed?
 pub fn language_feature_at(Bytes, UInt, UInt16) -> UInt16?
 
 pub fn language_feature_count(Bytes, UInt) -> UInt16
+
+pub fn lookup_data(Bytes, Byte, UInt, UInt16, Byte, Gdef?) -> LookupData?
 
 pub fn map(Bytes, UInt, UInt, UInt) -> UInt?
 
@@ -140,11 +146,15 @@ pub fn script_language_count(Bytes, UInt) -> UInt16
 
 pub fn[T : RawFont] subtable(T) -> (UInt, UInt, Bool)?
 
+pub fn subtable_data(Bytes, UInt, LookupKind, UInt16) -> SubtableData?
+
 pub fn[T : RawFont] table_data(T, UInt) -> BytesView?
 
 pub fn[T : RawFont] table_offset(T, UInt) -> UInt
 
 pub fn[T : RawFont] table_range(T, UInt) -> (UInt, UInt)?
+
+pub fn validate_coverage(Bytes, UInt) -> Bool
 
 pub fn ymax(Bytes, UInt, UInt, UInt, UInt) -> Int?
 
@@ -168,6 +178,12 @@ pub fn BeBytes::read_u32(Self, Int) -> UInt?
 pub fn BeBytes::read_u64(Self, Int) -> UInt64?
 pub fn BeBytes::read_u8(Self, Int) -> Byte?
 pub fn BeBytes::with_offset(Bytes, Int) -> Self?
+
+pub struct FeatureSubsts {
+  offset : UInt
+}
+pub fn FeatureSubsts::apply(Self, Bytes, UInt16) -> UInt?
+pub fn FeatureSubsts::new(Bytes, UInt, ArrayView[Int]) -> Self?
 
 pub struct Fixed {
   value : Int
@@ -196,6 +212,27 @@ pub impl Div for Fixed
 pub impl Mul for Fixed
 pub impl Neg for Fixed
 pub impl Sub for Fixed
+
+pub struct Gdef {
+  data : Bytes
+  base : Int
+  classes : UInt16
+  mark_classes : UInt16
+  mark_sets : UInt16
+  var_store : UInt
+}
+pub fn Gdef::class(Self, UInt16) -> UInt16
+pub fn Gdef::delta(Self, UInt16, UInt16, ArrayView[Int]) -> Double
+pub fn Gdef::empty() -> Self
+pub fn Gdef::from_offset(Bytes, UInt) -> Self?
+pub fn Gdef::has_classes(Self) -> Bool
+pub fn Gdef::has_mark_classes(Self) -> Bool
+pub fn Gdef::has_var_store(Self) -> Bool
+pub fn Gdef::mark_class(Self, UInt16) -> UInt16
+pub fn Gdef::mark_set_coverage(Self, UInt, UInt16) -> UInt16?
+pub fn Gdef::mark_set_offset(Self, UInt16) -> UInt?
+pub fn Gdef::new(Bytes, Int) -> Self?
+pub fn Gdef::ok(Self) -> Bool
 
 pub struct Head {
   data : BytesView
@@ -228,6 +265,43 @@ pub fn Hhea::line_gap(Self) -> Int
 pub fn Hhea::max_advance(Self) -> UInt
 pub fn Hhea::new(BytesView) -> Self
 pub fn Hhea::num_long_metrics(Self) -> UInt
+
+pub struct LookupData {
+  index : UInt16
+  stage : Byte
+  kind : LookupKind
+  mut feature : UInt16
+  mask : Byte
+  ignored : Byte
+  is_ext : Bool
+  offset : UInt
+  mut coverage : UInt
+  count : UInt16
+  mut subtables : (UInt16, UInt16)
+  mark_set : UInt
+  mark_check : Byte
+  mark_class : Byte
+}
+pub fn LookupData::set_coverage(Self, UInt) -> Unit
+pub fn LookupData::set_feature(Self, UInt16) -> Unit
+pub fn LookupData::set_subtables(Self, UInt16, UInt16) -> Unit
+pub fn LookupData::subtable_data(Self, Bytes, UInt16) -> SubtableData?
+
+pub(all) enum LookupKind {
+  SingleSub
+  MultiSub
+  AltSub
+  LigSub
+  SingleAdj
+  PairAdj
+  Cursive
+  MarkToBase
+  MarkToLig
+  MarkToMark
+  Context
+  ChainContext
+  RevChainContext
+}
 
 pub struct Maxp {
   data : BytesView
@@ -321,6 +395,36 @@ pub fn Stream::remaining(Self) -> Int
 pub fn Stream::set_offset(Self, Int) -> Bool
 pub fn Stream::skip(Self, Int) -> Bool
 pub fn Stream::with_offset(Bytes, Int) -> Self?
+
+pub struct SubtableData {
+  offset : UInt
+  kind : SubtableKind
+  coverage : UInt16
+}
+pub fn SubtableData::coverage(Self, Bytes, UInt16) -> UInt16?
+
+pub(all) enum SubtableKind {
+  SingleSub1
+  SingleSub2
+  MultiSub1
+  AltSub1
+  LigSub1
+  SingleAdj1
+  SingleAdj2
+  PairAdj1
+  PairAdj2
+  Cursive1
+  MarkToBase1
+  MarkToLig1
+  MarkToMark1
+  Context1
+  Context2
+  Context3
+  ChainContext1
+  ChainContext2
+  ChainContext3
+  RevChainContext1
+}
 
 pub struct Vhea {
   data : BytesView
