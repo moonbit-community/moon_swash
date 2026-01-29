@@ -1,6 +1,6 @@
 {
   "name": "Milky2018/moon_swash",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "deps": {
     "Milky2018/moon_zeno": "0.1.0",
     "Milky2018/moon_yazi": "0.1.0",
