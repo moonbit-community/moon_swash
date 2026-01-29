@@ -69,7 +69,9 @@ Diff against the Rust reference implementation (requires `wasmtime`, `cargo`, an
 python3 tools/verify_swash_reference.py --font /path/to/font.ttf
 ```
 
-For stricter float comparison, try `--tol 0.001` (may fail due to small outline float deltas).
+Notes:
+- The verifier uses a numeric tolerance (default `--tol 0.02`) because outline floats may differ by ~1/64 between MoonBit and Rust due to fixed-point rounding details in the outline scaler.
+- For stricter float comparison, try `--tol 0.001` (may fail on some fonts).
 
 ## Development
 
