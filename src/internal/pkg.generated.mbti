@@ -542,8 +542,6 @@ pub struct MorxContextual {
 }
 pub fn MorxContextual::next(Self, MorxContextualState, Int, UInt16, Bool, (Int, UInt16) -> Unit?) -> Unit?
 
-type MorxContextualData
-
 pub struct MorxContextualState {
   mut state : UInt16
   mut mark_set : Bool
@@ -565,8 +563,6 @@ pub struct MorxInsertion {
   action : Int
 }
 pub fn MorxInsertion::next(Self, MorxInsertionState, Int, UInt16, Bool, (Int, ArrayView[UInt16]) -> Unit?) -> Int?
-
-type MorxInsertionData
 
 pub struct MorxInsertionState {
   mut state : UInt16

@@ -1,6 +1,7 @@
 {
   "import": [
     "moonbitlang/core/array",
-    "moonbitlang/core/bytes"
+    "moonbitlang/core/bytes",
+    "moonbitlang/core/encoding/utf8"
   ]
 }

@@ -100,7 +100,7 @@ pub fn KernSubtables::iter(self : KernSubtables) -> Iter[KernSubtable] {
       let cross_stream = (cov & (1 << 2).to_uint16()) != 0
       (is_horizontal, cross_stream, format)
     }
-    offset = offset + size.to_int()
+    offset = offset + size.reinterpret_as_int()
     Some(KernSubtable::{
       b: sub,
       offset: sub_offset,
@@ -157,7 +157,7 @@ pub struct KernFormat0 {
 fn KernFormat0::new(b : BeBytes, offset : Int) -> KernFormat0? {
   let count = match b.read_u16(offset) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
   Some(KernFormat0::{ b, base: offset + 8, count })
 }

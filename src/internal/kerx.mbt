@@ -87,7 +87,7 @@ pub fn KerxSubtables::iter(self : KerxSubtables) -> Iter[KerxSubtable] {
     } else {
       0U
     }
-    offset = offset + size.to_int()
+    offset = offset + size.reinterpret_as_int()
     Some(KerxSubtable::{ b: sub, version, size, coverage, tuple_count, ankr })
   })
 }
@@ -147,7 +147,7 @@ pub struct KerxFormat0 {
 fn KerxFormat0::new(b : BeBytes) -> KerxFormat0? {
   let count = match b.read_u32(12) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
   Some(KerxFormat0::{ b, count })
 }
@@ -216,9 +216,13 @@ fn KerxFormat1::new(b0 : BeBytes, tuple_count : UInt) -> KerxFormat1? {
   }
   let value = match b.read_u32(16) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
-  let tuple_size = if tuple_count == 0U { 2 } else { tuple_count.to_int() * 2 }
+  let tuple_size = if tuple_count == 0U {
+    2
+  } else {
+    tuple_count.reinterpret_as_int() * 2
+  }
   Some(KerxFormat1::{ b, state_table, value, tuple_count, tuple_size })
 }
 
@@ -295,15 +299,15 @@ pub struct KerxFormat2 {
 fn KerxFormat2::new(b : BeBytes) -> KerxFormat2? {
   let l_table = match b.read_u32(16) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
   let r_table = match b.read_u32(20) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
   let array = match b.read_u32(24) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
   Some(KerxFormat2::{ b, l_table, r_table, array })
 }
@@ -362,7 +366,7 @@ fn KerxFormat4::new(b0 : BeBytes, ankr : BytesView) -> KerxFormat4? {
     Some(v) => v
   }
   let action_type = (flags & 0xC0000000U) >> 30
-  let control_table = (flags & 0x00FFFFFFU).to_int()
+  let control_table = (flags & 0x00FFFFFFU).reinterpret_as_int()
   Some(KerxFormat4::{ b, state_table, action_type, control_table, ankr })
 }
 
@@ -475,11 +479,11 @@ pub fn kerx_anchor_points(
   let b = BeBytes::from_view(data)
   let lookup_offset = match b.read_u32(4) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
   let base = match b.read_u32(8) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
   let off = match aat_lookup_u16(b, lookup_offset, glyph_id) {
     None => return None

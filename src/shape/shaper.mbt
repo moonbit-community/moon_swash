@@ -41,7 +41,7 @@ pub impl Eq for Direction with equal(self, other) {
 const DEFAULT_SIZE : Int = 16
 
 ///|
-struct State {
+priv struct State {
   buffer : Buffer
   order : Array[Int]
   glyphs : Array[GlyphData]

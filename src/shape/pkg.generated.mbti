@@ -40,10 +40,6 @@ pub fn[S : Selector, O : ShapeOptions] shape(ShapeContext, S, O, Iter[@moon_swas
 // Errors
 
 // Types and methods
-type ApplyContext
-
-type BitSet
-
 pub struct Buffer {
   glyphs : Array[GlyphData]
   positions : Array[PositionData]
@@ -141,10 +137,6 @@ pub(all) enum EngineMode {
   Complex
 }
 pub impl Eq for EngineMode
-
-type FeatureCache
-
-type FeatureCacheEntry
 
 pub struct FeatureGroups {
   default : FeatureMask
@@ -277,8 +269,6 @@ pub fn IndexRange::start(Self) -> Int
 
 type LookupState
 
-type Pos4
-
 pub(all) enum PosMode {
   None
   Gpos
@@ -392,8 +382,6 @@ pub struct StageOffsets {
 }
 pub fn StageOffsets::default() -> Self
 pub fn StageOffsets::new(Bytes, UInt, UInt, UInt?) -> (Self, (UInt, UInt))?
-
-type State
 
 pub struct Storage {
   stack : Array[LookupState]

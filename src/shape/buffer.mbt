@@ -93,16 +93,6 @@ pub fn GlyphData::cluster(self : GlyphData) -> UInt {
 }
 
 ///|
-fn GlyphData::set_char_class(self : GlyphData, c : ShapeClass) -> Unit {
-  self.char_class = c
-}
-
-///|
-fn GlyphData::set_mark_type(self : GlyphData, t : Byte) -> Unit {
-  self.mark_type = t
-}
-
-///|
 /// Per glyph shaping position data.
 pub struct PositionData {
   mut base : Byte
@@ -609,7 +599,7 @@ pub fn Buffer::position_cursive(
   self : Buffer,
   index : Int,
   next : Int,
-  x : Double,
+  _x : Double,
   y : Double,
 ) -> Unit {
   self.has_cursive = true

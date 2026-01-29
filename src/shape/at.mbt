@@ -261,7 +261,7 @@ pub struct FeatureStore {
 
 ///|
 /// A growable bitset used by the OT coverage cache builder.
-struct BitSet {
+priv struct BitSet {
   list : Array[UInt16]
   bits : Array[UInt64]
 }
@@ -679,7 +679,7 @@ fn LookupState::default() -> LookupState {
 
 ///|
 /// Temporary 4-tuple used for GPOS value records.
-struct Pos4 {
+priv struct Pos4 {
   mut x : Double
   mut y : Double
   mut xadvance : Double
@@ -705,7 +705,7 @@ fn popcount_u16(v : UInt16) -> Int {
 
 ///|
 /// Context used by the OT lookup application engine.
-struct ApplyContext {
+priv struct ApplyContext {
   stage : Byte
   data : Bytes
   gsubgpos : UInt
@@ -785,7 +785,7 @@ fn ApplyContext::update_glyphs_skip(
         g.skip = (ss.flags & ((1).to_byte() << g.class.to_int())) != 0 ||
           (g.mask & mask) != mask
         if !g.skip && g.class == (3).to_byte() {
-          g.skip = self.defs.mark_set_coverage(ss.mark_set, g.id).is_none()
+          g.skip = self.defs.mark_set_coverage(ss.mark_set, g.id) is None
         }
         self.buf.glyphs.set(i, g)
       }
@@ -861,7 +861,7 @@ fn ApplyContext::update_glyph(self : ApplyContext, index : Int) -> Unit {
     }
     if ss.mark_check != (0).to_byte() && !g.skip {
       if ss.mark_set != 0U {
-        g.skip = self.defs.mark_set_coverage(ss.mark_set, g.id).is_none()
+        g.skip = self.defs.mark_set_coverage(ss.mark_set, g.id) is None
       } else {
         g.skip = g.mark_type != ss.mark_class
       }
@@ -1785,9 +1785,11 @@ fn ApplyContext::apply_subtable(
       }
       c = c + input_count * 2
       let input_end = match
-        self.match_sequence(cur, input_count, (j, id) => self
-          .coverage(base + input[j].to_int(), id)
-          .is_some()) {
+        self.match_sequence(cur, input_count, (j, id) => self.coverage(
+            base + input[j].to_int(),
+            id,
+          )
+          is Some(_)) {
         None => return None
         Some(v) => v
       }
@@ -1839,7 +1841,7 @@ fn ApplyContext::apply_subtable(
           }
           c = c + backtrack_count * 2
           let pred = (j, id) => id == seq[j]
-          if self.match_backtrack(cur, backtrack_count, pred).is_none() {
+          if self.match_backtrack(cur, backtrack_count, pred) is None {
             continue
           }
         }
@@ -1873,7 +1875,7 @@ fn ApplyContext::apply_subtable(
           }
           c = c + lookahead_count * 2
           let pred = (j, id) => id == seq[j]
-          if self.match_sequence(input_end, lookahead_count, pred).is_none() {
+          if self.match_sequence(input_end, lookahead_count, pred) is None {
             continue
           }
         }
@@ -1954,7 +1956,7 @@ fn ApplyContext::apply_subtable(
           }
           d = d + backtrack_count * 2
           let pred = (j, id) => self.class(backtrack_classdef, id) == seq[j]
-          if self.match_backtrack(cur, backtrack_count, pred).is_none() {
+          if self.match_backtrack(cur, backtrack_count, pred) is None {
             continue
           }
         }
@@ -1992,7 +1994,7 @@ fn ApplyContext::apply_subtable(
           }
           d = d + lookahead_count * 2
           let pred = (j, id) => self.class(lookahead_classdef, id) == seq[j]
-          if self.match_sequence(input_end, lookahead_count, pred).is_none() {
+          if self.match_sequence(input_end, lookahead_count, pred) is None {
             continue
           }
         }
@@ -2023,12 +2025,11 @@ fn ApplyContext::apply_subtable(
         }
         c = c + backtrack_count * 2
         match
-          self.match_backtrack(cur, backtrack_count, (j, id) => self
-            .coverage(
+          self.match_backtrack(cur, backtrack_count, (j, id) => self.coverage(
               base + backtrack.get(j).unwrap_or((0).to_uint16()).to_int(),
               id,
             )
-            .is_some()) {
+            is Some(_)) {
           None => return None
           Some(_) => ()
         }
@@ -2047,12 +2048,11 @@ fn ApplyContext::apply_subtable(
         }
         c = c + input_count * 2
         input_end = match
-          self.match_sequence(cur, input_count, (j, id) => self
-            .coverage(
+          self.match_sequence(cur, input_count, (j, id) => self.coverage(
               base + input.get(j).unwrap_or((0).to_uint16()).to_int(),
               id,
             )
-            .is_some()) {
+            is Some(_)) {
           None => return None
           Some(v) => v
         }
@@ -2072,12 +2072,11 @@ fn ApplyContext::apply_subtable(
         }
         c = c + lookahead_count * 2
         match
-          self.match_sequence(input_end, lookahead_count, (j, id) => self
-            .coverage(
+          self.match_sequence(input_end, lookahead_count, (j, id) => self.coverage(
               base + lookahead.get(j).unwrap_or((0).to_uint16()).to_int(),
               id,
             )
-            .is_some()) {
+            is Some(_)) {
           None => return None
           Some(_) => ()
         }
@@ -2107,12 +2106,11 @@ fn ApplyContext::apply_subtable(
         }
         c = c + backtrack_count * 2
         match
-          self.match_backtrack(cur, backtrack_count, (j, id) => self
-            .coverage(
+          self.match_backtrack(cur, backtrack_count, (j, id) => self.coverage(
               base + backtrack.get(j).unwrap_or((0).to_uint16()).to_int(),
               id,
             )
-            .is_some()) {
+            is Some(_)) {
           None => return None
           Some(_) => ()
         }
@@ -2132,12 +2130,11 @@ fn ApplyContext::apply_subtable(
         }
         c = c + lookahead_count * 2
         match
-          self.match_sequence(cur, lookahead_count, (j, id) => self
-            .coverage(
+          self.match_sequence(cur, lookahead_count, (j, id) => self.coverage(
               base + lookahead.get(j).unwrap_or((0).to_uint16()).to_int(),
               id,
             )
-            .is_some()) {
+            is Some(_)) {
           None => return None
           Some(_) => ()
         }
@@ -2440,7 +2437,7 @@ fn ApplyContext::value_delta(
   let offset = parent_offset + offset.to_int()
   let format = match b.read_u16(offset + 4) {
     None => return None
-    Some(v) => v.to_int() & 0xFFFF
+    Some(v) => v.reinterpret_as_int() & 0xFFFF
   }
   if format != 0x8000 {
     return Some(0.0)
@@ -2461,7 +2458,7 @@ fn ApplyContext::anchor(self : ApplyContext, offset : Int) -> (Double, Double)? 
   let b = @internal.BeBytes::new(self.data)
   let format = match b.read_u16(offset) {
     None => return None
-    Some(v) => v.to_int() & 0xFFFF
+    Some(v) => v.reinterpret_as_int() & 0xFFFF
   }
   let mut x = match b.read_i16(offset + 2) {
     None => return None
@@ -2521,7 +2518,7 @@ fn ApplyContext::mark_anchor(
   }
   let offset = match b.read_u16(rec + 2) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
   if offset == 0 {
     return None

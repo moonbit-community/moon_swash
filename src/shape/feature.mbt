@@ -18,10 +18,6 @@
 /// Ported from `swash/src/shape/feature.rs` (swash is dual-licensed Apache-2.0 OR MIT).
 
 ///|
-/// Default tag used in various places.
-const DFLT_TAG : Tag = 0x44464C54 // "DFLT"
-
-///|
 /// Substitution features.
 const CCMP : Tag = 0x63636D70 // "ccmp"
 
@@ -39,9 +35,6 @@ const CLIG : Tag = 0x636C6967 // "clig"
 
 ///|
 const RLIG : Tag = 0x726C6967 // "rlig"
-
-///|
-const DLIG : Tag = 0x646C6967 // "dlig"
 
 ///|
 const CALT : Tag = 0x63616C74 // "calt"

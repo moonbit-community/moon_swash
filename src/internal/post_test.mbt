@@ -38,7 +38,7 @@ test "Post.name: version 1.0 uses default glyph names" {
   inspect(post.has_names(), content="true")
   inspect(post.name(0).unwrap_or(""), content=".notdef")
   inspect(post.name(257).unwrap_or(""), content="dcroat")
-  inspect(post.name(258).is_none(), content="true")
+  inspect(post.name(258) is None, content="true")
 }
 
 ///|
@@ -58,5 +58,5 @@ test "Post.name: version 2.0 parses custom names" {
   let post = Post::new(Bytes::from_array(buf.op_as_view())[:])
   inspect(post.has_names(), content="true")
   inspect(post.name(0).unwrap_or(""), content="foo")
-  inspect(post.name(1).is_none(), content="true")
+  inspect(post.name(1) is None, content="true")
 }

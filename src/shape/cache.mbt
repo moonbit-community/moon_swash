@@ -48,14 +48,14 @@ priv struct FeatureEntry {
 }
 
 ///|
-struct FeatureCache {
+priv struct FeatureCache {
   entries : Array[FeatureEntry]
   mut epoch : Epoch
   max_entries : Int
 }
 
 ///|
-enum FeatureCacheEntry {
+priv enum FeatureCacheEntry {
   New(Ref[FeatureStore])
   Present(Ref[FeatureStore])
 }

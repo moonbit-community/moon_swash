@@ -44,6 +44,16 @@ fn selectors_contains(
 }
 
 ///|
+fn first_non_joining_index(buffer : Buffer) -> Int? {
+  for i in 0..<buffer.glyphs.length() {
+    if buffer.glyphs[i].joining_type != (6).to_byte() {
+      return Some(i)
+    }
+  }
+  None
+}
+
+///|
 pub fn apply_morx(
   data : Bytes,
   morx : UInt,
@@ -216,9 +226,7 @@ pub fn apply_kerx(
               continue
             }
             let len = buffer.len()
-            let left_index_opt = buffer.glyphs.find_index(fn(g) {
-              g.joining_type != (6).to_byte()
-            })
+            let left_index_opt = first_non_joining_index(buffer)
             let mut left_index = match left_index_opt {
               None => continue
               Some(v) => v
@@ -265,9 +273,7 @@ pub fn apply_kerx(
               continue
             }
             let len = buffer.len()
-            let left_index_opt = buffer.glyphs.find_index(fn(g) {
-              g.joining_type != (6).to_byte()
-            })
+            let left_index_opt = first_non_joining_index(buffer)
             let mut left_index = match left_index_opt {
               None => continue
               Some(v) => v
@@ -328,9 +334,7 @@ pub fn apply_kern(data : Bytes, kern : UInt, buffer : Buffer) -> Unit {
       @internal.KernSubtableKind::Format0(t) => {
         buffer.ensure_order(false)
         let len = buffer.len()
-        let left_index_opt = buffer.glyphs.find_index(fn(g) {
-          g.joining_type != (6).to_byte()
-        })
+        let left_index_opt = first_non_joining_index(buffer)
         let mut left_index = match left_index_opt {
           None => continue
           Some(v) => v

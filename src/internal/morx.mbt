@@ -60,7 +60,7 @@ pub fn MorxChains::iter(self : MorxChains) -> Iter[MorxChain] {
     let base = offset
     let chain_len = match b.read_u32(base + 4) {
       None => return None
-      Some(v) => v.to_int()
+      Some(v) => v.reinterpret_as_int()
     }
     offset = offset + chain_len
     let default_flags = match b.read_u32(base) {
@@ -102,7 +102,7 @@ pub struct MorxFeature {
 pub fn MorxChain::features(self : MorxChain) -> Iter[MorxFeature] {
   let b = self.b
   let base = self.offset + 16
-  let len = self.feature_count.to_int()
+  let len = self.feature_count.reinterpret_as_int()
   let mut cur = 0
   Iter::new(fn() {
     if cur >= len {
@@ -146,7 +146,7 @@ pub struct MorxSubtables {
 
 ///|
 pub fn MorxChain::subtables(self : MorxChain) -> MorxSubtables {
-  let offset = self.offset + 16 + 12 * self.feature_count.to_int()
+  let offset = self.offset + 16 + 12 * self.feature_count.reinterpret_as_int()
   MorxSubtables::{ b: self.b, offset, len: self.subtable_count, cur: 0U }
 }
 
@@ -173,7 +173,7 @@ pub fn MorxSubtables::iter(self : MorxSubtables) -> Iter[MorxSubtable] {
     let base = offset
     let size = match b.read_u32(base) {
       None => return None
-      Some(v) => v.to_int()
+      Some(v) => v.reinterpret_as_int()
     }
     offset = offset + size
     let coverage = match b.read_u32(base + 4) {
@@ -408,7 +408,7 @@ pub fn MorxRearrangement::next(
 // ---- Contextual ------------------------------------------------------------
 
 ///|
-struct MorxContextualData {
+priv struct MorxContextualData {
   mark_index : UInt16
   current_index : UInt16
 }
@@ -438,7 +438,7 @@ fn MorxContextual::new(data : BytesView) -> MorxContextual? {
   let b = BeBytes::from_view(data)
   let table = match b.read_u32(16) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
   let state_table = match ExtendedStateTable::new(data) {
     None => return None
@@ -548,7 +548,7 @@ fn MorxContextual::lookup(
 ) -> UInt16? {
   let offset0 = match self.b.read_u32(self.table + table_index.to_int() * 4) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
   let offset = self.table + offset0
   aat_lookup_u16(self.b, offset, glyph_id)
@@ -574,15 +574,15 @@ fn MorxLigature::new(data : BytesView) -> MorxLigature? {
   }
   let action = match b.read_u32(16) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
   let component = match b.read_u32(20) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
   let ligature = match b.read_u32(24) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
   Some(MorxLigature::{ b, state_table, action, component, ligature })
 }
@@ -717,12 +717,16 @@ fn MorxLigature::action_at(self : MorxLigature, index : UInt16) -> UInt? {
 
 ///|
 fn MorxLigature::component_at(self : MorxLigature, index : UInt) -> UInt16? {
-  self.b.read_u16(self.component + index.to_int() * 2).map(x => x.to_uint16())
+  self.b
+  .read_u16(self.component + index.reinterpret_as_int() * 2)
+  .map(x => x.to_uint16())
 }
 
 ///|
 fn MorxLigature::ligature_at(self : MorxLigature, index : UInt) -> UInt16? {
-  self.b.read_u16(self.ligature + index.to_int() * 2).map(x => x.to_uint16())
+  self.b
+  .read_u16(self.ligature + index.reinterpret_as_int() * 2)
+  .map(x => x.to_uint16())
 }
 
 // ---- Non-contextual --------------------------------------------------------
@@ -748,7 +752,7 @@ pub fn MorxNonContextual::substitute(
 // ---- Insertion -------------------------------------------------------------
 
 ///|
-struct MorxInsertionData {
+priv struct MorxInsertionData {
   current_index : UInt16
   mark_index : UInt16
 }
@@ -782,7 +786,7 @@ fn MorxInsertion::new(data : BytesView) -> MorxInsertion? {
   }
   let action = match b.read_u32(16) {
     None => return None
-    Some(v) => v.to_int()
+    Some(v) => v.reinterpret_as_int()
   }
   Some(MorxInsertion::{ b, state_table, action })
 }
@@ -905,7 +909,7 @@ pub fn morx_language_index(
   ltag : UInt,
   language : String,
 ) -> UInt? {
-  let name = language.to_bytes()[:]
+  let name = @utf8.encode(language)[:]
   let view = if ltag == 0U { return None } else { aat_slice_from(data, ltag) }
   let b = BeBytes::from_view(view)
   let count = match b.read_u32(8) {
@@ -914,13 +918,13 @@ pub fn morx_language_index(
   }
   let mut i = 0U
   while i < count {
-    let off = match b.read_u16(12 + i.to_int() * 4) {
+    let off = match b.read_u16(12 + i.reinterpret_as_int() * 4) {
       None => return None
-      Some(v) => v.to_int()
+      Some(v) => v.reinterpret_as_int()
     }
-    let len = match b.read_u16(12 + i.to_int() * 4 + 2) {
+    let len = match b.read_u16(12 + i.reinterpret_as_int() * 4 + 2) {
       None => return None
-      Some(v) => v.to_int()
+      Some(v) => v.reinterpret_as_int()
     }
     if len < 0 || !b.check_range(off, len) {
       return None
