@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/moon_swash/proxy"
+
+import {
+  "Milky2018/moon_swash",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+pub using @moon_swash {type BitmapStrikesProxy}
+
+pub using @moon_swash {type CharmapProxy}
+
+pub using @moon_swash {type MetricsProxy}
+
+pub using @moon_swash {type VariationsProxy}
+
+// Traits
+
