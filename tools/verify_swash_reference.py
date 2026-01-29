@@ -82,7 +82,12 @@ def _prepare_font(font: Path) -> Path:
     dst = TMP_FONTS_DIR / font.name
     if dst.exists():
         return dst
-    shutil.copy2(font, dst)
+    # On macOS some system fonts carry flags/xattrs that can cause copy2/copyfile
+    # to fail when attempting to preserve metadata. We only need the bytes.
+    try:
+        shutil.copy2(font, dst)
+    except PermissionError:
+        shutil.copyfile(font, dst)
     return dst
 
 
@@ -180,7 +185,7 @@ def main() -> None:
     ap.add_argument("--font", type=Path, help="Path to a font file (ttf/otf/ttc).")
     ap.add_argument("--text", action="append", help="Text to shape (repeatable).")
     ap.add_argument("--size", type=float, default=14.0, help="Font size (default: 14).")
-    ap.add_argument("--tol", type=float, default=0.05, help="Numeric tolerance (default: 0.05).")
+    ap.add_argument("--tol", type=float, default=0.02, help="Numeric tolerance (default: 0.02).")
     ap.add_argument("--dump", action="store_true", help="Print both JSON blobs on mismatch.")
     args = ap.parse_args()
 

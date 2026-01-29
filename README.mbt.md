@@ -69,7 +69,7 @@ Diff against the Rust reference implementation (requires `wasmtime`, `cargo`, an
 python3 tools/verify_swash_reference.py --font /path/to/font.ttf
 ```
 
-For stricter float comparison, try `--tol 0.001`.
+For stricter float comparison, try `--tol 0.001` (may fail due to small outline float deltas).
 
 ## Development
 
