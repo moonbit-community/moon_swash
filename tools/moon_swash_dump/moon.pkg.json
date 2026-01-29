@@ -1,0 +1,30 @@
+{
+  "is-main": true,
+  "import": [
+    "peter-jerry-ye/wasi",
+    "peter-jerry-ye/wasi/stdio",
+    "peter-jerry-ye/wasi/fs",
+    "peter-jerry-ye/wasi/sync_io",
+    {
+      "path": "Milky2018/moon_zeno",
+      "alias": "zeno"
+    },
+    {
+      "path": "Milky2018/moon_swash",
+      "alias": "swash"
+    },
+    {
+      "path": "Milky2018/moon_swash/shape",
+      "alias": "shape"
+    },
+    {
+      "path": "Milky2018/moon_swash/scale",
+      "alias": "scale"
+    }
+  ],
+  "link": {
+    "wasm": {
+      "export-memory-name": "memory"
+    }
+  }
+}

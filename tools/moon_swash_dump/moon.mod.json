@@ -1,0 +1,9 @@
+{
+  "name": "tools/moon_swash_dump",
+  "deps": {
+    "peter-jerry-ye/wasi": "0.23.0",
+    "Milky2018/moon_zeno": "0.1.0",
+    "Milky2018/moon_swash": { "path": "../.." }
+  },
+  "preferred-target": "wasm"
+}

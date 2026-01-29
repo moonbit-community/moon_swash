@@ -1,6 +1,6 @@
 # Milky2018/moon_swash
 
-MoonBit port of the Rust `swash` reference implementation (see `./swash-reference`).
+MoonBit port of the Rust `swash` reference implementation.
 
 This repo provides:
 - Font metadata APIs (`FontRef`, attributes, localized strings, variation axes/instances, metrics, palettes, strikes).
@@ -53,6 +53,23 @@ let render = @swash_scale.Render::new([@swash_scale.Source::Outline])
 let img = render.render(scaler, gid).unwrap()
 img |> ignore
 ```
+
+## Verify It Works
+
+Basic:
+
+```bash
+moon test
+moon check
+```
+
+Diff against the Rust reference implementation (requires `wasmtime`, `cargo`, and a checkout at `./swash-reference`):
+
+```bash
+python3 tools/verify_swash_reference.py --font /path/to/font.ttf
+```
+
+For stricter float comparison, try `--tol 0.001`.
 
 ## Development
 
