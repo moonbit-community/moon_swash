@@ -16,7 +16,11 @@ Add dependencies in your `moon.pkg.json`:
   "import": [
     { "path": "Milky2018/moon_swash", "alias": "swash" },
     { "path": "Milky2018/moon_swash/shape", "alias": "swash_shape" },
-    { "path": "Milky2018/moon_swash/scale", "alias": "swash_scale" }
+    { "path": "Milky2018/moon_swash/scale", "alias": "swash_scale" },
+
+    // Optional: API parity with swash-reference module paths
+    { "path": "Milky2018/moon_swash/iter", "alias": "swash_iter" },
+    { "path": "Milky2018/moon_swash/proxy", "alias": "swash_proxy" }
   ]
 }
 ```
@@ -53,6 +57,11 @@ let render = @swash_scale.Render::new([@swash_scale.Source::Outline])
 let img = render.render(scaler, gid).unwrap()
 img |> ignore
 ```
+
+## API Compatibility Notes
+
+- `Milky2018/moon_swash/iter` and `Milky2018/moon_swash/proxy` exist for API parity with swash-reference module paths.
+- They currently provide stable type aliases (so downstream import paths match), while the underlying implementations live in the main packages.
 
 ## Verify It Works
 
