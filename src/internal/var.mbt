@@ -224,7 +224,7 @@ pub fn Fvar::get_instance(self : Fvar, index : UInt) -> VarInstance? {
   let ps_name_offset = 4 + axis_count * 4
   let postscript_name_id = if ps_name_offset ==
     self.inst_size.reinterpret_as_int() - 2 {
-    // NOTE: this matches the upstream `swash-reference` implementation.
+    // NOTE: this matches the upstream `upstream swash` implementation.
     b.read_u16(ps_name_offset)
   } else {
     None

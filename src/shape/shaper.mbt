@@ -15,7 +15,7 @@
 ///|
 /// Shaper context and builder scaffolding.
 ///
-/// Port intent: align with upstream `swash-reference/src/shape/mod.rs` for
+/// Port intent: align with upstream `upstream swash/src/shape/mod.rs` for
 /// `Direction`, `ShapeContext`, `ShaperBuilder`, and `Shaper`.
 ///
 /// Note: the actual shaping engines (OT/AT/AAT) are implemented in later

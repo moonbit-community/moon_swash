@@ -146,7 +146,7 @@ fn resize_weights(
   outx : UInt,
   weights : Array[Double],
 ) -> (Int, Int, Double) {
-  // Mirrors swash-reference `sample_dir` weight computation for Mitchell.
+  // Mirrors upstream swash `sample_dir` weight computation for Mitchell.
   weights.clear()
   let ratio = width.to_double() / new_width.to_double()
   let sratio = if ratio > 1.0 { ratio } else { 1.0 }

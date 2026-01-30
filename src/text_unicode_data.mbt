@@ -15,7 +15,7 @@
 ///|
 /// Unicode character database tables.
 ///
-/// Auto-generated from swash-reference `text/unicode_data.rs` (Unicode 13.0.0).
+/// Auto-generated from upstream swash `text/unicode_data.rs` (Unicode 13.0.0).
 
 ///|
 /// The version of the Unicode Character Database used to generate properties.

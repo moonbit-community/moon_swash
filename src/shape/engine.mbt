@@ -15,7 +15,7 @@
 ///|
 /// Shaping engine that handles the various methods available in an OpenType font.
 ///
-/// Ported from `swash-reference/src/shape/engine.rs`.
+/// Ported from `upstream swash/src/shape/engine.rs`.
 
 ///|
 pub(all) enum EngineMode {

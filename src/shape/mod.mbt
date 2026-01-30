@@ -15,7 +15,7 @@
 ///|
 /// Mapping complex text to a sequence of positioned glyphs.
 ///
-/// This package is a strict port of `swash-reference/src/shape/*`.
+/// This package is a strict port of `upstream swash/src/shape/*`.
 pub type Tag = @swash.Tag
 
 ///|

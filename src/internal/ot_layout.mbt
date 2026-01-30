@@ -15,7 +15,7 @@
 ///|
 /// OpenType advanced typography data structures (GSUB/GPOS lookup metadata).
 ///
-/// Ported from `swash-reference/src/internal/at.rs` (lookup + subtable metadata).
+/// Ported from `upstream swash/src/internal/at.rs` (lookup + subtable metadata).
 
 ///|
 /// Feature lookup kind.

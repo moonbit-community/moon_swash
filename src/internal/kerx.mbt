@@ -15,7 +15,7 @@
 ///|
 /// Extended kerning table (`kerx`) + anchor table (`ankr`).
 ///
-/// Ported from `swash-reference/src/internal/aat.rs` (module `kerx`).
+/// Ported from `upstream swash/src/internal/aat.rs` (module `kerx`).
 
 ///|
 pub struct KerxSubtables {

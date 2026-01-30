@@ -13,7 +13,7 @@
 // limitations under the License.
 
 ///|
-/// WASI CLI that dumps a small JSON summary for diffing against swash-reference.
+/// WASI CLI that dumps a small JSON summary for diffing against upstream swash.
 
 fn f64_round3(x : Double) -> Double {
   // Keep output stable for diffs.

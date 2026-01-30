@@ -15,7 +15,7 @@
 ///|
 /// AAT shaping helpers (morx/kerx/kern).
 ///
-/// Ported from `swash-reference/src/shape/aat.rs`.
+/// Ported from `upstream swash/src/shape/aat.rs`.
 
 ///|
 fn selectors_contains(

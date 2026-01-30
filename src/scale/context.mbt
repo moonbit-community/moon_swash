@@ -52,7 +52,7 @@ pub fn ScaleContext::new() -> ScaleContext {
 ///|
 /// Creates a new scaling context with the specified maximum number of cache entries.
 ///
-/// This mirrors the upstream `swash-reference` API. The value is clamped to 1..=64.
+/// This mirrors the upstream API. The value is clamped to 1..=64.
 pub fn ScaleContext::with_max_entries(max_entries : Int) -> ScaleContext {
   let max_entries = if max_entries < 1 {
     1
@@ -563,7 +563,7 @@ fn Scaler::scale_bitmap_impl(
   let ppem = size.to_int()
   let gid = @skrifa.GlyphId::new(glyph_id)
 
-  // Select a strike and glyph, mirroring swash-reference strike selection.
+  // Select a strike and glyph, mirroring upstream swash strike selection.
   let mut glyph : @skrifa.BitmapGlyph? = None
   let mut strike_ppem = 0
   match strike {

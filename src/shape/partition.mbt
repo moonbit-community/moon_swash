@@ -15,7 +15,7 @@
 ///|
 /// Shaper that partitions by font using trait based per-cluster selection.
 ///
-/// Ported from `swash-reference/src/shape/partition.rs`.
+/// Ported from `upstream swash/src/shape/partition.rs`.
 
 ///|
 /// Font selected for a cluster.

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 ///|
-/// Proxy names for API parity with swash-reference.
+/// Proxy names for API parity with upstream swash.
 pub type CharmapProxy = @swash.CharmapProxy
 
 ///|

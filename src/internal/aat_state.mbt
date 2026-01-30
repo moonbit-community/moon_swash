@@ -15,7 +15,7 @@
 ///|
 /// AAT state tables.
 ///
-/// Ported from `swash-reference/src/internal/aat.rs` (`ExtendedStateTable`,
+/// Ported from `upstream swash/src/internal/aat.rs` (`ExtendedStateTable`,
 /// `StateTable`).
 
 ///|

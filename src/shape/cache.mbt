@@ -15,7 +15,7 @@
 ///|
 /// Shaping caches (font metadata + feature store).
 ///
-/// Ported from `swash-reference/src/shape/cache.rs`.
+/// Ported from `upstream swash/src/shape/cache.rs`.
 pub type Epoch = UInt64
 
 ///|

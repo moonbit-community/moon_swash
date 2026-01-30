@@ -15,7 +15,7 @@
 ///|
 /// Extended glyph metamorphosis table (`morx`).
 ///
-/// Ported from `swash-reference/src/internal/aat.rs` (module `morx`).
+/// Ported from `upstream swash/src/internal/aat.rs` (module `morx`).
 
 ///|
 pub struct MorxChains {

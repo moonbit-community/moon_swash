@@ -15,7 +15,7 @@
 ///|
 /// AAT lookup table helpers.
 ///
-/// Ported from `swash-reference/src/internal/aat.rs` (`lookup<T>`).
+/// Ported from `upstream swash/src/internal/aat.rs` (`lookup<T>`).
 
 ///|
 pub fn aat_lookup_u16(b : BeBytes, offset : Int, id : UInt16) -> UInt16? {

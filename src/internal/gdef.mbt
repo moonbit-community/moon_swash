@@ -15,7 +15,7 @@
 ///|
 /// Glyph Definition (GDEF) table wrapper.
 ///
-/// Ported from `swash-reference/src/internal/at.rs` (`Gdef`).
+/// Ported from `upstream swash/src/internal/at.rs` (`Gdef`).
 pub struct Gdef {
   data : Bytes
   base : Int

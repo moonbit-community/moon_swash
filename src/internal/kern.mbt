@@ -15,7 +15,7 @@
 ///|
 /// Kerning table (`kern`).
 ///
-/// Ported from `swash-reference/src/internal/aat.rs` (module `kern`).
+/// Ported from `upstream swash/src/internal/aat.rs` (module `kern`).
 
 ///|
 pub struct KernSubtables {

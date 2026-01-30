@@ -15,7 +15,7 @@
 ///|
 /// OpenType GSUB/GPOS shaping (AT).
 ///
-/// Ported from `swash-reference/src/shape/at.rs`.
+/// Ported from `upstream swash/src/shape/at.rs`.
 pub type FeatureBit = UInt16
 
 ///|
@@ -305,7 +305,7 @@ fn BitSet::insert(self : BitSet, value : UInt16) -> Bool {
 ///|
 /// Builds a compact coverage cache used to cheaply skip lookups.
 ///
-/// Format matches `swash-reference/src/shape/at.rs`:
+/// Format matches `upstream swash/src/shape/at.rs`:
 /// `[min, max, bitset words (u16)]`, keyed by base index into `FeatureStore.coverage`.
 struct CoverageBuilder {
   coverage : BitSet
@@ -2556,7 +2556,7 @@ fn read_u16_array(
 ///|
 /// Applies lookups for either substitutions (`stage=0`) or positioning (`stage=1`).
 ///
-/// This is ported from `swash-reference/src/shape/at.rs` (`apply`) and is
+/// This is ported from `upstream swash/src/shape/at.rs` (`apply`) and is
 /// completed as part of ro7.2.3.
 pub fn apply(
   stage : Byte,

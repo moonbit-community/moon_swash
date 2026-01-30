@@ -42,7 +42,7 @@ pub fn inflate_zlib(data : Bytes) -> Array[Byte] raise @yazi.YaziError {
   out
 }
 
-// ---- Internal PNG decoder (ported from swash-reference) --------------------
+// ---- Internal PNG decoder (ported from upstream swash) --------------------
 
 ///|
 const PNG_IHDR_LEN : Int = 13

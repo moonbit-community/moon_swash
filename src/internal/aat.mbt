@@ -15,7 +15,7 @@
 ///|
 /// Apple Advanced Typography (AAT) tables.
 ///
-/// Ported from `swash-reference/src/internal/aat.rs`.
+/// Ported from `upstream swash/src/internal/aat.rs`.
 
 ///|
 pub const MORX : UInt = 0x6D6F7278 // "morx"

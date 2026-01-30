@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import shutil
 import subprocess
 import sys
@@ -25,7 +24,6 @@ from typing import Any, Tuple
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SWASH_REFERENCE_DIR = ROOT / "swash-reference"
 
 MOON_DUMP_DIR = ROOT / "tools" / "moon_swash_dump"
 MOON_DUMP_WASM = MOON_DUMP_DIR / "target" / "wasm" / "release" / "build" / "moon_swash_dump.wasm"
@@ -124,29 +122,10 @@ def _run_moon_dump(font_path: Path, text: str, size: float) -> str:
     return p.stdout.strip()
 
 
-def _run_rust_dump(font_path: Path, text: str, size: float) -> str:
-    if not (SWASH_REFERENCE_DIR / "Cargo.toml").exists():
-        raise SystemExit(
-            "swash-reference not found at ./swash-reference.\n"
-            "Place a checkout of the Rust reference implementation there to run this verifier."
-        )
-    p = _run(
-        [
-            "cargo",
-            "run",
-            "--quiet",
-            "--manifest-path",
-            str(SWASH_REFERENCE_DIR / "Cargo.toml"),
-            "--bin",
-            "dump_json",
-            "--",
-            str(font_path),
-            text,
-            str(size),
-        ],
-        cwd=ROOT,
-    )
-    _require_ok(p, "cargo run (swash-reference dump_json)")
+def _run_ref_dump(ref_cmd: list[str], font_path: Path, text: str, size: float) -> str:
+    # The reference command must print JSON to stdout.
+    p = _run(ref_cmd + [str(font_path), text, str(size)], cwd=ROOT)
+    _require_ok(p, "reference command")
     return p.stdout.strip()
 
 
@@ -181,12 +160,21 @@ def _cmp(a: Any, b: Any, *, tol: float, path: str) -> Tuple[bool, str]:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Diff MoonBit swash vs Rust swash-reference.")
+    ap = argparse.ArgumentParser(description="Diff MoonBit output vs an external reference dumper.")
     ap.add_argument("--font", type=Path, help="Path to a font file (ttf/otf/ttc).")
     ap.add_argument("--text", action="append", help="Text to shape (repeatable).")
     ap.add_argument("--size", type=float, default=14.0, help="Font size (default: 14).")
     ap.add_argument("--tol", type=float, default=0.02, help="Numeric tolerance (default: 0.02).")
     ap.add_argument("--dump", action="store_true", help="Print both JSON blobs on mismatch.")
+    ap.add_argument(
+        "--ref-cmd",
+        nargs="+",
+        required=True,
+        help=(
+            "Reference dumper command. It must accept arguments: <font_path> <text> <size> "
+            "and print a single JSON object to stdout."
+        ),
+    )
     args = ap.parse_args()
 
     font = args.font or _pick_default_font()
@@ -202,24 +190,24 @@ def main() -> None:
     _build_moon_dump()
 
     for t in texts:
-        rust_out = _run_rust_dump(font_rel, t, args.size)
+        ref_out = _run_ref_dump(args.ref_cmd, font_rel, t, args.size)
         moon_out = _run_moon_dump(font_rel, t, args.size)
         try:
-            rust_json = json.loads(rust_out)
+            ref_json = json.loads(ref_out)
         except Exception as e:
-            raise SystemExit(f"failed to parse rust json: {e}\n{rust_out}")
+            raise SystemExit(f"failed to parse reference json: {e}\n{ref_out}")
         try:
             moon_json = json.loads(moon_out)
         except Exception as e:
             raise SystemExit(f"failed to parse moon json: {e}\n{moon_out}")
 
-        ok, msg = _cmp(rust_json, moon_json, tol=args.tol, path="$")
+        ok, msg = _cmp(ref_json, moon_json, tol=args.tol, path="$")
         if not ok:
             sys.stderr.write(f"Mismatch for text={t!r} size={args.size} font={font}\n")
             sys.stderr.write(msg + "\n")
             if args.dump:
                 sys.stderr.write("\nref:\n")
-                sys.stderr.write(rust_out + "\n")
+                sys.stderr.write(ref_out + "\n")
                 sys.stderr.write("\nmoon:\n")
                 sys.stderr.write(moon_out + "\n")
             raise SystemExit(1)

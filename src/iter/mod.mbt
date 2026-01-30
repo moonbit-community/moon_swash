@@ -13,9 +13,9 @@
 // limitations under the License.
 
 ///|
-/// Iterator names for API parity with swash-reference.
+/// Iterator names for API parity with upstream swash.
 ///
-/// Note: some swash-reference iterator types are represented as `Iter[T]` in
+/// Note: some upstream swash iterator types are represented as `Iter[T]` in
 /// MoonBit. We still re-export the stable names here to keep downstream import
 /// paths consistent.
 pub type Features = @swash.Features

@@ -15,7 +15,7 @@
 ///|
 /// Color scalable outline helpers (COLR/CPAL).
 ///
-/// Ported from `swash-reference/src/scale/color.rs`.
+/// Ported from `upstream swash/src/scale/color.rs`.
 
 ///|
 struct ColorProxy {

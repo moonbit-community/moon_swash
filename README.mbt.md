@@ -18,7 +18,7 @@ Add dependencies in your `moon.pkg.json`:
     { "path": "Milky2018/moon_swash/shape", "alias": "swash_shape" },
     { "path": "Milky2018/moon_swash/scale", "alias": "swash_scale" },
 
-    // Optional: API parity with swash-reference module paths
+    // Optional: API parity with upstream swash module paths
     { "path": "Milky2018/moon_swash/iter", "alias": "swash_iter" },
     { "path": "Milky2018/moon_swash/proxy", "alias": "swash_proxy" }
   ]
@@ -60,7 +60,7 @@ img |> ignore
 
 ## API Compatibility Notes
 
-- `Milky2018/moon_swash/iter` and `Milky2018/moon_swash/proxy` exist for API parity with swash-reference module paths.
+- `Milky2018/moon_swash/iter` and `Milky2018/moon_swash/proxy` exist for API parity with upstream swash module paths.
 - They currently provide stable type aliases (so downstream import paths match), while the underlying implementations live in the main packages.
 
 ## Verify It Works
@@ -72,10 +72,10 @@ moon test
 moon check
 ```
 
-Diff against the Rust reference implementation (requires `wasmtime`, `cargo`, and a checkout at `./swash-reference`):
+Diff against an external reference dumper (requires `wasmtime`):
 
 ```bash
-python3 tools/verify_swash_reference.py --font /path/to/font.ttf
+python3 tools/verify_reference.py --font /path/to/font.ttf --ref-cmd /path/to/reference_dump_json
 ```
 
 Notes:
