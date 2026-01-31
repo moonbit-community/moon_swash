@@ -46,9 +46,11 @@ pub struct Image {
 pub fn Image::clear(Self) -> Unit
 pub fn Image::content(Self) -> Content
 pub fn Image::data(Self) -> Bytes
+pub fn Image::data_view(Self) -> ArrayView[Byte]
 pub fn Image::new() -> Self
 pub fn Image::placement(Self) -> @moon_zeno.Placement
 pub fn Image::source(Self) -> Source
+pub fn Image::to_rgba8(Self, Array[Byte]) -> Bool
 
 pub struct Layer {
   points : Array[@moon_zeno.Vector]

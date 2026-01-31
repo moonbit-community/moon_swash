@@ -55,8 +55,23 @@ let scaler = scx.builder(font).size(14.0).hint(true).build()
 
 let render = @swash_scale.Render::new([@swash_scale.Source::Outline])
 let img = render.render(scaler, gid).unwrap()
-img |> ignore
+
+// Zero-copy pixel access:
+let pixels = img.data_view()
+pixels |> ignore
+
+// GPU-friendly RGBA8 (premultiplied):
+let white = [(255).to_byte(), (255).to_byte(), (255).to_byte(), (255).to_byte()]
+img.to_rgba8(white) |> ignore
+let rgba8 = img.data_view()
+rgba8 |> ignore
 ```
+
+## SubpixelMask Notes
+
+- `Content::SubpixelMask` stores per-channel coverage in RGB; the alpha channel is unused by the rasterizer.
+- `Image::to_rgba8(base_color)` converts `Mask` / `SubpixelMask` into **premultiplied** RGBA8 and sets alpha to `max(r, g, b)` coverage (modulated by `base_color[3]`).
+- Use premultiplied-alpha blending when compositing (`src = 1`, `dst = 1 - srcA`).
 
 ## API Compatibility Notes
 

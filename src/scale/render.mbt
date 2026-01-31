@@ -27,6 +27,30 @@ pub struct Render {
 }
 
 ///|
+fn ensure_zeroed(buf : Array[Byte], len : Int) -> Array[Byte] {
+  if len <= 0 {
+    buf.clear()
+    return buf
+  }
+  if buf.capacity() < len {
+    return Array::makei(len, _ => b'\x00')
+  }
+  if buf.length() < len {
+    for _ in buf.length()..<len {
+      buf.push(b'\x00')
+    }
+  } else if buf.length() > len {
+    buf.truncate(len)
+  }
+  // zeno subpixel masks only write RGB channels; always clear to avoid stale
+  // alpha/unused channels when reusing buffers.
+  for i in 0..<len {
+    buf[i] = b'\x00'
+  }
+  buf
+}
+
+///|
 pub fn Render::new(sources : Array[Source]) -> Render {
   Render::{
     sources,
@@ -149,7 +173,7 @@ pub fn Render::render_into(
           .render_offset(self.offset)
           .inspect((fmt, w, h) => {
             let n = fmt.buffer_size(w, h)
-            image.data = Array::makei(n, _ => b'\x00')
+            image.data = ensure_zeroed(image.data, n)
           })
           .render_into(image.data)
         image.placement = placement
@@ -180,7 +204,7 @@ pub fn Render::render_into(
         let base_w = total_bounds.width().ceil().to_int().reinterpret_as_uint()
         let base_h = total_bounds.height().ceil().to_int().reinterpret_as_uint()
         let base_size = (base_w * base_h * 4U).reinterpret_as_int()
-        image.data = Array::makei(base_size, _ => b'\x00')
+        image.data = ensure_zeroed(image.data, base_size)
         image.placement = Placement::{
           left: base_x,
           top: base_h.reinterpret_as_int() + base_y,
@@ -207,7 +231,10 @@ pub fn Render::render_into(
                 .render_offset(self.offset)
                 .inspect((fmt, w, h) => {
                   let n = fmt.buffer_size(w, h)
-                  scaler.state.val._scratch0 = Array::makei(n, _ => b'\x00')
+                  scaler.state.val._scratch0 = ensure_zeroed(
+                    scaler.state.val._scratch0,
+                    n,
+                  )
                 })
                 .render_into(scaler.state.val._scratch0)
               let color = match layer.color_index() {
