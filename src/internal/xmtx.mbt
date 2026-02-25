@@ -61,20 +61,22 @@ pub fn sb(
 ///|
 test "xmtx.advance/sb read long/short metrics" {
   // One long metric entry: advance=10, lsb=-2; then extra lsb for glyph 1: 5.
-  let data = Bytes::makei(10, i => if i == 0 {
-    b'\x00'
-  } else if i == 1 {
-    b'\x0A'
-  } else if i == 2 {
-    b'\xFF'
-  } else if i == 3 {
-    b'\xFE'
-  } else if i == 4 {
-    b'\x00'
-  } else if i == 5 {
-    b'\x05'
-  } else {
-    b'\x00'
+  let data = Bytes::makei(10, i => {
+    if i == 0 {
+      b'\x00'
+    } else if i == 1 {
+      b'\x0A'
+    } else if i == 2 {
+      b'\xFF'
+    } else if i == 3 {
+      b'\xFE'
+    } else if i == 4 {
+      b'\x00'
+    } else if i == 5 {
+      b'\x05'
+    } else {
+      b'\x00'
+    }
   })
   inspect(advance(data, 0, 1, 0), content="10")
   inspect(sb(data, 0, 1, 0), content="-2")

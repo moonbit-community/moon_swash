@@ -189,40 +189,42 @@ pub fn FontRef::vhea(self : FontRef) -> @internal.Vhea? {
 ///|
 test "FontDataRef/FontRef basic collection support" {
   // Collection with one font at offset 0x20.
-  let data = Bytes::makei(36, i => if i == 0 {
-    b't'
-  } else if i == 1 {
-    b't'
-  } else if i == 2 {
-    b'c'
-  } else if i == 3 {
-    b'f'
-  } else if i == 8 {
-    b'\x00'
-  } else if i == 9 {
-    b'\x00'
-  } else if i == 10 {
-    b'\x00'
-  } else if i == 11 {
-    b'\x01'
-  } else if i == 12 {
-    b'\x00'
-  } else if i == 13 {
-    b'\x00'
-  } else if i == 14 {
-    b'\x00'
-  } else if i == 15 {
-    b'\x20'
-  } else if i == 32 {
-    b'\x00'
-  } else if i == 33 {
-    b'\x01'
-  } else if i == 34 {
-    b'\x00'
-  } else if i == 35 {
-    b'\x00'
-  } else {
-    b'\x00'
+  let data = Bytes::makei(36, i => {
+    if i == 0 {
+      b't'
+    } else if i == 1 {
+      b't'
+    } else if i == 2 {
+      b'c'
+    } else if i == 3 {
+      b'f'
+    } else if i == 8 {
+      b'\x00'
+    } else if i == 9 {
+      b'\x00'
+    } else if i == 10 {
+      b'\x00'
+    } else if i == 11 {
+      b'\x01'
+    } else if i == 12 {
+      b'\x00'
+    } else if i == 13 {
+      b'\x00'
+    } else if i == 14 {
+      b'\x00'
+    } else if i == 15 {
+      b'\x20'
+    } else if i == 32 {
+      b'\x00'
+    } else if i == 33 {
+      b'\x01'
+    } else if i == 34 {
+      b'\x00'
+    } else if i == 35 {
+      b'\x00'
+    } else {
+      b'\x00'
+    }
   })
   let fdr_opt = FontDataRef::new(data)
   if fdr_opt is Some(fdr) {

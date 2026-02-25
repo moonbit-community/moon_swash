@@ -133,13 +133,13 @@ pub(all) enum KernSubtableKind {
 pub fn KernSubtable::kind(self : KernSubtable) -> KernSubtableKind? {
   match self.format.to_int() {
     0 =>
-      KernFormat0::new(self.b, self.offset).map(x => KernSubtableKind::Format0(
-        x,
-      ))
+      KernFormat0::new(self.b, self.offset).map(x => {
+        KernSubtableKind::Format0(x)
+      })
     1 =>
-      KernFormat1::new(self.b, self.offset, self.cross_stream).map(x => KernSubtableKind::Format1(
-        x,
-      ))
+      KernFormat1::new(self.b, self.offset, self.cross_stream).map(x => {
+        KernSubtableKind::Format1(x)
+      })
     _ => None
   }
 }

@@ -26,40 +26,42 @@ test "raw_data collection count and offsets" {
   // 0..4: 'ttcf'
   // 8..12: numFonts = 2
   // 12..: offsets array [0x20, 0x40]
-  let data = Bytes::makei(20, i => if i == 0 {
-    b't'
-  } else if i == 1 {
-    b't'
-  } else if i == 2 {
-    b'c'
-  } else if i == 3 {
-    b'f'
-  } else if i == 8 {
-    b'\x00'
-  } else if i == 9 {
-    b'\x00'
-  } else if i == 10 {
-    b'\x00'
-  } else if i == 11 {
-    b'\x02'
-  } else if i == 12 {
-    b'\x00'
-  } else if i == 13 {
-    b'\x00'
-  } else if i == 14 {
-    b'\x00'
-  } else if i == 15 {
-    b'\x20'
-  } else if i == 16 {
-    b'\x00'
-  } else if i == 17 {
-    b'\x00'
-  } else if i == 18 {
-    b'\x00'
-  } else if i == 19 {
-    b'\x40'
-  } else {
-    b'\x00'
+  let data = Bytes::makei(20, i => {
+    if i == 0 {
+      b't'
+    } else if i == 1 {
+      b't'
+    } else if i == 2 {
+      b'c'
+    } else if i == 3 {
+      b'f'
+    } else if i == 8 {
+      b'\x00'
+    } else if i == 9 {
+      b'\x00'
+    } else if i == 10 {
+      b'\x00'
+    } else if i == 11 {
+      b'\x02'
+    } else if i == 12 {
+      b'\x00'
+    } else if i == 13 {
+      b'\x00'
+    } else if i == 14 {
+      b'\x00'
+    } else if i == 15 {
+      b'\x20'
+    } else if i == 16 {
+      b'\x00'
+    } else if i == 17 {
+      b'\x00'
+    } else if i == 18 {
+      b'\x00'
+    } else if i == 19 {
+      b'\x40'
+    } else {
+      b'\x00'
+    }
   })
   inspect(is_collection(data), content="true")
   inspect(count(data), content="2")

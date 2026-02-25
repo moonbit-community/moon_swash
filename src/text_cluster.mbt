@@ -635,7 +635,9 @@ pub fn CharCluster::map(self : CharCluster, f : (Char) -> GlyphId) -> Status {
   if len == 0 {
     return Status::Complete
   }
-  let glyph_ids : Array[GlyphId] = Array::makei(MAX_CLUSTER_SIZE, _ => (0).to_uint16())
+  let glyph_ids : Array[GlyphId] = Array::makei(MAX_CLUSTER_SIZE, _ => {
+    (0).to_uint16()
+  })
   let prev_ratio = self.best_ratio
   if self.force_normalize {
     match CharCluster::composed(self) {
@@ -910,8 +912,9 @@ fn TokenStream::next(self : TokenStream) -> Token? {
     self.buf_offset = self.buf_offset + 1
     if self.buf_offset > 16 {
       let remain = self.buf.length() - self.buf_offset
-      let new_buf : Array[Token] = Array::makei(remain, i => self.buf[self.buf_offset +
-        i])
+      let new_buf : Array[Token] = Array::makei(remain, i => {
+        self.buf[self.buf_offset + i]
+      })
       self.buf = new_buf
       self.buf_offset = 0
     }

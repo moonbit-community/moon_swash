@@ -1,0 +1,9 @@
+import {
+  "moonbitlang/core/array",
+  "moonbitlang/core/bytes",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/option",
+  "moonbitlang/core/ref",
+  "Milky2018/moon_swash" @swash,
+  "Milky2018/moon_swash/internal" @internal,
+}

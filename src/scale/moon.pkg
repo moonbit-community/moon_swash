@@ -1,0 +1,11 @@
+import {
+  "moonbitlang/core/array",
+  "moonbitlang/core/bytes",
+  "moonbitlang/core/option",
+  "Milky2018/moon_swash" @swash,
+  "Milky2018/moon_zeno" @zeno,
+  "Milky2018/moon_yazi" @yazi,
+  "Milky2018/moon_skrifa/core" @skrifa,
+  "Milky2018/moon_skrifa/outline" @skrifa_outline,
+  "Milky2018/moon_swash/internal" @internal,
+}

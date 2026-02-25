@@ -256,9 +256,14 @@ fn[S : Selector, O : ShapeOptions] shape_clusters(
             }
           }
         }
-      } else {
-        // Unreachable, but required because `while` is an expression.
-        (false, parser, cluster, None)
+      } nobreak {
+        (
+          // Unreachable, but required because `while` is an expression.
+          false,
+          parser,
+          cluster,
+          None,
+        )
       }
     }
   }

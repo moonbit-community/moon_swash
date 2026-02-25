@@ -576,7 +576,9 @@ fn decode_png(
         if off + pass_pitch + 1 > decomp.length() {
           return None
         }
-        let row : Array[Byte] = Array::makei(pass_pitch + 1, i => decomp[off + i])
+        let row : Array[Byte] = Array::makei(pass_pitch + 1, i => {
+          decomp[off + i]
+        })
         off = off + pass_pitch + 1
         let ty = row[0].to_int().reinterpret_as_uint()
         let scan : Array[Byte] = Array::makei(pass_pitch, i => row[i + 1])

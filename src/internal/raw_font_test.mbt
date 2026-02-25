@@ -35,52 +35,54 @@ fn mk_min_font() -> Bytes {
   // numTables = 1
   // record[0] tag="head", offset=0x20, length=4
   // table bytes = DE AD BE EF
-  Bytes::makei(36, i => if i == 0 {
-    b'\x00'
-  } else if i == 1 {
-    b'\x01'
-  } else if i == 2 {
-    b'\x00'
-  } else if i == 3 {
-    b'\x00'
-  } else if i == 4 {
-    b'\x00'
-  } else if i == 5 {
-    b'\x01'
-  } else if i == 12 {
-    b'h'
-  } else if i == 13 {
-    b'e'
-  } else if i == 14 {
-    b'a'
-  } else if i == 15 {
-    b'd'
-  } else if i == 20 {
-    b'\x00'
-  } else if i == 21 {
-    b'\x00'
-  } else if i == 22 {
-    b'\x00'
-  } else if i == 23 {
-    b'\x20'
-  } else if i == 24 {
-    b'\x00'
-  } else if i == 25 {
-    b'\x00'
-  } else if i == 26 {
-    b'\x00'
-  } else if i == 27 {
-    b'\x04'
-  } else if i == 32 {
-    b'\xDE'
-  } else if i == 33 {
-    b'\xAD'
-  } else if i == 34 {
-    b'\xBE'
-  } else if i == 35 {
-    b'\xEF'
-  } else {
-    b'\x00'
+  Bytes::makei(36, i => {
+    if i == 0 {
+      b'\x00'
+    } else if i == 1 {
+      b'\x01'
+    } else if i == 2 {
+      b'\x00'
+    } else if i == 3 {
+      b'\x00'
+    } else if i == 4 {
+      b'\x00'
+    } else if i == 5 {
+      b'\x01'
+    } else if i == 12 {
+      b'h'
+    } else if i == 13 {
+      b'e'
+    } else if i == 14 {
+      b'a'
+    } else if i == 15 {
+      b'd'
+    } else if i == 20 {
+      b'\x00'
+    } else if i == 21 {
+      b'\x00'
+    } else if i == 22 {
+      b'\x00'
+    } else if i == 23 {
+      b'\x20'
+    } else if i == 24 {
+      b'\x00'
+    } else if i == 25 {
+      b'\x00'
+    } else if i == 26 {
+      b'\x00'
+    } else if i == 27 {
+      b'\x04'
+    } else if i == 32 {
+      b'\xDE'
+    } else if i == 33 {
+      b'\xAD'
+    } else if i == 34 {
+      b'\xBE'
+    } else if i == 35 {
+      b'\xEF'
+    } else {
+      b'\x00'
+    }
   })
 }
 

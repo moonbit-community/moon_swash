@@ -571,10 +571,12 @@ pub fn Shaper::add_str(self : Shaper, s : String) -> Unit {
   let tokens : Array[@swash.Token] = []
   let mut offset = 0U
   for ch in s {
+    // Keep source ranges in UTF-8 byte offsets to match upstream swash.
+    let ch_len = @utf8.encode(ch.to_string())[:].length().reinterpret_as_uint()
     tokens.push(
-      @swash.Token::new(ch, offset, 1U, @swash.CharInfo::from_char(ch), 0U),
+      @swash.Token::new(ch, offset, ch_len, @swash.CharInfo::from_char(ch), 0U),
     )
-    offset = offset + 1U
+    offset = offset + ch_len
   }
   let parser = @swash.Parser::new(self.script, tokens.iter())
   let cluster = @swash.CharCluster::new()

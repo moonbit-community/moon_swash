@@ -447,12 +447,14 @@ pub fn FeatureStoreBuilder::build(
       gsub,
       (0).to_byte(),
     )
-    store.val.sub_features.sort_by((a, b) => if a.0 < b.0 {
-      -1
-    } else if a.0 > b.0 {
-      1
-    } else {
-      0
+    store.val.sub_features.sort_by((a, b) => {
+      if a.0 < b.0 {
+        -1
+      } else if a.0 > b.0 {
+        1
+      } else {
+        0
+      }
     })
   }
   store.val.sub_count = store.val.sub_features.length()
@@ -467,12 +469,14 @@ pub fn FeatureStoreBuilder::build(
       gpos,
       (1).to_byte(),
     )
-    store.val.pos_features.sort_by((a, b) => if a.0 < b.0 {
-      -1
-    } else if a.0 > b.0 {
-      1
-    } else {
-      0
+    store.val.pos_features.sort_by((a, b) => {
+      if a.0 < b.0 {
+        -1
+      } else if a.0 > b.0 {
+        1
+      } else {
+        0
+      }
     })
   }
 }
@@ -1749,10 +1753,9 @@ fn ApplyContext::apply_subtable(
           }
           c = c + input_count * 2
           match
-            self.match_sequence(cur, input_count, (j, id) => self.class(
-                input_classdef, id,
-              ) ==
-              seq[j]) {
+            self.match_sequence(cur, input_count, (j, id) => {
+              self.class(input_classdef, id) == seq[j]
+            }) {
             None => continue
             Some(end_ix) => input_end = end_ix
           }
@@ -1785,11 +1788,9 @@ fn ApplyContext::apply_subtable(
       }
       c = c + input_count * 2
       let input_end = match
-        self.match_sequence(cur, input_count, (j, id) => self.coverage(
-            base + input[j].to_int(),
-            id,
-          )
-          is Some(_)) {
+        self.match_sequence(cur, input_count, (j, id) => {
+          self.coverage(base + input[j].to_int(), id) is Some(_)
+        }) {
         None => return None
         Some(v) => v
       }
@@ -1974,10 +1975,9 @@ fn ApplyContext::apply_subtable(
           }
           d = d + input_count * 2
           match
-            self.match_sequence(cur, input_count, (j, id) => self.class(
-                input_classdef, id,
-              ) ==
-              seq[j]) {
+            self.match_sequence(cur, input_count, (j, id) => {
+              self.class(input_classdef, id) == seq[j]
+            }) {
             None => continue
             Some(end_ix) => input_end = end_ix
           }
@@ -2025,11 +2025,13 @@ fn ApplyContext::apply_subtable(
         }
         c = c + backtrack_count * 2
         match
-          self.match_backtrack(cur, backtrack_count, (j, id) => self.coverage(
+          self.match_backtrack(cur, backtrack_count, (j, id) => {
+            self.coverage(
               base + backtrack.get(j).unwrap_or((0).to_uint16()).to_int(),
               id,
             )
-            is Some(_)) {
+            is Some(_)
+          }) {
           None => return None
           Some(_) => ()
         }
@@ -2048,11 +2050,13 @@ fn ApplyContext::apply_subtable(
         }
         c = c + input_count * 2
         input_end = match
-          self.match_sequence(cur, input_count, (j, id) => self.coverage(
+          self.match_sequence(cur, input_count, (j, id) => {
+            self.coverage(
               base + input.get(j).unwrap_or((0).to_uint16()).to_int(),
               id,
             )
-            is Some(_)) {
+            is Some(_)
+          }) {
           None => return None
           Some(v) => v
         }
@@ -2072,11 +2076,13 @@ fn ApplyContext::apply_subtable(
         }
         c = c + lookahead_count * 2
         match
-          self.match_sequence(input_end, lookahead_count, (j, id) => self.coverage(
+          self.match_sequence(input_end, lookahead_count, (j, id) => {
+            self.coverage(
               base + lookahead.get(j).unwrap_or((0).to_uint16()).to_int(),
               id,
             )
-            is Some(_)) {
+            is Some(_)
+          }) {
           None => return None
           Some(_) => ()
         }
@@ -2106,11 +2112,13 @@ fn ApplyContext::apply_subtable(
         }
         c = c + backtrack_count * 2
         match
-          self.match_backtrack(cur, backtrack_count, (j, id) => self.coverage(
+          self.match_backtrack(cur, backtrack_count, (j, id) => {
+            self.coverage(
               base + backtrack.get(j).unwrap_or((0).to_uint16()).to_int(),
               id,
             )
-            is Some(_)) {
+            is Some(_)
+          }) {
           None => return None
           Some(_) => ()
         }
@@ -2130,11 +2138,13 @@ fn ApplyContext::apply_subtable(
         }
         c = c + lookahead_count * 2
         match
-          self.match_sequence(cur, lookahead_count, (j, id) => self.coverage(
+          self.match_sequence(cur, lookahead_count, (j, id) => {
+            self.coverage(
               base + lookahead.get(j).unwrap_or((0).to_uint16()).to_int(),
               id,
             )
-            is Some(_)) {
+            is Some(_)
+          }) {
           None => return None
           Some(_) => ()
         }

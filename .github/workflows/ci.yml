@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  check-and-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up MoonBit
+        run: |
+          set -eux
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: Print tool versions
+        run: moon version --all
+
+      - name: Update dependencies
+        run: moon update
+
+      - name: Verify generated files and formatting are up-to-date
+        run: |
+          set -euo pipefail
+          moon info
+          moon fmt
+          git diff --exit-code
+
+      - name: Lint and type-check (no warnings)
+        run: |
+          set -euo pipefail
+          moon check 2>&1 | tee /tmp/moon-check.log
+          if grep -n "^Warning:" /tmp/moon-check.log; then
+            echo "moon check emitted warnings; treat as failure"
+            exit 1
+          fi
+
+      - name: Run tests
+        run: moon test

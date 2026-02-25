@@ -90,12 +90,38 @@ moon check
 Diff against an external reference dumper (requires `wasmtime`):
 
 ```bash
-python3 tools/verify_reference.py --font /path/to/font.ttf --ref-cmd /path/to/reference_dump_json
+python3 tools/verify_reference.py \
+  --font /path/to/font.ttf \
+  --text "abc" \
+  --size 14 \
+  --ref-cmd /path/to/reference_dump_json
+```
+
+Matrix mode (repeatable `--font`, `--text`, `--size`):
+
+```bash
+python3 tools/verify_reference.py \
+  --font /path/to/font-a.ttf \
+  --font /path/to/font-b.ttf \
+  --text "abc" \
+  --text "Hello, world!" \
+  --size 12 \
+  --size 14 \
+  --ref-cmd /path/to/reference_dump_json
+```
+
+Case-file mode (`.json` / `.jsonl` entries like `{"font":"...","text":"...","size":14}`):
+
+```bash
+python3 tools/verify_reference.py \
+  --case-file /path/to/cases.jsonl \
+  --ref-cmd /path/to/reference_dump_json
 ```
 
 Notes:
-- The verifier uses a numeric tolerance (default `--tol 0.02`) because outline floats may differ by ~1/64 between MoonBit and Rust due to fixed-point rounding details in the outline scaler.
-- For stricter float comparison, try `--tol 0.001` (may fail on some fonts).
+- The verifier uses a numeric tolerance (default `--tol 0.02`) because outline floats may differ slightly between MoonBit and Rust.
+- For emoji/math-heavy fonts, use `--tol 0.05` to avoid small outline-bound jitter.
+- For strict schema checks, add `--strict-keys` (default mode allows extra MoonBit-only keys).
 
 ## Development
 

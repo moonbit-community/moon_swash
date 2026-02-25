@@ -116,8 +116,9 @@ fn CharStream::next(self : CharStream) -> Char? {
     self.buf_offset = self.buf_offset + 1
     if self.buf_offset > 16 {
       let remain = self.buf.length() - self.buf_offset
-      let new_buf : Array[Char] = Array::makei(remain, i => self.buf[self.buf_offset +
-        i])
+      let new_buf : Array[Char] = Array::makei(remain, i => {
+        self.buf[self.buf_offset + i]
+      })
       self.buf = new_buf
       self.buf_offset = 0
     }

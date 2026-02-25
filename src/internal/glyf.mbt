@@ -128,20 +128,22 @@ pub fn ymax(
 test "glyf.get + ymax for loca fmt 0" {
   // data[0..4): loca table with two u16 offsets (0, 5) -> [0, 10) bytes.
   // data[20..30): glyf data for glyph 0 with ymax=16 at offset 8.
-  let data = Bytes::makei(40, i => if i == 0 {
-    b'\x00'
-  } else if i == 1 {
-    b'\x00'
-  } else if i == 2 {
-    b'\x00'
-  } else if i == 3 {
-    b'\x05'
-  } else if i == 28 {
-    b'\x00'
-  } else if i == 29 {
-    b'\x10'
-  } else {
-    b'\x00'
+  let data = Bytes::makei(40, i => {
+    if i == 0 {
+      b'\x00'
+    } else if i == 1 {
+      b'\x00'
+    } else if i == 2 {
+      b'\x00'
+    } else if i == 3 {
+      b'\x05'
+    } else if i == 28 {
+      b'\x00'
+    } else if i == 29 {
+      b'\x10'
+    } else {
+      b'\x00'
+    }
   })
   let view_opt = get(data, 0, 0, 20, 0)
   if view_opt is Some(view) {

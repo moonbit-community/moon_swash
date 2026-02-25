@@ -168,11 +168,11 @@ pub fn StateTable::new(view : BytesView) -> StateTable? {
   if glyph_count < 0 || !b.check_range(classes_start, glyph_count) {
     return None
   }
-  let classes = view.sub(start=classes_start, end=classes_start + glyph_count)
+  let classes = view[classes_start:classes_start + glyph_count]
   if state_array < 0 || state_array > view.length() {
     return None
   }
-  let states = view.sub(start=state_array)
+  let states = view[state_array:]
   Some(StateTable::{
     b,
     class_count,

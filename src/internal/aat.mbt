@@ -57,6 +57,6 @@ fn aat_subview(view : BytesView, start : Int) -> BytesView {
   if start < 0 || start > view.length() {
     aat_empty_view()
   } else {
-    view.sub(start~)
+    view[start:]
   }
 }

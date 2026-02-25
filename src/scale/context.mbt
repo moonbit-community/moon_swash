@@ -373,12 +373,26 @@ fn OutlineWriter::new(outline : Outline) -> OutlineWriter {
 }
 
 ///|
+fn OutlineWriter::drop_trailing_close_if_continuing_contour(
+  self : OutlineWriter,
+) -> Unit {
+  if self.outline.verbs.length() == 0 {
+    return
+  }
+  let last = self.outline.verbs[self.outline.verbs.length() - 1]
+  if last is @zeno.Verb::Close {
+    self.outline.verbs.pop() |> ignore
+  }
+}
+
+///|
 pub impl @skrifa_outline.OutlinePen for OutlineWriter with move_to(self, x, y) {
   self.outline.move_to(Vector::new(x, y))
 }
 
 ///|
 pub impl @skrifa_outline.OutlinePen for OutlineWriter with line_to(self, x, y) {
+  self.drop_trailing_close_if_continuing_contour()
   self.outline.line_to(Vector::new(x, y))
 }
 
@@ -390,6 +404,7 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with quad_to(
   x,
   y,
 ) {
+  self.drop_trailing_close_if_continuing_contour()
   self.outline.quad_to(Vector::new(cx0, cy0), Vector::new(x, y))
 }
 
@@ -403,6 +418,7 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with curve_to(
   x,
   y,
 ) {
+  self.drop_trailing_close_if_continuing_contour()
   self.outline.curve_to(
     Vector::new(cx0, cy0),
     Vector::new(cx1, cy1),
@@ -412,7 +428,15 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with curve_to(
 
 ///|
 pub impl @skrifa_outline.OutlinePen for OutlineWriter with close(self) {
-  self.outline.close()
+  let verbs = self.outline.verbs()
+  if verbs.length() == 0 {
+    return
+  }
+  match verbs[verbs.length() - 1] {
+    @zeno.Verb::MoveTo => ()
+    @zeno.Verb::Close => ()
+    _ => self.outline.close()
+  }
 }
 
 ///|
@@ -844,21 +868,34 @@ fn Scaler::scale_outline_layer_into(
   match self.outlines {
     None => ()
     Some(outlines) => {
-      let loc = if self.coords.is_empty() {
-        @skrifa.LocationRef::default()
-      } else {
-        @skrifa.LocationRef::new(self.coords.op_as_view())
-      }
+      let loc = @skrifa.LocationRef::new(self.coords.op_as_view())
       let settings = match self.hinting_instance {
         None => @skrifa_outline.DrawSettings::unhinted(self.skrifa_size, loc)
         Some(h) => @skrifa_outline.DrawSettings::hinted(h, false)
       }
       let gid = @skrifa.GlyphId::new(glyph_id)
-      let pen = OutlineWriter::new(outline)
-      if outlines.draw(gid, settings, pen) {
-        outline.maybe_close()
-        outline.finish()
-        return true
+      match outlines.get(gid) {
+        None => ()
+        Some(glyph) => {
+          let pen = OutlineWriter::new(outline)
+          match glyph.draw(settings, pen) {
+            Ok(_) => {
+              outline.maybe_close()
+              outline.finish()
+              return true
+            }
+            Err(@skrifa_outline.DrawError::GlyphNotFound(_)) =>
+              // Keep parity with upstream behavior for valid glyphs that have
+              // an empty outline path.
+              if glyph_id != 0 &&
+                outline.points.length() == 0 &&
+                outline.verbs.length() == 0 {
+                outline.finish()
+                return true
+              }
+            Err(_) => ()
+          }
+        }
       }
     }
   }
@@ -1369,170 +1406,172 @@ fn mk_min_ttf_with_one_simple_glyph() -> Bytes {
   Bytes::makei(
     total,
     // sfntVersion 0x00010000
-    i => if i == 0 {
-      b'\x00'
-    } else if i == 1 {
-      b'\x01'
-    } else if i == 2 {
-      b'\x00'
-    } else if i == 3 {
-      b'\x00'
-    } else if i == 4 {
-      b'\x00'
-    } else if i == 5 {
-      b'\x03' // numTables=3
+    i => {
+      if i == 0 {
+        b'\x00'
+      } else if i == 1 {
+        b'\x01'
+      } else if i == 2 {
+        b'\x00'
+      } else if i == 3 {
+        b'\x00'
+      } else if i == 4 {
+        b'\x00'
+      } else if i == 5 {
+        b'\x03' // numTables=3
 
-      // record 0: "glyf"
-    } else if i == 12 {
-      b'g'
-    } else if i == 13 {
-      b'l'
-    } else if i == 14 {
-      b'y'
-    } else if i == 15 {
-      b'f'
-    } else if i == 20 {
-      b'\x00'
-    } else if i == 21 {
-      b'\x00'
-    } else if i == 22 {
-      b'\x00'
-    } else if i == 23 {
-      b'\x80' // offset 0x80
-    } else if i == 24 {
-      b'\x00'
-    } else if i == 25 {
-      b'\x00'
-    } else if i == 26 {
-      b'\x00'
-    } else if i == 27 {
-      b'\x1E' // len 30
+        // record 0: "glyf"
+      } else if i == 12 {
+        b'g'
+      } else if i == 13 {
+        b'l'
+      } else if i == 14 {
+        b'y'
+      } else if i == 15 {
+        b'f'
+      } else if i == 20 {
+        b'\x00'
+      } else if i == 21 {
+        b'\x00'
+      } else if i == 22 {
+        b'\x00'
+      } else if i == 23 {
+        b'\x80' // offset 0x80
+      } else if i == 24 {
+        b'\x00'
+      } else if i == 25 {
+        b'\x00'
+      } else if i == 26 {
+        b'\x00'
+      } else if i == 27 {
+        b'\x1E' // len 30
 
-      // record 1: "head"
-    } else if i == 28 {
-      b'h'
-    } else if i == 29 {
-      b'e'
-    } else if i == 30 {
-      b'a'
-    } else if i == 31 {
-      b'd'
-    } else if i == 36 {
-      b'\x00'
-    } else if i == 37 {
-      b'\x00'
-    } else if i == 38 {
-      b'\x00'
-    } else if i == 39 {
-      b'\xA0' // offset 0xA0
-    } else if i == 40 {
-      b'\x00'
-    } else if i == 41 {
-      b'\x00'
-    } else if i == 42 {
-      b'\x00'
-    } else if i == 43 {
-      b'\x36' // len 54
+        // record 1: "head"
+      } else if i == 28 {
+        b'h'
+      } else if i == 29 {
+        b'e'
+      } else if i == 30 {
+        b'a'
+      } else if i == 31 {
+        b'd'
+      } else if i == 36 {
+        b'\x00'
+      } else if i == 37 {
+        b'\x00'
+      } else if i == 38 {
+        b'\x00'
+      } else if i == 39 {
+        b'\xA0' // offset 0xA0
+      } else if i == 40 {
+        b'\x00'
+      } else if i == 41 {
+        b'\x00'
+      } else if i == 42 {
+        b'\x00'
+      } else if i == 43 {
+        b'\x36' // len 54
 
-      // record 2: "loca"
-    } else if i == 44 {
-      b'l'
-    } else if i == 45 {
-      b'o'
-    } else if i == 46 {
-      b'c'
-    } else if i == 47 {
-      b'a'
-    } else if i == 52 {
-      b'\x00'
-    } else if i == 53 {
-      b'\x00'
-    } else if i == 54 {
-      b'\x00'
-    } else if i == 55 {
-      b'\xE0' // offset 0xE0
-    } else if i == 56 {
-      b'\x00'
-    } else if i == 57 {
-      b'\x00'
-    } else if i == 58 {
-      b'\x00'
-    } else if i == 59 {
-      b'\x04' // len 4
+        // record 2: "loca"
+      } else if i == 44 {
+        b'l'
+      } else if i == 45 {
+        b'o'
+      } else if i == 46 {
+        b'c'
+      } else if i == 47 {
+        b'a'
+      } else if i == 52 {
+        b'\x00'
+      } else if i == 53 {
+        b'\x00'
+      } else if i == 54 {
+        b'\x00'
+      } else if i == 55 {
+        b'\xE0' // offset 0xE0
+      } else if i == 56 {
+        b'\x00'
+      } else if i == 57 {
+        b'\x00'
+      } else if i == 58 {
+        b'\x00'
+      } else if i == 59 {
+        b'\x04' // len 4
 
-      // glyf glyph at 0x80 (30 bytes padded):
-      // numberOfContours=1, xMin=0,yMin=0,xMax=50,yMax=50
-      // endPts=[2], instructionLength=0
-      // flags=[0x01,0x01,0x01]
-      // xDeltas=[0,50,-50], yDeltas=[0,0,50]
-    } else if i == 0x80 {
-      b'\x00'
-    } else if i == 0x81 {
-      b'\x01' // contours
-    } else if i == 0x86 {
-      b'\x00'
-    } else if i == 0x87 {
-      b'\x32' // xMax=50
-    } else if i == 0x88 {
-      b'\x00'
-    } else if i == 0x89 {
-      b'\x32' // yMax=50
-    } else if i == 0x8A {
-      b'\x00'
-    } else if i == 0x8B {
-      b'\x02' // endPt=2
-    } else if i == 0x8C {
-      b'\x00'
-    } else if i == 0x8D {
-      b'\x00' // instrLen=0
-    } else if i == 0x8E {
-      b'\x01'
-    } else if i == 0x8F {
-      b'\x01'
-    } else if i == 0x90 {
-      b'\x01' // flags
-    } else if i == 0x91 {
-      b'\x00'
-    } else if i == 0x92 {
-      b'\x00' // dx0=0
-    } else if i == 0x93 {
-      b'\x00'
-    } else if i == 0x94 {
-      b'\x32' // dx1=50
-    } else if i == 0x95 {
-      b'\xFF'
-    } else if i == 0x96 {
-      b'\xCE' // dx2=-50
-    } else if i == 0x97 {
-      b'\x00'
-    } else if i == 0x98 {
-      b'\x00' // dy0=0
-    } else if i == 0x99 {
-      b'\x00'
-    } else if i == 0x9A {
-      b'\x00' // dy1=0
-    } else if i == 0x9B {
-      b'\x00'
-    } else if i == 0x9C {
-      b'\x32' // dy2=50
+        // glyf glyph at 0x80 (30 bytes padded):
+        // numberOfContours=1, xMin=0,yMin=0,xMax=50,yMax=50
+        // endPts=[2], instructionLength=0
+        // flags=[0x01,0x01,0x01]
+        // xDeltas=[0,50,-50], yDeltas=[0,0,50]
+      } else if i == 0x80 {
+        b'\x00'
+      } else if i == 0x81 {
+        b'\x01' // contours
+      } else if i == 0x86 {
+        b'\x00'
+      } else if i == 0x87 {
+        b'\x32' // xMax=50
+      } else if i == 0x88 {
+        b'\x00'
+      } else if i == 0x89 {
+        b'\x32' // yMax=50
+      } else if i == 0x8A {
+        b'\x00'
+      } else if i == 0x8B {
+        b'\x02' // endPt=2
+      } else if i == 0x8C {
+        b'\x00'
+      } else if i == 0x8D {
+        b'\x00' // instrLen=0
+      } else if i == 0x8E {
+        b'\x01'
+      } else if i == 0x8F {
+        b'\x01'
+      } else if i == 0x90 {
+        b'\x01' // flags
+      } else if i == 0x91 {
+        b'\x00'
+      } else if i == 0x92 {
+        b'\x00' // dx0=0
+      } else if i == 0x93 {
+        b'\x00'
+      } else if i == 0x94 {
+        b'\x32' // dx1=50
+      } else if i == 0x95 {
+        b'\xFF'
+      } else if i == 0x96 {
+        b'\xCE' // dx2=-50
+      } else if i == 0x97 {
+        b'\x00'
+      } else if i == 0x98 {
+        b'\x00' // dy0=0
+      } else if i == 0x99 {
+        b'\x00'
+      } else if i == 0x9A {
+        b'\x00' // dy1=0
+      } else if i == 0x9B {
+        b'\x00'
+      } else if i == 0x9C {
+        b'\x32' // dy2=50
 
-      // head table at 0xA0: unitsPerEm=1000 at offset +18, indexToLocFormat=0 at +50.
-    } else if i == 0xA0 + 18 {
-      b'\x03'
-    } else if i == 0xA0 + 19 {
-      b'\xE8'
-    } else if i == 0xA0 + 50 {
-      b'\x00'
-    } else if i == 0xA0 + 51 {
-      b'\x00'
+        // head table at 0xA0: unitsPerEm=1000 at offset +18, indexToLocFormat=0 at +50.
+      } else if i == 0xA0 + 18 {
+        b'\x03'
+      } else if i == 0xA0 + 19 {
+        b'\xE8'
+      } else if i == 0xA0 + 50 {
+        b'\x00'
+      } else if i == 0xA0 + 51 {
+        b'\x00'
 
-      // loca table at 0xE0: [0, 15] (since end offset=30 bytes => 15*2)
-    } else if i == 0xE2 {
-      b'\x00'
-    } else if i == 0xE3 {
-      b'\x0F'
-    } else {
-      b'\x00'
+        // loca table at 0xE0: [0, 15] (since end offset=30 bytes => 15*2)
+      } else if i == 0xE2 {
+        b'\x00'
+      } else if i == 0xE3 {
+        b'\x0F'
+      } else {
+        b'\x00'
+      }
     },
   )
 }
@@ -1714,193 +1753,195 @@ fn mk_min_ttf_with_compound_glyph() -> Bytes {
   Bytes::makei(
     total,
     // sfntVersion 0x00010000
-    i => if i == 0 {
-      b'\x00'
-    } else if i == 1 {
-      b'\x01'
-    } else if i == 2 {
-      b'\x00'
-    } else if i == 3 {
-      b'\x00'
-    } else if i == 4 {
-      b'\x00'
-    } else if i == 5 {
-      b'\x03' // numTables=3
+    i => {
+      if i == 0 {
+        b'\x00'
+      } else if i == 1 {
+        b'\x01'
+      } else if i == 2 {
+        b'\x00'
+      } else if i == 3 {
+        b'\x00'
+      } else if i == 4 {
+        b'\x00'
+      } else if i == 5 {
+        b'\x03' // numTables=3
 
-      // record 0: "glyf" offset 0x80 len 50
-    } else if i == 12 {
-      b'g'
-    } else if i == 13 {
-      b'l'
-    } else if i == 14 {
-      b'y'
-    } else if i == 15 {
-      b'f'
-    } else if i == 20 {
-      b'\x00'
-    } else if i == 21 {
-      b'\x00'
-    } else if i == 22 {
-      b'\x00'
-    } else if i == 23 {
-      b'\x80'
-    } else if i == 24 {
-      b'\x00'
-    } else if i == 25 {
-      b'\x00'
-    } else if i == 26 {
-      b'\x00'
-    } else if i == 27 {
-      b'\x32' // len 50
+        // record 0: "glyf" offset 0x80 len 50
+      } else if i == 12 {
+        b'g'
+      } else if i == 13 {
+        b'l'
+      } else if i == 14 {
+        b'y'
+      } else if i == 15 {
+        b'f'
+      } else if i == 20 {
+        b'\x00'
+      } else if i == 21 {
+        b'\x00'
+      } else if i == 22 {
+        b'\x00'
+      } else if i == 23 {
+        b'\x80'
+      } else if i == 24 {
+        b'\x00'
+      } else if i == 25 {
+        b'\x00'
+      } else if i == 26 {
+        b'\x00'
+      } else if i == 27 {
+        b'\x32' // len 50
 
-      // record 1: "head" offset 0xA0 len 54
-    } else if i == 28 {
-      b'h'
-    } else if i == 29 {
-      b'e'
-    } else if i == 30 {
-      b'a'
-    } else if i == 31 {
-      b'd'
-    } else if i == 36 {
-      b'\x00'
-    } else if i == 37 {
-      b'\x00'
-    } else if i == 38 {
-      b'\x00'
-    } else if i == 39 {
-      b'\xA0'
-    } else if i == 40 {
-      b'\x00'
-    } else if i == 41 {
-      b'\x00'
-    } else if i == 42 {
-      b'\x00'
-    } else if i == 43 {
-      b'\x36'
+        // record 1: "head" offset 0xA0 len 54
+      } else if i == 28 {
+        b'h'
+      } else if i == 29 {
+        b'e'
+      } else if i == 30 {
+        b'a'
+      } else if i == 31 {
+        b'd'
+      } else if i == 36 {
+        b'\x00'
+      } else if i == 37 {
+        b'\x00'
+      } else if i == 38 {
+        b'\x00'
+      } else if i == 39 {
+        b'\xA0'
+      } else if i == 40 {
+        b'\x00'
+      } else if i == 41 {
+        b'\x00'
+      } else if i == 42 {
+        b'\x00'
+      } else if i == 43 {
+        b'\x36'
 
-      // record 2: "loca" offset 0xE0 len 6
-    } else if i == 44 {
-      b'l'
-    } else if i == 45 {
-      b'o'
-    } else if i == 46 {
-      b'c'
-    } else if i == 47 {
-      b'a'
-    } else if i == 52 {
-      b'\x00'
-    } else if i == 53 {
-      b'\x00'
-    } else if i == 54 {
-      b'\x00'
-    } else if i == 55 {
-      b'\xE0'
-    } else if i == 56 {
-      b'\x00'
-    } else if i == 57 {
-      b'\x00'
-    } else if i == 58 {
-      b'\x00'
-    } else if i == 59 {
-      b'\x06'
+        // record 2: "loca" offset 0xE0 len 6
+      } else if i == 44 {
+        b'l'
+      } else if i == 45 {
+        b'o'
+      } else if i == 46 {
+        b'c'
+      } else if i == 47 {
+        b'a'
+      } else if i == 52 {
+        b'\x00'
+      } else if i == 53 {
+        b'\x00'
+      } else if i == 54 {
+        b'\x00'
+      } else if i == 55 {
+        b'\xE0'
+      } else if i == 56 {
+        b'\x00'
+      } else if i == 57 {
+        b'\x00'
+      } else if i == 58 {
+        b'\x00'
+      } else if i == 59 {
+        b'\x06'
 
-      // glyph 0 at 0x80: same as mk_min_ttf_with_one_simple_glyph
-    } else if i == 0x80 {
-      b'\x00'
-    } else if i == 0x81 {
-      b'\x01'
-    } else if i == 0x86 {
-      b'\x00'
-    } else if i == 0x87 {
-      b'\x32'
-    } else if i == 0x88 {
-      b'\x00'
-    } else if i == 0x89 {
-      b'\x32'
-    } else if i == 0x8A {
-      b'\x00'
-    } else if i == 0x8B {
-      b'\x02'
-    } else if i == 0x8C {
-      b'\x00'
-    } else if i == 0x8D {
-      b'\x00'
-    } else if i == 0x8E {
-      b'\x01'
-    } else if i == 0x8F {
-      b'\x01'
-    } else if i == 0x90 {
-      b'\x01'
-    } else if i == 0x91 {
-      b'\x00'
-    } else if i == 0x92 {
-      b'\x00'
-    } else if i == 0x93 {
-      b'\x00'
-    } else if i == 0x94 {
-      b'\x32'
-    } else if i == 0x95 {
-      b'\xFF'
-    } else if i == 0x96 {
-      b'\xCE'
-    } else if i == 0x97 {
-      b'\x00'
-    } else if i == 0x98 {
-      b'\x00'
-    } else if i == 0x99 {
-      b'\x00'
-    } else if i == 0x9A {
-      b'\x00'
-    } else if i == 0x9B {
-      b'\x00'
-    } else if i == 0x9C {
-      b'\x32'
+        // glyph 0 at 0x80: same as mk_min_ttf_with_one_simple_glyph
+      } else if i == 0x80 {
+        b'\x00'
+      } else if i == 0x81 {
+        b'\x01'
+      } else if i == 0x86 {
+        b'\x00'
+      } else if i == 0x87 {
+        b'\x32'
+      } else if i == 0x88 {
+        b'\x00'
+      } else if i == 0x89 {
+        b'\x32'
+      } else if i == 0x8A {
+        b'\x00'
+      } else if i == 0x8B {
+        b'\x02'
+      } else if i == 0x8C {
+        b'\x00'
+      } else if i == 0x8D {
+        b'\x00'
+      } else if i == 0x8E {
+        b'\x01'
+      } else if i == 0x8F {
+        b'\x01'
+      } else if i == 0x90 {
+        b'\x01'
+      } else if i == 0x91 {
+        b'\x00'
+      } else if i == 0x92 {
+        b'\x00'
+      } else if i == 0x93 {
+        b'\x00'
+      } else if i == 0x94 {
+        b'\x32'
+      } else if i == 0x95 {
+        b'\xFF'
+      } else if i == 0x96 {
+        b'\xCE'
+      } else if i == 0x97 {
+        b'\x00'
+      } else if i == 0x98 {
+        b'\x00'
+      } else if i == 0x99 {
+        b'\x00'
+      } else if i == 0x9A {
+        b'\x00'
+      } else if i == 0x9B {
+        b'\x00'
+      } else if i == 0x9C {
+        b'\x32'
 
-      // glyph 1 at 0x80 + 30 = 0x9E:
-      // numberOfContours=-1, flags=ARGS_ARE_WORDS|ARGS_ARE_XY_VALUES, glyphIndex=0, dx=100, dy=0.
-    } else if i == 0x9E {
-      b'\xFF'
-    } else if i == 0x9F {
-      b'\xFF'
-    } else if i == 0xA8 {
-      b'\x00'
-    } else if i == 0xA9 {
-      b'\x03' // flags=0x0003
-    } else if i == 0xAA {
-      b'\x00'
-    } else if i == 0xAB {
-      b'\x00' // glyphIndex=0
-    } else if i == 0xAC {
-      b'\x00'
-    } else if i == 0xAD {
-      b'\x64' // dx=100
-    } else if i == 0xAE {
-      b'\x00'
-    } else if i == 0xAF {
-      b'\x00' // dy=0
+        // glyph 1 at 0x80 + 30 = 0x9E:
+        // numberOfContours=-1, flags=ARGS_ARE_WORDS|ARGS_ARE_XY_VALUES, glyphIndex=0, dx=100, dy=0.
+      } else if i == 0x9E {
+        b'\xFF'
+      } else if i == 0x9F {
+        b'\xFF'
+      } else if i == 0xA8 {
+        b'\x00'
+      } else if i == 0xA9 {
+        b'\x03' // flags=0x0003
+      } else if i == 0xAA {
+        b'\x00'
+      } else if i == 0xAB {
+        b'\x00' // glyphIndex=0
+      } else if i == 0xAC {
+        b'\x00'
+      } else if i == 0xAD {
+        b'\x64' // dx=100
+      } else if i == 0xAE {
+        b'\x00'
+      } else if i == 0xAF {
+        b'\x00' // dy=0
 
-      // head table at 0xA0: unitsPerEm=1000, indexToLocFormat=0.
-    } else if i == 0xA0 + 18 {
-      b'\x03'
-    } else if i == 0xA0 + 19 {
-      b'\xE8'
-    } else if i == 0xA0 + 50 {
-      b'\x00'
-    } else if i == 0xA0 + 51 {
-      b'\x00'
+        // head table at 0xA0: unitsPerEm=1000, indexToLocFormat=0.
+      } else if i == 0xA0 + 18 {
+        b'\x03'
+      } else if i == 0xA0 + 19 {
+        b'\xE8'
+      } else if i == 0xA0 + 50 {
+        b'\x00'
+      } else if i == 0xA0 + 51 {
+        b'\x00'
 
-      // loca at 0xE0: [0,15,25]
-    } else if i == 0xE2 {
-      b'\x00'
-    } else if i == 0xE3 {
-      b'\x0F'
-    } else if i == 0xE4 {
-      b'\x00'
-    } else if i == 0xE5 {
-      b'\x19'
-    } else {
-      b'\x00'
+        // loca at 0xE0: [0,15,25]
+      } else if i == 0xE2 {
+        b'\x00'
+      } else if i == 0xE3 {
+        b'\x0F'
+      } else if i == 0xE4 {
+        b'\x00'
+      } else if i == 0xE5 {
+        b'\x19'
+      } else {
+        b'\x00'
+      }
     },
   )
 }

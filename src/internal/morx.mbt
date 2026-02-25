@@ -929,7 +929,7 @@ pub fn morx_language_index(
     if len < 0 || !b.check_range(off, len) {
       return None
     }
-    let bytes = view.sub(start=off, end=off + len)
+    let bytes = view[off:off + len]
     if bytes.equal(name) {
       return Some(i)
     }

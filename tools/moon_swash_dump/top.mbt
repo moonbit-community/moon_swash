@@ -68,6 +68,54 @@ fn parse_size(s : String) -> Double? {
   Some((int_part + frac_part) * sign)
 }
 
+fn strike_with_to_string(mode : @scale.StrikeWith) -> String {
+  match mode {
+    @scale.StrikeWith::ExactSize => "ExactSize"
+    @scale.StrikeWith::BestFit => "BestFit"
+    @scale.StrikeWith::LargestSize => "LargestSize"
+    @scale.StrikeWith::Index(i) => "Index(\{i})"
+  }
+}
+
+fn source_to_string(source : @scale.Source) -> String {
+  match source {
+    @scale.Source::Outline => "Outline"
+    @scale.Source::ColorOutline(ix) => "ColorOutline(\{ix})"
+    @scale.Source::Bitmap(mode) => "Bitmap(\{strike_with_to_string(mode)})"
+    @scale.Source::ColorBitmap(mode) =>
+      "ColorBitmap(\{strike_with_to_string(mode)})"
+  }
+}
+
+fn content_to_string(content : @scale.Content) -> String {
+  match content {
+    @scale.Content::Mask => "Mask"
+    @scale.Content::SubpixelMask => "SubpixelMask"
+    @scale.Content::Color => "Color"
+  }
+}
+
+fn verb_to_string(v : @zeno.Verb) -> String {
+  match v {
+    @zeno.Verb::MoveTo => "MoveTo"
+    @zeno.Verb::LineTo => "LineTo"
+    @zeno.Verb::QuadTo => "QuadTo"
+    @zeno.Verb::CurveTo => "CurveTo"
+    @zeno.Verb::Close => "Close"
+  }
+}
+
+fn byte_stats(data : ArrayView[Byte]) -> (UInt64, UInt64) {
+  let mut sum : UInt64 = 0
+  let mut xor : UInt64 = 0
+  for b in data {
+    let u = b.to_int().to_uint64()
+    sum = sum + u
+    xor = xor ^ u
+  }
+  (sum, xor)
+}
+
 fn write_json_escaped(s : String) -> Unit {
   @stdio.stdout.write_sync("\"") catch { _ => () }
   for ch in s {
@@ -83,6 +131,48 @@ fn write_json_escaped(s : String) -> Unit {
   @stdio.stdout.write_sync("\"") catch { _ => () }
 }
 
+fn write_image_json(image : @scale.Image?) -> Unit {
+  match image {
+    None => {
+      @stdio.stdout.write_sync("{\"ok\":false}") catch { _ => () }
+    }
+    Some(img) => {
+      let p = img.placement()
+      let data = img.data_view()
+      let (sum, xor) = byte_stats(data)
+      @stdio.stdout.write_sync("{\"ok\":true") catch { _ => () }
+      @stdio.stdout.write_sync(",\"source\":") catch { _ => () }
+      write_json_escaped(source_to_string(img.source()))
+      @stdio.stdout.write_sync(",\"content\":") catch { _ => () }
+      write_json_escaped(content_to_string(img.content()))
+      @stdio.stdout.write_sync(",\"placement\":[") catch { _ => () }
+      @stdio.stdout.write_sync(p.left.to_string()) catch { _ => () }
+      @stdio.stdout.write_sync(",") catch { _ => () }
+      @stdio.stdout.write_sync(p.top.to_string()) catch { _ => () }
+      @stdio.stdout.write_sync(",") catch { _ => () }
+      @stdio.stdout.write_sync(p.width.to_string()) catch { _ => () }
+      @stdio.stdout.write_sync(",") catch { _ => () }
+      @stdio.stdout.write_sync(p.height.to_string()) catch { _ => () }
+      @stdio.stdout.write_sync("]") catch { _ => () }
+      @stdio.stdout.write_sync(",\"data_len\":") catch { _ => () }
+      @stdio.stdout.write_sync(data.length().to_string()) catch { _ => () }
+      @stdio.stdout.write_sync(",\"data_sum\":") catch { _ => () }
+      @stdio.stdout.write_sync(sum.to_string()) catch { _ => () }
+      @stdio.stdout.write_sync(",\"data_xor\":") catch { _ => () }
+      @stdio.stdout.write_sync(xor.to_string()) catch { _ => () }
+      @stdio.stdout.write_sync(",\"sample\":[") catch { _ => () }
+      let limit = if data.length() < 16 { data.length() } else { 16 }
+      for i in 0..<limit {
+        if i != 0 {
+          @stdio.stdout.write_sync(",") catch { _ => () }
+        }
+        @stdio.stdout.write_sync(data[i].to_int().to_string()) catch { _ => () }
+      }
+      @stdio.stdout.write_sync("]}") catch { _ => () }
+    }
+  }
+}
+
 fn dump_and_write_json(
   font_path : String,
   text : String,
@@ -94,9 +184,32 @@ fn dump_and_write_json(
   }
   let data = data.unwrap()
   let bytes = data.binary()
-  let font = match @swash.FontRef::from_offset(bytes, 0) {
+  let font = match @swash.FontRef::from_index(bytes, 0) {
     None => return false
     Some(f) => f
+  }
+  let metrics = font.metrics([][:])
+  let attrs = font.attributes()
+  let (stretch, weight, style) = attrs.parts()
+  let mut feature_count = 0
+  for _ in font.features().iter() {
+    feature_count = feature_count + 1
+  }
+  let mut writing_system_count = 0
+  for _ in font.writing_systems().iter() {
+    writing_system_count = writing_system_count + 1
+  }
+  let color_palette_count = font.color_palettes().len()
+  let alpha_strike_count = font.alpha_strikes().len()
+  let color_strike_count = font.color_strikes().len()
+
+  let charmap = @swash.Charmap::from_font(font)
+  let codepoints : Array[UInt] = []
+  let mapped_glyph_ids : Array[UInt16] = []
+  for ch in text {
+    let cp = ch.to_int().reinterpret_as_uint()
+    codepoints.push(cp)
+    mapped_glyph_ids.push(charmap.map(cp))
   }
 
   // Shape
@@ -115,6 +228,7 @@ fn dump_and_write_json(
     }
     clusters.push(gs)
   })
+  let shape_metrics = shaper.metrics()
 
   // Scale outline for a representative glyph.
   let glyph_id = pick_glyph_id(clusters)
@@ -129,6 +243,12 @@ fn dump_and_write_json(
   let has_color_outlines = scaler.has_color_outlines()
   let has_bitmaps = scaler.has_bitmaps()
   let has_color_bitmaps = scaler.has_color_bitmaps()
+  let glyph_metrics = font.glyph_metrics(coords.op_as_view())
+  let gm_advance_width = f64_round3(glyph_metrics.advance_width(glyph_id))
+  let gm_lsb = f64_round3(glyph_metrics.lsb(glyph_id))
+  let gm_advance_height = f64_round3(glyph_metrics.advance_height(glyph_id))
+  let gm_tsb = f64_round3(glyph_metrics.tsb(glyph_id))
+  let gm_vertical_origin = f64_round3(glyph_metrics.vertical_origin(glyph_id))
 
   let outline = @scale.Outline::new()
   let outline_ok = if glyph_id == 0 {
@@ -137,7 +257,7 @@ fn dump_and_write_json(
     scaler.scale_outline_into(glyph_id, outline)
   }
   let (min_x, min_y, max_x, max_y) = if outline_ok {
-    let b = @zeno.Bounds::from_points(outline.points())
+    let b = outline.bounds()
     (
       f64_round3(b.min.x()),
       f64_round3(b.min.y()),
@@ -147,6 +267,32 @@ fn dump_and_write_json(
   } else {
     (0.0, 0.0, 0.0, 0.0)
   }
+  let outline_alpha_img = @scale.Render::new([@scale.Source::Outline])
+    .format(@zeno.Format::Alpha)
+    .render(scaler, glyph_id)
+  let outline_subpixel_img = @scale.Render::new([@scale.Source::Outline])
+    .format(@zeno.Format::Subpixel)
+    .render(scaler, glyph_id)
+  let color_outline_img = if has_color_outlines {
+    @scale.Render::new([@scale.Source::ColorOutline((0).to_uint16())])
+    .format(@zeno.Format::Alpha)
+    .render(scaler, glyph_id)
+  } else {
+    None
+  }
+  let bitmap_img = if has_bitmaps {
+    @scale.Render::new([@scale.Source::Bitmap(@scale.StrikeWith::BestFit)])
+    .render(scaler, glyph_id)
+  } else {
+    None
+  }
+  let color_bitmap_img = if has_color_bitmaps {
+    @scale.Render::new(
+      [@scale.Source::ColorBitmap(@scale.StrikeWith::BestFit)],
+    ).render(scaler, glyph_id)
+  } else {
+    None
+  }
 
   // JSON
   @stdio.stdout.write_sync("{") catch { _ => () }
@@ -154,13 +300,42 @@ fn dump_and_write_json(
   @stdio.stdout.write_sync("\"font\":{") catch { _ => () }
   @stdio.stdout.write_sync("\"path\":") catch { _ => () }
   write_json_escaped(font_path)
-  let metrics = font.metrics([][:])
   @stdio.stdout.write_sync(",\"units_per_em\":") catch { _ => () }
   @stdio.stdout.write_sync(metrics.units_per_em.to_string()) catch { _ => () }
   @stdio.stdout.write_sync(",\"glyph_count\":") catch { _ => () }
   @stdio.stdout.write_sync(metrics.glyph_count.to_string()) catch { _ => () }
   @stdio.stdout.write_sync(",\"var_count\":") catch { _ => () }
   @stdio.stdout.write_sync(font.variations().len().to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"attributes\":") catch { _ => () }
+  write_json_escaped(attrs.to_string())
+  @stdio.stdout.write_sync(",\"stretch\":") catch { _ => () }
+  write_json_escaped(stretch.to_string())
+  @stdio.stdout.write_sync(",\"weight\":") catch { _ => () }
+  write_json_escaped(weight.to_string())
+  @stdio.stdout.write_sync(",\"style\":") catch { _ => () }
+  write_json_escaped(style.to_string())
+  @stdio.stdout.write_sync(",\"feature_count\":") catch { _ => () }
+  @stdio.stdout.write_sync(feature_count.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"writing_system_count\":") catch { _ => () }
+  @stdio.stdout.write_sync(writing_system_count.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"color_palette_count\":") catch { _ => () }
+  @stdio.stdout.write_sync(color_palette_count.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"alpha_strike_count\":") catch { _ => () }
+  @stdio.stdout.write_sync(alpha_strike_count.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"color_strike_count\":") catch { _ => () }
+  @stdio.stdout.write_sync(color_strike_count.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"cmap\":[") catch { _ => () }
+  for i in 0..<codepoints.length() {
+    if i != 0 {
+      @stdio.stdout.write_sync(",") catch { _ => () }
+    }
+    @stdio.stdout.write_sync("[") catch { _ => () }
+    @stdio.stdout.write_sync(codepoints[i].to_string()) catch { _ => () }
+    @stdio.stdout.write_sync(",") catch { _ => () }
+    @stdio.stdout.write_sync(mapped_glyph_ids[i].to_string()) catch { _ => () }
+    @stdio.stdout.write_sync("]") catch { _ => () }
+  }
+  @stdio.stdout.write_sync("]") catch { _ => () }
   @stdio.stdout.write_sync("},") catch { _ => () }
 
   @stdio.stdout.write_sync("\"shape\":{") catch { _ => () }
@@ -204,7 +379,42 @@ fn dump_and_write_json(
     }
     @stdio.stdout.write_sync("]}") catch { _ => () }
   }
-  @stdio.stdout.write_sync("]},") catch { _ => () }
+  @stdio.stdout.write_sync("],\"metrics\":{") catch { _ => () }
+  @stdio.stdout.write_sync("\"units_per_em\":") catch { _ => () }
+  @stdio.stdout.write_sync(shape_metrics.units_per_em.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"glyph_count\":") catch { _ => () }
+  @stdio.stdout.write_sync(shape_metrics.glyph_count.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"is_monospace\":") catch { _ => () }
+  @stdio.stdout.write_sync(shape_metrics.is_monospace.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"has_vertical_metrics\":") catch { _ => () }
+  @stdio.stdout.write_sync(shape_metrics.has_vertical_metrics.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"ascent\":") catch { _ => () }
+  @stdio.stdout.write_sync(f64_round3(shape_metrics.ascent).to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"descent\":") catch { _ => () }
+  @stdio.stdout.write_sync(f64_round3(shape_metrics.descent).to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"leading\":") catch { _ => () }
+  @stdio.stdout.write_sync(f64_round3(shape_metrics.leading).to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"vertical_ascent\":") catch { _ => () }
+  @stdio.stdout.write_sync(f64_round3(shape_metrics.vertical_ascent).to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"vertical_descent\":") catch { _ => () }
+  @stdio.stdout.write_sync(f64_round3(shape_metrics.vertical_descent).to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"vertical_leading\":") catch { _ => () }
+  @stdio.stdout.write_sync(f64_round3(shape_metrics.vertical_leading).to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"cap_height\":") catch { _ => () }
+  @stdio.stdout.write_sync(f64_round3(shape_metrics.cap_height).to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"x_height\":") catch { _ => () }
+  @stdio.stdout.write_sync(f64_round3(shape_metrics.x_height).to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"average_width\":") catch { _ => () }
+  @stdio.stdout.write_sync(f64_round3(shape_metrics.average_width).to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"max_width\":") catch { _ => () }
+  @stdio.stdout.write_sync(f64_round3(shape_metrics.max_width).to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"underline_offset\":") catch { _ => () }
+  @stdio.stdout.write_sync(f64_round3(shape_metrics.underline_offset).to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"strikeout_offset\":") catch { _ => () }
+  @stdio.stdout.write_sync(f64_round3(shape_metrics.strikeout_offset).to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"stroke_size\":") catch { _ => () }
+  @stdio.stdout.write_sync(f64_round3(shape_metrics.stroke_size).to_string()) catch { _ => () }
+  @stdio.stdout.write_sync("}},") catch { _ => () }
 
   @stdio.stdout.write_sync("\"scale\":{") catch { _ => () }
   @stdio.stdout.write_sync("\"size\":") catch { _ => () }
@@ -220,6 +430,26 @@ fn dump_and_write_json(
   @stdio.stdout.write_sync(has_bitmaps.to_string()) catch { _ => () }
   @stdio.stdout.write_sync(",\"has_color_bitmaps\":") catch { _ => () }
   @stdio.stdout.write_sync(has_color_bitmaps.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"glyph_metrics\":{") catch { _ => () }
+  @stdio.stdout.write_sync("\"units_per_em\":") catch { _ => () }
+  @stdio.stdout.write_sync(glyph_metrics.units_per_em().to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"glyph_count\":") catch { _ => () }
+  @stdio.stdout.write_sync(glyph_metrics.glyph_count().to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"has_vertical_metrics\":") catch { _ => () }
+  @stdio.stdout.write_sync(glyph_metrics.has_vertical_metrics().to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"has_variations\":") catch { _ => () }
+  @stdio.stdout.write_sync(glyph_metrics.has_variations().to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"advance_width\":") catch { _ => () }
+  @stdio.stdout.write_sync(gm_advance_width.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"lsb\":") catch { _ => () }
+  @stdio.stdout.write_sync(gm_lsb.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"advance_height\":") catch { _ => () }
+  @stdio.stdout.write_sync(gm_advance_height.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"tsb\":") catch { _ => () }
+  @stdio.stdout.write_sync(gm_tsb.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"vertical_origin\":") catch { _ => () }
+  @stdio.stdout.write_sync(gm_vertical_origin.to_string()) catch { _ => () }
+  @stdio.stdout.write_sync("}") catch { _ => () }
   @stdio.stdout.write_sync(",\"outline\":{") catch { _ => () }
   @stdio.stdout.write_sync("\"ok\":") catch { _ => () }
   @stdio.stdout.write_sync(outline_ok.to_string()) catch { _ => () }
@@ -229,6 +459,15 @@ fn dump_and_write_json(
   @stdio.stdout.write_sync(outline.points().length().to_string()) catch { _ => () }
   @stdio.stdout.write_sync(",\"verbs\":") catch { _ => () }
   @stdio.stdout.write_sync(outline.verbs().length().to_string()) catch { _ => () }
+  @stdio.stdout.write_sync(",\"verbs_seq\":[") catch { _ => () }
+  let outline_verbs = outline.verbs()
+  for i in 0..<outline_verbs.length() {
+    if i != 0 {
+      @stdio.stdout.write_sync(",") catch { _ => () }
+    }
+    write_json_escaped(verb_to_string(outline_verbs[i]))
+  }
+  @stdio.stdout.write_sync("]") catch { _ => () }
   @stdio.stdout.write_sync(",\"bounds\":[") catch { _ => () }
   @stdio.stdout.write_sync(min_x.to_string()) catch { _ => () }
   @stdio.stdout.write_sync(",") catch { _ => () }
@@ -237,7 +476,19 @@ fn dump_and_write_json(
   @stdio.stdout.write_sync(max_x.to_string()) catch { _ => () }
   @stdio.stdout.write_sync(",") catch { _ => () }
   @stdio.stdout.write_sync(max_y.to_string()) catch { _ => () }
-  @stdio.stdout.write_sync("]}}") catch { _ => () }
+  @stdio.stdout.write_sync("]}") catch { _ => () }
+  @stdio.stdout.write_sync(",\"render\":{") catch { _ => () }
+  @stdio.stdout.write_sync("\"outline_alpha\":") catch { _ => () }
+  write_image_json(outline_alpha_img)
+  @stdio.stdout.write_sync(",\"outline_subpixel\":") catch { _ => () }
+  write_image_json(outline_subpixel_img)
+  @stdio.stdout.write_sync(",\"color_outline_alpha\":") catch { _ => () }
+  write_image_json(color_outline_img)
+  @stdio.stdout.write_sync(",\"bitmap_best_fit\":") catch { _ => () }
+  write_image_json(bitmap_img)
+  @stdio.stdout.write_sync(",\"color_bitmap_best_fit\":") catch { _ => () }
+  write_image_json(color_bitmap_img)
+  @stdio.stdout.write_sync("}}") catch { _ => () }
 
   @stdio.stdout.write_sync("}") catch { _ => () }
   true

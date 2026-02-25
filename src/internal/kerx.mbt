@@ -125,9 +125,9 @@ pub fn KerxSubtable::kind(self : KerxSubtable) -> KerxSubtableKind? {
   match format {
     0U => KerxFormat0::new(self.b).map(x => KerxSubtableKind::Format0(x))
     1U =>
-      KerxFormat1::new(self.b, self.tuple_count).map(x => KerxSubtableKind::Format1(
-        x,
-      ))
+      KerxFormat1::new(self.b, self.tuple_count).map(x => {
+        KerxSubtableKind::Format1(x)
+      })
     2U => KerxFormat2::new(self.b).map(x => KerxSubtableKind::Format2(x))
     4U =>
       KerxFormat4::new(self.b, self.ankr).map(x => KerxSubtableKind::Format4(x))

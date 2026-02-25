@@ -52,9 +52,9 @@ test "shape.partition selects and partitions fonts by cluster" {
   ]
   let ids : Array[UInt64] = []
   let cx = ShapeContext::new()
-  shape(cx, selector, opts, tokens.iter(), (font, _shaper) => ids.push(
-    font.id_override().unwrap().0,
-  ))
+  shape(cx, selector, opts, tokens.iter(), (font, _shaper) => {
+    ids.push(font.id_override().unwrap().0)
+  })
   inspect(ids.length(), content="3")
   inspect(ids[0], content="1")
   inspect(ids[1], content="3")
