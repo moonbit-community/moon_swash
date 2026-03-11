@@ -152,7 +152,7 @@ fn parse_list_tokens(source : String) -> Iter[(Tag, StringView)] {
         }
         let (start, end) = trim_range(source, start0, end0)
         // Always safe: start/end are derived from bounds checks above.
-        let value = try! source[start:end]
+        let value = source[start:end]
         Some((tag, value))
       }
     }

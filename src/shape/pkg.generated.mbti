@@ -4,6 +4,7 @@ package "Milky2018/moon_swash/shape"
 import {
   "Milky2018/moon_swash",
   "Milky2018/moon_swash/internal",
+  "moonbitlang/core/ref",
 }
 
 // Values
@@ -106,7 +107,7 @@ pub struct Engine {
   use_ot : Bool
   mode : EngineMode
 }
-pub fn Engine::collect_features(Self, FeatureStoreBuilder, Ref[FeatureStore]) -> Unit
+pub fn Engine::collect_features(Self, FeatureStoreBuilder, @ref.Ref[FeatureStore]) -> Unit
 pub fn Engine::collect_selectors(Self, ArrayView[@moon_swash.Setting[UInt16]], Array[(UInt16, UInt16)]) -> Unit
 pub fn Engine::gpos(Self, FeatureStore, FeatureMask, Buffer, IndexRange?) -> Bool
 pub fn Engine::gsub(Self, FeatureStore, FeatureMask, Buffer, IndexRange?) -> Bool
@@ -188,7 +189,7 @@ pub struct FeatureStoreBuilder {
   coverage : CoverageBuilder
   mut next_bit : UInt16
 }
-pub fn FeatureStoreBuilder::build(Self, Ref[FeatureStore], Bytes, ArrayView[Int], @internal.Gdef, StageOffsets, StageOffsets) -> Unit
+pub fn FeatureStoreBuilder::build(Self, @ref.Ref[FeatureStore], Bytes, ArrayView[Int], @internal.Gdef, StageOffsets, StageOffsets) -> Unit
 pub fn FeatureStoreBuilder::default() -> Self
 
 pub struct FontEntry {
@@ -299,7 +300,7 @@ pub fn SelectedFont::with_id_override(Self, (UInt64, UInt64)) -> Self
 pub fn SelectedFont::with_synthesis(Self, @moon_swash.Synthesis) -> Self
 
 pub struct ShapeContext {
-  inner : Ref[ContextState]
+  inner : @ref.Ref[ContextState]
 }
 pub fn ShapeContext::builder(Self, @moon_swash.FontRef) -> ShaperBuilder
 pub fn ShapeContext::builder_with_id(Self, @moon_swash.FontRef, (UInt64, UInt64)) -> ShaperBuilder
@@ -307,11 +308,11 @@ pub fn ShapeContext::new() -> Self
 pub fn ShapeContext::with_max_entries(Int) -> Self
 
 pub struct Shaper {
-  cx : Ref[ContextState]
+  cx : @ref.Ref[ContextState]
   font : @moon_swash.FontRef
   id0 : UInt64
   id1 : UInt64
-  font_entry : Ref[FontEntry]
+  font_entry : @ref.Ref[FontEntry]
   charmap : @moon_swash.Charmap
   size : Double
   script : @moon_swash.Script
@@ -320,7 +321,7 @@ pub struct Shaper {
   retain_ignorables : Bool
   joined : Bool
   engine : Engine
-  store : Ref[FeatureStore]?
+  store : @ref.Ref[FeatureStore]?
   sub_mask : FeatureMask
   pos_mask : FeatureMask
 }
@@ -331,7 +332,7 @@ pub fn Shaper::normalized_coords(Self) -> ArrayView[Int]
 pub fn Shaper::shape_with(Self, (GlyphCluster) -> Unit) -> Unit
 
 pub struct ShaperBuilder {
-  cx : Ref[ContextState]
+  cx : @ref.Ref[ContextState]
   font : @moon_swash.FontRef
   id0 : UInt64
   id1 : UInt64
@@ -339,7 +340,7 @@ pub struct ShaperBuilder {
   script : @moon_swash.Script
   language : @moon_swash.Language?
   direction : Direction
-  font_entry : Ref[FontEntry]
+  font_entry : @ref.Ref[FontEntry]
   charmap : @moon_swash.Charmap
   dotted_circle : UInt16?
   retain_ignorables : Bool

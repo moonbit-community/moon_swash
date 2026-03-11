@@ -1,40 +1,38 @@
 # Milky2018/moon_swash
 
-MoonBit port of the Rust `swash` reference implementation.
-
-This repo provides:
-- Font metadata APIs (`FontRef`, attributes, localized strings, variation axes/instances, metrics, palettes, strikes).
-- Text shaping (`Milky2018/moon_swash/shape`).
-- Scaling and rendering (`Milky2018/moon_swash/scale`).
+MoonBit port of Rust `swash` for font metadata, text shaping, and glyph scaling/rendering.
 
 ## Install
 
-Add dependencies in your `moon.pkg.json`:
+Add imports in your `moon.pkg`:
 
-```json
-{
-  "import": [
-    { "path": "Milky2018/moon_swash", "alias": "swash" },
-    { "path": "Milky2018/moon_swash/shape", "alias": "swash_shape" },
-    { "path": "Milky2018/moon_swash/scale", "alias": "swash_scale" },
+```text
+import {
+  "Milky2018/moon_swash" @swash,
+  "Milky2018/moon_swash/shape" @swash_shape,
+  "Milky2018/moon_swash/scale" @swash_scale,
+}
+```
 
-    // Optional: API parity with upstream swash module paths
-    { "path": "Milky2018/moon_swash/iter", "alias": "swash_iter" },
-    { "path": "Milky2018/moon_swash/proxy", "alias": "swash_proxy" }
-  ]
+Optional modules:
+
+```text
+import {
+  "Milky2018/moon_swash/iter" @swash_iter,
+  "Milky2018/moon_swash/proxy" @swash_proxy,
 }
 ```
 
 ## Quickstart
 
-Load a font:
+### Load a Font
 
 ```moonbit
 let data : Bytes = ...
 let font = @swash.FontRef::from_offset(data, 0).unwrap()
 ```
 
-Shape a string:
+### Shape Text
 
 ```moonbit
 let cx = @swash_shape.ShapeContext::new()
@@ -46,7 +44,7 @@ shaper.shape_with(fn(cluster) {
 })
 ```
 
-Scale and render a glyph:
+### Scale and Render a Glyph
 
 ```moonbit
 let gid = font.charmap().map(('Q').to_int().reinterpret_as_uint())
@@ -67,76 +65,16 @@ let rgba8 = img.data_view()
 rgba8 |> ignore
 ```
 
-## SubpixelMask Notes
+## Modules
 
+- `Milky2018/moon_swash`: core font APIs (`FontRef`, attributes, metrics, variations, palettes, strikes).
+- `Milky2018/moon_swash/shape`: OpenType/AAT shaping and glyph clustering.
+- `Milky2018/moon_swash/scale`: outline/bitmap scaling and rendering.
+
+## SubpixelMask Notes
 - `Content::SubpixelMask` stores per-channel coverage in RGB; the alpha channel is unused by the rasterizer.
 - `Image::to_rgba8(base_color)` converts `Mask` / `SubpixelMask` into **premultiplied** RGBA8 and sets alpha to `max(r, g, b)` coverage (modulated by `base_color[3]`).
 - Use premultiplied-alpha blending when compositing (`src = 1`, `dst = 1 - srcA`).
-
-## API Compatibility Notes
-
-- `Milky2018/moon_swash/iter` and `Milky2018/moon_swash/proxy` exist for API parity with upstream swash module paths.
-- They currently provide stable type aliases (so downstream import paths match), while the underlying implementations live in the main packages.
-
-## Verify It Works
-
-Basic:
-
-```bash
-moon test
-moon check
-```
-
-Diff against an external reference dumper (requires `wasmtime`):
-
-```bash
-python3 tools/verify_reference.py \
-  --font /path/to/font.ttf \
-  --text "abc" \
-  --size 14 \
-  --ref-cmd /path/to/reference_dump_json
-```
-
-Matrix mode (repeatable `--font`, `--text`, `--size`):
-
-```bash
-python3 tools/verify_reference.py \
-  --font /path/to/font-a.ttf \
-  --font /path/to/font-b.ttf \
-  --text "abc" \
-  --text "Hello, world!" \
-  --size 12 \
-  --size 14 \
-  --ref-cmd /path/to/reference_dump_json
-```
-
-Case-file mode (`.json` / `.jsonl` entries like `{"font":"...","text":"...","size":14}`):
-
-```bash
-python3 tools/verify_reference.py \
-  --case-file /path/to/cases.jsonl \
-  --ref-cmd /path/to/reference_dump_json
-```
-
-Notes:
-- The verifier uses a numeric tolerance (default `--tol 0.02`) because outline floats may differ slightly between MoonBit and Rust.
-- For emoji/math-heavy fonts, use `--tol 0.05` to avoid small outline-bound jitter.
-- For strict schema checks, add `--strict-keys` (default mode allows extra MoonBit-only keys).
-
-## Development
-
-- `moon check` - lint/type-check
-- `moon test` - run tests
-- `moon fmt` - format
-- `moon info` - regenerate `.mbti` interface files
-
-Standard workflow before committing:
-
-```bash
-moon info && moon fmt
-moon test
-moon check
-```
 
 ## License
 

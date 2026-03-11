@@ -260,20 +260,12 @@ fn clamp_double(x : Double, lo : Double, hi : Double) -> Double {
 
 ///|
 fn slice_or_none(s : StringView, start : Int, end : Int) -> StringView? {
-  try s[start:end] catch {
-    _ => None
-  } noraise {
-    v => Some(v)
-  }
+  Some(s[start:end])
 }
 
 ///|
 fn slice_from_or_none(s : StringView, start : Int) -> StringView? {
-  try s[start:] catch {
-    _ => None
-  } noraise {
-    v => Some(v)
-  }
+  Some(s[start:])
 }
 
 ///|

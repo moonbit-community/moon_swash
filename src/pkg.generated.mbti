@@ -3,6 +3,7 @@ package "Milky2018/moon_swash"
 
 import {
   "Milky2018/moon_swash/internal",
+  "moonbitlang/core/ref",
 }
 
 // Values
@@ -717,7 +718,7 @@ pub struct FontCache[T] {
   max_entries : Int
   mut epoch : UInt64
 }
-pub fn[T] FontCache::get(Self[T], FontRef, (UInt64, UInt64)?, (FontRef) -> T) -> ((UInt64, UInt64), Ref[T])
+pub fn[T] FontCache::get(Self[T], FontRef, (UInt64, UInt64)?, (FontRef) -> T) -> ((UInt64, UInt64), @ref.Ref[T])
 pub fn[T] FontCache::new(Int) -> Self[T]
 
 pub struct FontDataRef {
