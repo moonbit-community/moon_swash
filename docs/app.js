@@ -7,6 +7,32 @@ import {
   ConsoleStdout,
 } from "https://cdn.jsdelivr.net/npm/@bjorn3/browser_wasi_shim@0.4.2/+esm";
 
+const CUSTOM_FONT_ID = "custom";
+
+const FONT_PRESETS = [
+  {
+    id: "noto-naskh-arabic",
+    label: "Noto Naskh Arabic (Bundled)",
+    file: "NotoNaskhArabic-wght.ttf",
+    licenseFile: "NotoNaskhArabic-OFL.txt",
+    licenseLabel: "OFL-1.1",
+  },
+  {
+    id: "noto-sans-latin",
+    label: "Noto Sans (Bundled)",
+    file: "NotoSans-Latin-wght.ttf",
+    licenseFile: "NotoSans-OFL.txt",
+    licenseLabel: "OFL-1.1",
+  },
+  {
+    id: "noto-sans-hebrew",
+    label: "Noto Sans Hebrew (Bundled)",
+    file: "NotoSansHebrew-wght.ttf",
+    licenseFile: "NotoSansHebrew-OFL.txt",
+    licenseLabel: "OFL-1.1",
+  },
+];
+
 const $ = (id) => document.getElementById(id);
 
 const ui = {
@@ -14,6 +40,7 @@ const ui = {
   size: $("size"),
   script: $("script"),
   direction: $("direction"),
+  fontPreset: $("font-preset"),
   font: $("font"),
   render: $("render"),
   download: $("download"),
@@ -21,11 +48,12 @@ const ui = {
   viewer: $("viewer"),
   raw: $("raw"),
   fontMeta: $("font-meta"),
+  fontLicenseLink: $("font-license-link"),
 };
 
 const state = {
   wasmModule: null,
-  defaultFont: null,
+  presetFontBytes: new Map(),
   customFont: null,
   customFontName: "",
   lastSvg: "",
@@ -44,6 +72,39 @@ function getBytesText(bytes) {
   return new TextDecoder().decode(bytes);
 }
 
+function getPresetById(id) {
+  return FONT_PRESETS.find((preset) => preset.id === id) || null;
+}
+
+function getSelectedPreset() {
+  const preset = getPresetById(ui.fontPreset.value);
+  if (!preset) {
+    throw new Error(`Unknown font preset: ${ui.fontPreset.value}`);
+  }
+  return preset;
+}
+
+function updateFontUi() {
+  const usingCustom = ui.fontPreset.value === CUSTOM_FONT_ID;
+  ui.font.disabled = usingCustom ? false : true;
+
+  if (usingCustom) {
+    if (state.customFontName) {
+      ui.fontMeta.textContent = `Current font: ${state.customFontName} (Custom Upload)`;
+    } else {
+      ui.fontMeta.textContent = "Current font: Custom Upload (pick a font file first)";
+    }
+    ui.fontLicenseLink.textContent = "User-provided";
+    ui.fontLicenseLink.removeAttribute("href");
+    return;
+  }
+
+  const preset = getSelectedPreset();
+  ui.fontMeta.textContent = `Current font: ${preset.label}`;
+  ui.fontLicenseLink.textContent = preset.licenseLabel;
+  ui.fontLicenseLink.href = `./assets/${preset.licenseFile}`;
+}
+
 async function loadWasmModule() {
   if (state.wasmModule) {
     return state.wasmModule;
@@ -57,23 +118,41 @@ async function loadWasmModule() {
   return state.wasmModule;
 }
 
-async function loadDefaultFont() {
-  if (state.defaultFont) {
-    return state.defaultFont;
+async function loadPresetFont(preset) {
+  if (state.presetFontBytes.has(preset.id)) {
+    return state.presetFontBytes.get(preset.id);
   }
-  const resp = await fetch("./assets/NotoNaskhArabic-wght.ttf");
+  const resp = await fetch(`./assets/${preset.file}`);
   if (!resp.ok) {
-    throw new Error(`Failed to load default font: HTTP ${resp.status}`);
+    throw new Error(`Failed to load bundled font ${preset.file}: HTTP ${resp.status}`);
   }
-  state.defaultFont = await resp.arrayBuffer();
-  return state.defaultFont;
+  const bytes = await resp.arrayBuffer();
+  state.presetFontBytes.set(preset.id, bytes);
+  return bytes;
+}
+
+async function resolveActiveFont() {
+  if (ui.fontPreset.value === CUSTOM_FONT_ID) {
+    if (!state.customFont) {
+      throw new Error("Custom Upload is selected, but no font file is loaded.");
+    }
+    return {
+      bytes: state.customFont,
+      displayName: state.customFontName || "custom-font.ttf",
+    };
+  }
+
+  const preset = getSelectedPreset();
+  return {
+    bytes: await loadPresetFont(preset),
+    displayName: preset.file,
+  };
 }
 
 async function readCustomFont(file) {
   const bytes = await file.arrayBuffer();
   state.customFont = bytes;
   state.customFontName = file.name;
-  ui.fontMeta.textContent = `Using custom font: ${file.name}`;
 }
 
 async function runSvgDump({ text, size, script, direction, fontBytes }) {
@@ -140,10 +219,32 @@ async function runSvgDump({ text, size, script, direction, fontBytes }) {
 function setBusy(busy) {
   ui.render.disabled = busy;
   ui.download.disabled = busy || !state.lastSvg;
+  ui.fontPreset.disabled = busy;
+  if (busy) {
+    ui.font.disabled = true;
+  } else {
+    updateFontUi();
+  }
 }
 
 function renderSvg(svg) {
   ui.viewer.innerHTML = svg;
+  const svgNode = ui.viewer.querySelector("svg");
+  if (svgNode) {
+    const viewBox = svgNode.getAttribute("viewBox");
+    if (viewBox) {
+      const nums = viewBox
+        .trim()
+        .split(/\s+/)
+        .map((v) => Number(v));
+      if (nums.length === 4 && Number.isFinite(nums[2]) && Number.isFinite(nums[3])) {
+        if (nums[2] > 0 && nums[3] > 0) {
+          svgNode.setAttribute("width", String(nums[2]));
+          svgNode.setAttribute("height", String(nums[3]));
+        }
+      }
+    }
+  }
   ui.raw.textContent = svg;
   state.lastSvg = svg;
   ui.download.disabled = false;
@@ -169,11 +270,18 @@ async function doRender() {
   setStatus("Rendering SVG with moon_swash...");
 
   try {
-    const fontBytes = state.customFont || (await loadDefaultFont());
-    const svg = await runSvgDump({ text, size, script, direction, fontBytes });
+    const activeFont = await resolveActiveFont();
+    const svg = await runSvgDump({
+      text,
+      size,
+      script,
+      direction,
+      fontBytes: activeFont.bytes,
+    });
     renderSvg(svg);
-    const fontName = state.customFontName || "NotoNaskhArabic-wght.ttf";
-    setStatus(`Rendered successfully. size=${size}, script=${script}, direction=${direction}, font=${fontName}`);
+    setStatus(
+      `Rendered successfully. size=${size}, script=${script}, direction=${direction}, font=${activeFont.displayName}`
+    );
   } catch (err) {
     console.error(err);
     setStatus(`Render failed: ${err instanceof Error ? err.message : String(err)}`, true);
@@ -203,16 +311,36 @@ ui.download.addEventListener("click", () => {
   downloadSvg();
 });
 
+ui.fontPreset.addEventListener("change", async () => {
+  updateFontUi();
+
+  if (ui.fontPreset.value === CUSTOM_FONT_ID) {
+    setStatus("Custom Upload selected. Pick a font file and render.");
+    return;
+  }
+
+  try {
+    const preset = getSelectedPreset();
+    await loadPresetFont(preset);
+    setStatus(`Ready. Active font: ${preset.label}`);
+  } catch (err) {
+    setStatus(`Failed to load bundled font: ${err instanceof Error ? err.message : String(err)}`, true);
+  }
+});
+
 ui.font.addEventListener("change", async (ev) => {
   const file = ev.target.files && ev.target.files[0];
   if (!file) {
     state.customFont = null;
     state.customFontName = "";
-    ui.fontMeta.textContent = "Default font: Noto Naskh Arabic (OFL-1.1)";
+    updateFontUi();
     return;
   }
+
   try {
     await readCustomFont(file);
+    ui.fontPreset.value = CUSTOM_FONT_ID;
+    updateFontUi();
     setStatus(`Loaded custom font: ${file.name}`);
   } catch (err) {
     state.customFont = null;
@@ -223,8 +351,12 @@ ui.font.addEventListener("change", async (ev) => {
 
 window.addEventListener("DOMContentLoaded", async () => {
   try {
-    setStatus("Loading wasm and default font...");
-    await Promise.all([loadWasmModule(), loadDefaultFont()]);
+    const defaultPreset = FONT_PRESETS[0];
+    ui.fontPreset.value = defaultPreset.id;
+    updateFontUi();
+
+    setStatus("Loading wasm and bundled fonts...");
+    await Promise.all([loadWasmModule(), loadPresetFont(defaultPreset)]);
     setStatus("Ready. Click Render SVG.");
     await doRender();
   } catch (err) {

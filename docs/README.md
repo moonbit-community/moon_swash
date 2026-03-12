@@ -5,9 +5,10 @@ This folder contains a static web demo for `moon_swash` shaping output.
 ## What it does
 
 - Lets users input text, size, script, and direction.
+- Lets users choose bundled fonts from a dropdown.
 - Runs `moon_swash_svg_dump.wasm` in-browser via WASI shim.
 - Renders the resulting SVG directly on the page.
-- Supports custom font upload, with a bundled default Arabic font.
+- Supports custom font upload.
 
 ## Local preview
 
@@ -26,8 +27,10 @@ Then open:
 - `index.html`: demo UI
 - `app.js`: in-browser WASI execution and rendering logic
 - `assets/moon_swash_svg_dump.wasm`: shaping-to-SVG wasm binary
-- `assets/NotoNaskhArabic-wght.ttf`: default demo font
-- `assets/NotoNaskhArabic-OFL.txt`: font license
+- `assets/NotoNaskhArabic-wght.ttf`: bundled Arabic font
+- `assets/NotoSans-Latin-wght.ttf`: bundled Latin font
+- `assets/NotoSansHebrew-wght.ttf`: bundled Hebrew font
+- `assets/*-OFL.txt`: bundled font licenses
 - `wasm/moon_swash_svg_dump/`: wasm source package (tracked, no private dependency)
 
 ## Rebuild wasm asset
@@ -40,4 +43,4 @@ From repo root:
 
 ## GitHub Pages
 
-Set repository GitHub Pages source to `main` branch, `/docs` folder.
+Set repository GitHub Pages source to `master` branch, `/docs` folder.
