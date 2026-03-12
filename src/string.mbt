@@ -153,6 +153,8 @@ pub struct LocalizedStrings {
   b : @internal.BeBytes
   len : Int
   storage : Int
+
+  fn new(data : BytesView) -> LocalizedStrings
 }
 
 ///|
@@ -171,8 +173,8 @@ fn LocalizedStrings::new(data : BytesView) -> LocalizedStrings {
 ///|
 pub fn FontRef::localized_strings(self : FontRef) -> LocalizedStrings {
   match self.table_data(NAME) {
-    None => LocalizedStrings::new(empty_view())
-    Some(v) => LocalizedStrings::new(v)
+    None => LocalizedStrings(empty_view())
+    Some(v) => LocalizedStrings(v)
   }
 }
 

@@ -20,6 +20,8 @@
 ///|
 pub struct BeBytes {
   data : BytesView
+
+  fn new(data : Bytes) -> BeBytes
 }
 
 ///|
@@ -189,6 +191,8 @@ pub fn BeBytes::read_i16(self : BeBytes, offset : Int) -> Int? {
 pub struct Stream {
   data : BytesView
   mut offset : Int
+
+  fn new(data : Bytes) -> Stream
 }
 
 ///|

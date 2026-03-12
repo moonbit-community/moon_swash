@@ -135,6 +135,14 @@ pub struct Engine {
   pos_mode : PosMode
   use_ot : Bool
   mode : EngineMode
+
+  fn new(
+    metadata : EngineMetadata,
+    font_data : Bytes,
+    coords : ArrayView[Int],
+    script : @swash.Script,
+    language : @swash.Language?,
+  ) -> Engine
 }
 
 ///|

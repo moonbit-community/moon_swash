@@ -27,7 +27,7 @@ pub struct Gdef {
 
 ///|
 pub fn Gdef::new(data : Bytes, base : Int) -> Gdef? {
-  let b = BeBytes::new(data)
+  let b = BeBytes(data)
   let major = b.read_u16(base).unwrap_or(0).to_uint16()
   let minor = b.read_u16(base + 2).unwrap_or(0).to_uint16()
   let classes = match b.read_u16(base + 4) {
@@ -131,7 +131,7 @@ pub fn Gdef::mark_set_offset(self : Gdef, set_index : UInt16) -> UInt? {
     return None
   }
   let set = set_index.to_int()
-  let b = BeBytes::new(self.data)
+  let b = BeBytes(self.data)
   let sets_base = self.base + self.mark_sets.to_int()
   let len = match b.read_u16(sets_base + 2) {
     None => return None
@@ -191,7 +191,7 @@ pub fn validate_coverage(b : Bytes, coverage_offset : UInt) -> Bool {
   }
   let base = coverage_offset.reinterpret_as_int()
   let arr = base + 4
-  let bb = BeBytes::new(b)
+  let bb = BeBytes(b)
   match (bb.read_u16(base), bb.read_u16(base + 2)) {
     (Some(_), Some(len_u)) if len_u == 0 => false
     (Some(fmt_u), Some(len_u)) => {
@@ -219,7 +219,7 @@ pub fn coverage(
     return None
   }
   let base = coverage_offset.reinterpret_as_int()
-  let bb = BeBytes::new(b)
+  let bb = BeBytes(b)
   let fmt = match bb.read_u16(base) {
     None => return None
     Some(v) => v.reinterpret_as_int()
@@ -294,7 +294,7 @@ pub fn classdef(b : Bytes, classdef_offset : UInt, glyph_id : UInt16) -> UInt16 
     return (0).to_uint16()
   }
   let base = classdef_offset.reinterpret_as_int()
-  let bb = BeBytes::new(b)
+  let bb = BeBytes(b)
   let fmt = bb.read_u16(base).unwrap_or(0).reinterpret_as_int()
   let gid : UInt16 = glyph_id
   if fmt == 1 {

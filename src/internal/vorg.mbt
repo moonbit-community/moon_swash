@@ -24,7 +24,7 @@ pub fn origin(data : Bytes, vorg : UInt, glyph_id : UInt) -> Int? {
   if vorg == 0 {
     return None
   }
-  let b = BeBytes::new(data)
+  let b = BeBytes(data)
   let base = vorg.reinterpret_as_int()
   let default = match b.read_i16(base + 4) {
     None => return None

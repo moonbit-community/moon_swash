@@ -35,7 +35,7 @@ fn WordBreakStrength::default() -> WordBreakStrength {
 /// Returns an iterator yielding unicode properties and boundary analysis for
 /// each character in the specified sequence.
 pub fn analyze(chars : Iter[Char]) -> Analyze {
-  Analyze::{ chars: CharStream::new(chars), state: BoundaryState::new() }
+  Analyze::{ chars: CharStream(chars), state: BoundaryState() }
 }
 
 ///|
@@ -77,6 +77,8 @@ struct CharStream {
   mut buf : Array[Char]
   mut buf_offset : Int
   mut done : Bool
+
+  fn new(iter : Iter[Char]) -> CharStream
 }
 
 ///|
@@ -139,6 +141,8 @@ struct BoundaryState {
   mut line_state : (UInt, LineBreak?)
   mut first : Bool
   mut needs_bidi : Bool
+
+  fn new() -> BoundaryState
 }
 
 ///|

@@ -29,7 +29,7 @@ pub fn advance(
   long_metric_count : UInt,
   glyph_id : UInt,
 ) -> UInt {
-  let b = BeBytes::new(data)
+  let b = BeBytes(data)
   let offset = if glyph_id < long_metric_count {
     glyph_id.reinterpret_as_int() * 4
   } else {
@@ -47,7 +47,7 @@ pub fn sb(
   long_metric_count : UInt,
   glyph_id : UInt,
 ) -> Int {
-  let b = BeBytes::new(data)
+  let b = BeBytes(data)
   let offset = if glyph_id < long_metric_count {
     glyph_id.reinterpret_as_int() * 4 + 2
   } else {

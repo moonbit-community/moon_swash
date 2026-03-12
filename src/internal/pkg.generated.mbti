@@ -193,6 +193,8 @@ pub(all) struct AatEntry[T] {
 
 pub struct BeBytes {
   data : BytesView
+
+  fn new(Bytes) -> BeBytes
 }
 pub fn BeBytes::check_range(Self, Int, Int) -> Bool
 pub fn BeBytes::data(Self) -> BytesView
@@ -261,6 +263,8 @@ pub struct Fvar {
   axis_size : UInt
   inst_count : UInt
   inst_size : UInt
+
+  fn new(BytesView) -> Fvar
 }
 pub fn Fvar::axis_count(Self) -> UInt
 pub fn[T : RawFont] Fvar::from_font(T) -> Self?
@@ -293,6 +297,8 @@ pub fn Gdef::ok(Self) -> Bool
 
 pub struct Head {
   data : BytesView
+
+  fn new(BytesView) -> Head
 }
 pub fn Head::bounds(Self) -> ((Int, Int), (Int, Int))
 pub fn Head::checksum_adjustment(Self) -> UInt
@@ -314,6 +320,8 @@ pub fn Head::units_per_em(Self) -> UInt
 
 pub struct Hhea {
   data : BytesView
+
+  fn new(BytesView) -> Hhea
 }
 pub fn Hhea::ascender(Self) -> Int
 pub fn Hhea::descender(Self) -> Int
@@ -342,6 +350,8 @@ pub struct KernFormat1State {
   stack : Array[Int]
   mut pos : Int
   mut cycles : Int
+
+  fn new() -> KernFormat1State
 }
 pub fn KernFormat1State::new() -> Self
 
@@ -384,6 +394,8 @@ pub struct KerxContextualState {
   stack : Array[Int]
   mut pos : Int
   mut cycles : Int
+
+  fn new() -> KerxContextualState
 }
 pub fn KerxContextualState::new() -> Self
 
@@ -424,6 +436,8 @@ pub struct KerxFormat4State {
   mut mark : Int
   mut mark_id : UInt16
   mut cycles : Int
+
+  fn new() -> KerxFormat4State
 }
 pub fn KerxFormat4State::new() -> Self
 
@@ -496,6 +510,8 @@ pub(all) enum LookupKind {
 
 pub struct Maxp {
   data : BytesView
+
+  fn new(BytesView) -> Maxp
 }
 pub fn[T : RawFont] Maxp::from_font(T) -> Self?
 pub fn Maxp::glyph_count(Self) -> UInt
@@ -547,6 +563,8 @@ pub struct MorxContextualState {
   mut mark_set : Bool
   mut mark_index : Int
   mut mark_id : UInt16
+
+  fn new() -> MorxContextualState
 }
 pub fn MorxContextualState::new() -> Self
 
@@ -568,6 +586,8 @@ pub struct MorxInsertionState {
   mut state : UInt16
   mut mark : Int
   mut cycles : Int
+
+  fn new() -> MorxInsertionState
 }
 pub fn MorxInsertionState::new() -> Self
 
@@ -585,11 +605,15 @@ pub struct MorxLigatureState {
   indices : Array[Int]
   glyphs : Array[UInt16]
   mut pos : Int
+
+  fn new() -> MorxLigatureState
 }
 pub fn MorxLigatureState::new() -> Self
 
 pub struct MorxNonContextual {
   b : BeBytes
+
+  fn new(BytesView) -> MorxNonContextual
 }
 pub fn MorxNonContextual::substitute(Self, UInt16) -> UInt16?
 
@@ -613,6 +637,8 @@ pub struct MorxRearrangementState {
   mut first : Int
   mut last : Int
   mut cycles : Int
+
+  fn new() -> MorxRearrangementState
 }
 pub fn MorxRearrangementState::new() -> Self
 
@@ -656,6 +682,8 @@ pub fn Mvar::new(Bytes, UInt, ArrayView[Int]) -> Self?
 
 pub struct Os2 {
   data : BytesView
+
+  fn new(BytesView) -> Os2
 }
 pub fn Os2::average_char_width(Self) -> Int
 pub fn Os2::cap_height(Self) -> Int
@@ -681,6 +709,8 @@ pub fn Os2Flags::use_typographic_metrics(Self) -> Bool
 
 pub struct Post {
   data : BytesView
+
+  fn new(BytesView) -> Post
 }
 pub fn Post::data(Self) -> BytesView
 pub fn[T : RawFont] Post::from_font(T) -> Self?
@@ -709,6 +739,8 @@ pub fn StateTable::new(BytesView) -> Self?
 pub struct Stream {
   data : BytesView
   mut offset : Int
+
+  fn new(Bytes) -> Stream
 }
 pub fn Stream::check_range(Self, Int) -> Bool
 pub fn Stream::data(Self) -> BytesView
@@ -777,6 +809,8 @@ pub struct VarInstance {
 
 pub struct Vhea {
   data : BytesView
+
+  fn new(BytesView) -> Vhea
 }
 pub fn Vhea::ascender(Self) -> Int
 pub fn Vhea::descender(Self) -> Int

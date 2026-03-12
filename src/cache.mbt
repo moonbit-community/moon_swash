@@ -21,6 +21,8 @@
 /// Uniquely generated value for identifying and caching fonts.
 pub struct CacheKey {
   value : UInt64
+
+  fn new() -> CacheKey
 }
 
 ///|
@@ -47,6 +49,8 @@ pub struct FontCache[T] {
   entries : Array[Entry[T]]
   max_entries : Int
   mut epoch : UInt64
+
+  fn[T] new(max_entries : Int) -> FontCache[T]
 }
 
 ///|
@@ -125,8 +129,8 @@ pub fn[T] FontCache::get(
 
 ///|
 test "CacheKey::new produces increasing keys" {
-  let a = CacheKey::new().value()
-  let b = CacheKey::new().value()
+  let a = CacheKey().value()
+  let b = CacheKey().value()
   inspect(a < b, content="true")
 }
 
@@ -136,7 +140,7 @@ test "FontCache caches and evicts by max_entries" {
   let data = Bytes::from_array([0, 1, 0, 0])
   let f0 = FontRef::from_offset(data, 0).unwrap()
   let f1 = FontRef::from_offset(data, 0).unwrap()
-  let cache : FontCache[Int] = FontCache::new(1)
+  let cache : FontCache[Int] = FontCache(1)
   let calls = Ref::new(0)
   fn mk(calls : Ref[Int], v : Int) -> (FontRef) -> Int {
     fn(font) {

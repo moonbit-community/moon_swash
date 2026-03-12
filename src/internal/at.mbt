@@ -32,7 +32,7 @@ pub fn script_count(data : Bytes, gsubgpos_offset : UInt) -> UInt16 {
     return (0).to_uint16()
   }
   let base = gsubgpos_offset.reinterpret_as_int()
-  let b = BeBytes::new(data)
+  let b = BeBytes(data)
   let offset = b.read_u16(base + 4).unwrap_or(0).reinterpret_as_int()
   if offset == 0 {
     return (0).to_uint16()
@@ -50,7 +50,7 @@ pub fn script_at(
     return None
   }
   let base = gsubgpos_offset.reinterpret_as_int()
-  let b = BeBytes::new(data)
+  let b = BeBytes(data)
   let sbase = match b.read_u16(base + 4) {
     None => return None
     Some(off) => base + off.reinterpret_as_int()
@@ -77,7 +77,7 @@ pub fn script_by_tag(
     return None
   }
   let base = gsubgpos_offset.reinterpret_as_int()
-  let b = BeBytes::new(data)
+  let b = BeBytes(data)
   let sbase = match b.read_u16(base + 4) {
     None => return None
     Some(off) => base + off.reinterpret_as_int()
@@ -115,7 +115,7 @@ pub fn script_language_count(data : Bytes, script_offset : UInt) -> UInt16 {
     return (0).to_uint16()
   }
   let base = script_offset.reinterpret_as_int()
-  let b = BeBytes::new(data)
+  let b = BeBytes(data)
   match b.read_u16(base + 2) {
     None => (0).to_uint16()
     Some(n) => (n + 1).to_uint16()
@@ -128,7 +128,7 @@ pub fn script_default_language(data : Bytes, script_offset : UInt) -> UInt? {
     return None
   }
   let base = script_offset.reinterpret_as_int()
-  let b = BeBytes::new(data)
+  let b = BeBytes(data)
   let off = match b.read_u16(base) {
     None => return None
     Some(v) => v.reinterpret_as_int()
@@ -158,7 +158,7 @@ pub fn script_language_at(
   }
   let index = (index.to_int() - 1).to_uint16()
   let base = script_offset.reinterpret_as_int()
-  let b = BeBytes::new(data)
+  let b = BeBytes(data)
   let rec = base + 4 + index.to_int() * 6
   let tag = match b.read_u32(rec) {
     None => return None
@@ -184,7 +184,7 @@ pub fn script_language_by_tag(
     return None
   }
   let base = script_offset.reinterpret_as_int()
-  let b = BeBytes::new(data)
+  let b = BeBytes(data)
   if language is Some(lang) {
     let mut l = 0
     let mut h = match b.read_u16(base + 2) {
@@ -231,7 +231,7 @@ pub fn language_feature_count(data : Bytes, language_offset : UInt) -> UInt16 {
     return (0).to_uint16()
   }
   let base = language_offset.reinterpret_as_int()
-  BeBytes::new(data).read_u16(base + 4).unwrap_or(0).to_uint16()
+  BeBytes(data).read_u16(base + 4).unwrap_or(0).to_uint16()
 }
 
 ///|
@@ -241,7 +241,7 @@ pub fn language_feature_at(
   index : UInt16,
 ) -> UInt16? {
   let base = language_offset.reinterpret_as_int()
-  match BeBytes::new(data).read_u16(base + 6 + index.to_int() * 2) {
+  match BeBytes(data).read_u16(base + 6 + index.to_int() * 2) {
     None => None
     Some(v) => Some(v.to_uint16())
   }
@@ -253,7 +253,7 @@ pub fn feature_count(data : Bytes, gsubgpos_offset : UInt) -> UInt16 {
     return (0).to_uint16()
   }
   let base = gsubgpos_offset.reinterpret_as_int()
-  let b = BeBytes::new(data)
+  let b = BeBytes(data)
   let foff = b.read_u16(base + 6).unwrap_or(0).reinterpret_as_int()
   if foff == 0 {
     return (0).to_uint16()
@@ -271,7 +271,7 @@ pub fn feature_at(
     return None
   }
   let base = gsubgpos_offset.reinterpret_as_int()
-  let b = BeBytes::new(data)
+  let b = BeBytes(data)
   let foff = match b.read_u16(base + 6) {
     None => return None
     Some(v) => v.reinterpret_as_int()

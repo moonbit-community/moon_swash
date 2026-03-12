@@ -25,6 +25,8 @@ const BOUNDARY_SHIFT : Int = 13
 /// Compact reference to Unicode properties for a character.
 pub struct Properties {
   bits : UInt
+
+  fn new(cp : Int) -> Properties
 }
 
 ///|
@@ -213,7 +215,7 @@ pub(open) trait Codepoint {
 
 ///|
 pub impl Codepoint for Char with properties(self) {
-  Properties::new(self.to_int())
+  Properties(self.to_int())
 }
 
 ///|

@@ -198,6 +198,8 @@ pub struct KernFormat1State {
   stack : Array[Int]
   mut pos : Int
   mut cycles : Int
+
+  fn new() -> KernFormat1State
 }
 
 ///|

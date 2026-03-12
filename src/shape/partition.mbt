@@ -27,6 +27,8 @@ pub struct SelectedFont {
   font : @swash.FontRef
   id_override : (UInt64, UInt64)?
   synthesis : @swash.Synthesis?
+
+  fn new(font : @swash.FontRef) -> SelectedFont
 }
 
 ///|
@@ -176,7 +178,7 @@ pub fn[S : Selector, O : ShapeOptions] shape(
   tokens : Iter[@swash.Token],
   f : (SelectedFont, Shaper) -> Unit,
 ) -> Unit {
-  let mut cluster = CharCluster::new()
+  let mut cluster = @swash.CharCluster::new()
   let parser0 = if options.direction() == Direction::RightToLeft {
     // Mirror characters for RTL text.
     @swash.Parser::new(

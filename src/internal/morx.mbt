@@ -223,7 +223,7 @@ pub fn MorxSubtable::kind(self : MorxSubtable) -> MorxSubtableKind? {
       MorxRearrangement::new(data).map(x => MorxSubtableKind::Rearrangement(x))
     1U => MorxContextual::new(data).map(x => MorxSubtableKind::Contextual(x))
     2U => MorxLigature::new(data).map(x => MorxSubtableKind::Ligature(x))
-    4U => Some(MorxSubtableKind::NonContextual(MorxNonContextual::new(data)))
+    4U => Some(MorxSubtableKind::NonContextual(MorxNonContextual(data)))
     5U => MorxInsertion::new(data).map(x => MorxSubtableKind::Insertion(x))
     _ => None
   }
@@ -267,6 +267,8 @@ pub struct MorxRearrangementState {
   mut first : Int
   mut last : Int
   mut cycles : Int
+
+  fn new() -> MorxRearrangementState
 }
 
 ///|
@@ -453,6 +455,8 @@ pub struct MorxContextualState {
   mut mark_set : Bool
   mut mark_index : Int
   mut mark_id : UInt16
+
+  fn new() -> MorxContextualState
 }
 
 ///|
@@ -593,6 +597,8 @@ pub struct MorxLigatureState {
   indices : Array[Int]
   glyphs : Array[UInt16]
   mut pos : Int
+
+  fn new() -> MorxLigatureState
 }
 
 ///|
@@ -734,6 +740,8 @@ fn MorxLigature::ligature_at(self : MorxLigature, index : UInt) -> UInt16? {
 ///|
 pub struct MorxNonContextual {
   b : BeBytes
+
+  fn new(data : BytesView) -> MorxNonContextual
 }
 
 ///|
@@ -796,6 +804,8 @@ pub struct MorxInsertionState {
   mut state : UInt16
   mut mark : Int
   mut cycles : Int
+
+  fn new() -> MorxInsertionState
 }
 
 ///|

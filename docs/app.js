@@ -121,6 +121,7 @@ const ui = {
   font: $("font"),
   render: $("render"),
   download: $("download"),
+  share: $("share"),
   status: $("status"),
   viewer: $("viewer"),
   raw: $("raw"),
@@ -194,6 +195,62 @@ function updateFontUi() {
   ui.fontMeta.textContent = `Current font: ${preset.label}`;
   ui.fontLicenseLink.textContent = preset.licenseLabel;
   ui.fontLicenseLink.href = `./assets/${preset.licenseFile}`;
+}
+
+function selectHasValue(select, value) {
+  return Array.from(select.options).some((opt) => opt.value === value);
+}
+
+function buildShareUrl() {
+  const url = new URL(window.location.href);
+  const params = new URLSearchParams();
+  params.set("text", ui.text.value);
+  params.set("size", ui.size.value);
+  params.set("script", ui.script.value);
+  params.set("direction", ui.direction.value);
+  if (ui.fontPreset.value !== CUSTOM_FONT_ID) {
+    params.set("font", ui.fontPreset.value);
+  }
+  url.search = params.toString();
+  return url.toString();
+}
+
+function syncShareUrl() {
+  const url = buildShareUrl();
+  const next = `${window.location.pathname}?${new URL(url).searchParams.toString()}`;
+  window.history.replaceState(null, "", next);
+}
+
+function applyStateFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+
+  const text = params.get("text");
+  if (text !== null) {
+    ui.text.value = text;
+  }
+
+  const sizeText = params.get("size");
+  if (sizeText !== null) {
+    const size = Number(sizeText);
+    if (Number.isFinite(size) && size > 0) {
+      ui.size.value = String(size);
+    }
+  }
+
+  const script = params.get("script");
+  if (script && selectHasValue(ui.script, script)) {
+    ui.script.value = script;
+  }
+
+  const direction = params.get("direction");
+  if (direction && selectHasValue(ui.direction, direction)) {
+    ui.direction.value = direction;
+  }
+
+  const font = params.get("font");
+  if (font && font !== CUSTOM_FONT_ID && getPresetById(font)) {
+    ui.fontPreset.value = font;
+  }
 }
 
 async function loadWasmModule() {
@@ -310,6 +367,7 @@ async function runSvgDump({ text, size, script, direction, fontBytes }) {
 function setBusy(busy) {
   ui.render.disabled = busy;
   ui.download.disabled = busy || !state.lastSvg;
+  ui.share.disabled = busy;
   ui.fontPreset.disabled = busy;
   if (busy) {
     ui.font.disabled = true;
@@ -370,6 +428,7 @@ async function doRender() {
       fontBytes: activeFont.bytes,
     });
     renderSvg(svg);
+    syncShareUrl();
     setStatus(
       `Rendered successfully. size=${size}, script=${script}, direction=${direction}, font=${activeFont.displayName}`
     );
@@ -394,12 +453,41 @@ function downloadSvg() {
   URL.revokeObjectURL(url);
 }
 
+async function copyShareUrl() {
+  const url = buildShareUrl();
+  const usingCustom = ui.fontPreset.value === CUSTOM_FONT_ID;
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(url);
+      if (usingCustom) {
+        setStatus("Share URL copied (custom uploaded font is not included in URL).");
+      } else {
+        setStatus("Share URL copied.");
+      }
+      return;
+    }
+  } catch (_err) {
+    // Fallback below.
+  }
+
+  window.prompt("Copy this URL", url);
+  if (usingCustom) {
+    setStatus("Share URL generated (custom uploaded font is not included in URL).");
+  } else {
+    setStatus("Share URL generated.");
+  }
+}
+
 ui.render.addEventListener("click", () => {
   doRender();
 });
 
 ui.download.addEventListener("click", () => {
   downloadSvg();
+});
+
+ui.share.addEventListener("click", () => {
+  copyShareUrl();
 });
 
 ui.fontPreset.addEventListener("change", async () => {
@@ -445,10 +533,12 @@ window.addEventListener("DOMContentLoaded", async () => {
     const defaultPreset = FONT_PRESETS[0];
     initFontPresetOptions();
     ui.fontPreset.value = defaultPreset.id;
+    applyStateFromUrl();
     updateFontUi();
 
     setStatus("Loading wasm and bundled fonts...");
-    await Promise.all([loadWasmModule(), loadPresetFont(defaultPreset)]);
+    const activePreset = getSelectedPreset();
+    await Promise.all([loadWasmModule(), loadPresetFont(activePreset)]);
     setStatus("Ready. Click Render SVG.");
     await doRender();
   } catch (err) {

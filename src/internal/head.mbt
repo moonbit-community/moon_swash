@@ -37,6 +37,8 @@ pub const VHEA : RawTag = 0x76686561 // "vhea"
 /// Font header table.
 pub struct Head {
   data : BytesView
+
+  fn new(data : BytesView) -> Head
 }
 
 ///|
@@ -136,6 +138,8 @@ pub fn Head::glyph_data_format(self : Head) -> Int {
 /// OS/2 and Windows metrics table.
 pub struct Os2 {
   data : BytesView
+
+  fn new(data : BytesView) -> Os2
 }
 
 ///|
@@ -240,6 +244,8 @@ pub fn Os2::cap_height(self : Os2) -> Int {
 /// PostScript table.
 pub struct Post {
   data : BytesView
+
+  fn new(data : BytesView) -> Post
 }
 
 ///|
@@ -312,6 +318,8 @@ fn post_ascii_string(bytes : BytesView) -> String? {
 /// Maximum profile table.
 pub struct Maxp {
   data : BytesView
+
+  fn new(data : BytesView) -> Maxp
 }
 
 ///|
@@ -408,6 +416,8 @@ pub fn Maxp::max_component_depth(self : Maxp) -> UInt {
 /// Horizontal header table.
 pub struct Hhea {
   data : BytesView
+
+  fn new(data : BytesView) -> Hhea
 }
 
 ///|
@@ -449,6 +459,8 @@ pub fn Hhea::num_long_metrics(self : Hhea) -> UInt {
 /// Vertical header table.
 pub struct Vhea {
   data : BytesView
+
+  fn new(data : BytesView) -> Vhea
 }
 
 ///|

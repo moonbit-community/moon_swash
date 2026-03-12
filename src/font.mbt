@@ -120,7 +120,7 @@ pub fn FontRef::from_offset(data : Bytes, offset : Int) -> FontRef? {
   if !@internal.is_font(data, offset) {
     None
   } else {
-    Some(FontRef::{ data, offset, key: CacheKey::new() })
+    Some(FontRef::{ data, offset, key: CacheKey() })
   }
 }
 

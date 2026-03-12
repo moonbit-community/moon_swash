@@ -85,7 +85,7 @@ pub fn apply_morx(
       match kind {
         @internal.MorxSubtableKind::Rearrangement(t) => {
           let mut i = 0
-          let state = @internal.MorxRearrangementState::new()
+          let state = @internal.MorxRearrangementState()
           while i < buffer.glyphs.length() && ops < max_ops {
             let gid = buffer.glyphs[i].id
             match
@@ -106,7 +106,7 @@ pub fn apply_morx(
           |> ignore
         }
         @internal.MorxSubtableKind::Contextual(t) => {
-          let state = @internal.MorxContextualState::new()
+          let state = @internal.MorxContextualState()
           for i in 0..<buffer.glyphs.length() {
             let gid = buffer.glyphs[i].id
             t.next(state, i, gid, false, fn(ix, g) {
@@ -137,7 +137,7 @@ pub fn apply_morx(
           }
         @internal.MorxSubtableKind::Ligature(t) => {
           let mut i = 0
-          let state = @internal.MorxLigatureState::new()
+          let state = @internal.MorxLigatureState()
           while i < buffer.glyphs.length() && ops < max_ops {
             let gid = buffer.glyphs[i].id
             if t.next(state, i, gid, false, fn(ix, g, comps) {
@@ -161,7 +161,7 @@ pub fn apply_morx(
         }
         @internal.MorxSubtableKind::Insertion(t) => {
           let mut i = 0
-          let state = @internal.MorxInsertionState::new()
+          let state = @internal.MorxInsertionState()
           while i < buffer.glyphs.length() && ops < max_ops {
             let gid = buffer.glyphs[i].id
             match
@@ -255,7 +255,7 @@ pub fn apply_kerx(
             }
             let mut i = 0
             let len = buffer.glyphs.length()
-            let state = @internal.KerxContextualState::new()
+            let state = @internal.KerxContextualState()
             while i < len {
               match
                 t.next(state, i, buffer.glyphs[i].id, fn(ix, k) {
@@ -299,7 +299,7 @@ pub fn apply_kerx(
           @internal.KerxSubtableKind::Format4(t) => {
             let mut i = 0
             let len = buffer.glyphs.length()
-            let state = @internal.KerxFormat4State::new()
+            let state = @internal.KerxFormat4State()
             while i < len {
               match
                 t.next(state, i, buffer.glyphs[i].id, fn(ix, base, x, y) {
@@ -360,7 +360,7 @@ pub fn apply_kern(data : Bytes, kern : UInt, buffer : Buffer) -> Unit {
       @internal.KernSubtableKind::Format1(t) => {
         let mut i = 0
         let len = buffer.glyphs.length()
-        let state = @internal.KernFormat1State::new()
+        let state = @internal.KernFormat1State()
         while i < len {
           match
             t.next(state, i, buffer.glyphs[i].id, fn(ix, k) {

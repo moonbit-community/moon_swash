@@ -24,6 +24,8 @@ struct ScaleContext {
   fonts : Ref[@swash.FontCache[ScalerProxy]]
   state : Ref[State]
   hinting_cache : Ref[HintingCache]
+
+  fn new() -> ScaleContext
 }
 
 ///|
@@ -32,6 +34,8 @@ priv struct State {
   mut _scratch1 : Array[Byte]
   outline : Outline
   rcx : Ref[@zeno.Scratch]
+
+  fn new() -> State
 }
 
 ///|
@@ -62,9 +66,9 @@ pub fn ScaleContext::with_max_entries(max_entries : Int) -> ScaleContext {
     max_entries
   }
   ScaleContext::{
-    fonts: Ref::new(@swash.FontCache::new(max_entries)),
-    state: Ref::new(State::new()),
-    hinting_cache: Ref::new(HintingCache::new()),
+    fonts: Ref::new(@swash.FontCache(max_entries)),
+    state: Ref::new(State()),
+    hinting_cache: Ref::new(HintingCache()),
   }
 }
 
@@ -365,6 +369,8 @@ fn to_skrifa_font(font : @swash.FontRef) -> @skrifa.FontRef? {
 ///|
 struct OutlineWriter {
   outline : Outline
+
+  fn new(outline : Outline) -> OutlineWriter
 }
 
 ///|
@@ -515,7 +521,7 @@ pub fn Scaler::scale_bitmap(
   glyph_id : @swash.GlyphId,
   strike : StrikeWith,
 ) -> Image? {
-  let image = Image::new()
+  let image = Image()
   if self.scale_bitmap_into(glyph_id, strike, image) {
     Some(image)
   } else {
@@ -542,7 +548,7 @@ pub fn Scaler::scale_color_bitmap(
   glyph_id : @swash.GlyphId,
   strike : StrikeWith,
 ) -> Image? {
-  let image = Image::new()
+  let image = Image()
   if self.scale_color_bitmap_into(glyph_id, strike, image) {
     Some(image)
   } else {
@@ -877,7 +883,7 @@ fn Scaler::scale_outline_layer_into(
       match outlines.get(gid) {
         None => ()
         Some(glyph) => {
-          let pen = OutlineWriter::new(outline)
+          let pen = OutlineWriter(outline)
           match glyph.draw(settings, pen) {
             Ok(_) => {
               outline.maybe_close()
@@ -943,7 +949,7 @@ test "ScaleContext builder scaffolding" {
   // Minimal TTF header tag 0x00010000 is enough for FontRef::from_offset.
   let data = Bytes::from_array([0, 1, 0, 0])
   let font = @swash.FontRef::from_offset(data, 0).unwrap()
-  let cx = ScaleContext::new()
+  let cx = ScaleContext()
   let scaler = cx.builder(font).size(14.0).hint(true).build()
   inspect(scaler.size().to_int(), content="14")
   inspect(scaler.hint(), content="true")
@@ -1728,7 +1734,7 @@ fn mk_min_ttf_with_colr_two_layer_glyph() -> Bytes {
 test "Scaler.scale_outline decodes a simple glyf outline" {
   let data = mk_min_ttf_with_one_simple_glyph()
   let font = @swash.FontRef::from_offset(data, 0).unwrap()
-  let cx = ScaleContext::new()
+  let cx = ScaleContext()
   // size=1000, unitsPerEm=1000 => scale=1.
   let scaler = cx.builder(font).size(1000.0).build()
   let outline = scaler.scale_outline(0).unwrap()
@@ -1950,7 +1956,7 @@ fn mk_min_ttf_with_compound_glyph() -> Bytes {
 test "Scaler.scale_outline decodes a compound glyph with translation" {
   let data = mk_min_ttf_with_compound_glyph()
   let font = @swash.FontRef::from_offset(data, 0).unwrap()
-  let cx = ScaleContext::new()
+  let cx = ScaleContext()
   let scaler = cx.builder(font).size(1000.0).build()
   let outline = scaler.scale_outline(1).unwrap()
   inspect(outline.points().length(), content="3")

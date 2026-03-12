@@ -44,6 +44,8 @@ pub struct Image {
   mut placement : Placement
   /// Raw image data.
   mut data : Array[Byte]
+
+  fn new() -> Image
 }
 
 ///|
@@ -211,7 +213,7 @@ pub fn Image::to_rgba8(self : Image, base_color : Array[Byte]) -> Bool {
 
 ///|
 test "Image::new produces empty image" {
-  let img = Image::new()
+  let img = Image()
   inspect(
     match img.source() {
       Outline => true
@@ -232,7 +234,7 @@ test "Image::new produces empty image" {
 
 ///|
 test "Image::clear resets fields" {
-  let img = Image::new()
+  let img = Image()
   img.clear()
   inspect(
     match img.source() {
@@ -253,13 +255,13 @@ test "Image::clear resets fields" {
 
 ///|
 test "Image::data_view is zero-copy length view" {
-  let img = Image::new()
+  let img = Image()
   inspect(img.data_view().length(), content="0")
 }
 
 ///|
 test "Image::to_rgba8 converts Mask to premultiplied RGBA8" {
-  let img = Image::new()
+  let img = Image()
   img.placement = Placement::{ left: 0, top: 0, width: 2U, height: 1U }
   img.content = Content::Mask
   img.data = [b'\x00', b'\xFF']
@@ -293,7 +295,7 @@ test "Image::to_rgba8 converts Mask to premultiplied RGBA8" {
 
 ///|
 test "Image::to_rgba8 converts SubpixelMask using per-channel coverage" {
-  let img = Image::new()
+  let img = Image()
   img.placement = Placement::{ left: 0, top: 0, width: 1U, height: 1U }
   img.content = Content::SubpixelMask
   // Coverage only on the red subpixel.

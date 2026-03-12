@@ -163,6 +163,8 @@ const EMOJI_MASK : UInt = 0b11U
 /// Information about a cluster including content properties and boundary analysis.
 struct ClusterInfo {
   bits : UInt
+
+  fn new(bits : UInt) -> ClusterInfo
 }
 
 ///|
@@ -486,6 +488,8 @@ priv struct Form {
   chars : Array[ClusterChar]
   mut map_len : Int
   mut state : FormState
+
+  fn new() -> Form
 }
 
 ///|
@@ -584,8 +588,8 @@ pub fn CharCluster::new() -> CharCluster {
     start: 0U,
     end: 0U,
     force_normalize: false,
-    comp: Form::new(),
-    decomp: Form::new(),
+    comp: Form(),
+    decomp: Form(),
     form: FormKind::Original,
     best_ratio: 0.0,
   }
@@ -593,7 +597,7 @@ pub fn CharCluster::new() -> CharCluster {
 
 ///|
 pub fn CharCluster::info(self : CharCluster) -> ClusterInfo {
-  ClusterInfo::new(self.info_bits)
+  ClusterInfo(self.info_bits)
 }
 
 ///|
@@ -873,6 +877,8 @@ priv struct TokenStream {
   mut buf : Array[Token]
   mut buf_offset : Int
   mut done : Bool
+
+  fn new(iter : Iter[Token]) -> TokenStream
 }
 
 ///|
@@ -931,11 +937,13 @@ priv struct SimpleState {
   mut cur_kind : ClusterBreak
   mut cur_emoji : Bool
   mut done : Bool
+
+  fn new(chars : Iter[Token]) -> SimpleState
 }
 
 ///|
 fn SimpleState::new(chars : Iter[Token]) -> SimpleState {
-  let stream = TokenStream::new(chars)
+  let stream = TokenStream(chars)
   match stream.next() {
     None =>
       SimpleState::{
@@ -1337,12 +1345,14 @@ priv struct ComplexTokens {
   decomp : Array[(Token, UseClass)]
   mut decomp_offset : Int
   script : Script
+
+  fn new(script : Script, iter : Iter[Token]) -> ComplexTokens
 }
 
 ///|
 fn ComplexTokens::new(script : Script, iter : Iter[Token]) -> ComplexTokens {
   ComplexTokens::{
-    stream: TokenStream::new(iter),
+    stream: TokenStream(iter),
     decomp: ([] : Array[(Token, UseClass)]),
     decomp_offset: 0,
     script,
@@ -1485,11 +1495,13 @@ priv struct ComplexState {
   mut cur_kind : UseClass
   mut cur_emoji : Bool
   mut done : Bool
+
+  fn new(script : Script, chars : Iter[Token]) -> ComplexState
 }
 
 ///|
 fn ComplexState::new(script : Script, chars : Iter[Token]) -> ComplexState {
-  let tokens = ComplexTokens::new(script, chars)
+  let tokens = ComplexTokens(script, chars)
   match tokens.next() {
     None =>
       ComplexState::{
@@ -2188,11 +2200,13 @@ priv struct MyanmarState {
   mut cur_kind : MyanmarClass
   mut cur_emoji : Bool
   mut done : Bool
+
+  fn new(chars : Iter[Token]) -> MyanmarState
 }
 
 ///|
 fn MyanmarState::new(chars : Iter[Token]) -> MyanmarState {
-  let stream = TokenStream::new(chars)
+  let stream = TokenStream(chars)
   match stream.next() {
     None =>
       MyanmarState::{
@@ -2901,11 +2915,11 @@ priv enum Inner {
 pub fn Parser::new(script : Script, tokens : Iter[Token]) -> Parser {
   let inner = if script.is_complex() {
     match script {
-      Script::Myanmar => Inner::Myanmar(MyanmarState::new(tokens))
-      _ => Inner::Complex(ComplexState::new(script, tokens))
+      Script::Myanmar => Inner::Myanmar(MyanmarState(tokens))
+      _ => Inner::Complex(ComplexState(script, tokens))
     }
   } else {
-    Inner::Simple(SimpleState::new(tokens))
+    Inner::Simple(SimpleState(tokens))
   }
   Parser::{ inner, }
 }

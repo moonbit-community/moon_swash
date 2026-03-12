@@ -189,6 +189,8 @@ pub struct KerxContextualState {
   stack : Array[Int]
   mut pos : Int
   mut cycles : Int
+
+  fn new() -> KerxContextualState
 }
 
 ///|
@@ -337,6 +339,8 @@ pub struct KerxFormat4State {
   mut mark : Int
   mut mark_id : UInt16
   mut cycles : Int
+
+  fn new() -> KerxFormat4State
 }
 
 ///|

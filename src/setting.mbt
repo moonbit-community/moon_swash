@@ -21,6 +21,8 @@
 pub struct Setting[T] {
   tag : Tag
   value : T
+
+  fn[T] new(tag : Tag, value : T) -> Setting[T]
 }
 
 ///|
@@ -183,7 +185,7 @@ pub fn Setting::parse_feature_list(s : String) -> Iter[FeatureSetting] {
             }
         }
         if ok {
-          Some(Setting::new(tag, value.to_uint16()))
+          Some(Setting(tag, value.to_uint16()))
         } else {
           None
         }
@@ -207,7 +209,7 @@ pub fn Setting::parse_variation_list(s : String) -> Iter[VariationSetting] {
         try @strconv.parse_double(value_sv) catch {
           _ => None
         } noraise {
-          v => Some(Setting::new(tag, v))
+          v => Some(Setting(tag, v))
         }
     }
   })

@@ -35,6 +35,8 @@ pub struct Outline {
   points : Array[Point]
   verbs : Array[Verb]
   mut is_color : Bool
+
+  fn new() -> Outline
 }
 
 ///|

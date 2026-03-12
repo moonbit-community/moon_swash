@@ -49,12 +49,14 @@ priv struct State {
   mut disable_kern : Bool
   features : Array[@swash.FeatureSetting]
   selectors : Array[(UInt16, UInt16)]
+
+  fn new() -> State
 }
 
 ///|
 fn State::new() -> State {
   State::{
-    buffer: Buffer::new(),
+    buffer: Buffer(),
     order: [],
     glyphs: [],
     store_builder: FeatureStoreBuilder::default(),
@@ -78,15 +80,17 @@ struct ContextState {
   feature_cache : FeatureCache
   coords : Array[Int]
   state : State
+
+  fn new(max_entries : Int) -> ContextState
 }
 
 ///|
 fn ContextState::new(max_entries : Int) -> ContextState {
   ContextState::{
-    font_cache: @swash.FontCache::new(max_entries),
-    feature_cache: FeatureCache::new(max_entries),
+    font_cache: @swash.FontCache(max_entries),
+    feature_cache: FeatureCache(max_entries),
     coords: [],
-    state: State::new(),
+    state: State(),
   }
 }
 
@@ -97,6 +101,8 @@ fn ContextState::new(max_entries : Int) -> ContextState {
 /// in later shaping tasks.
 pub struct ShapeContext {
   inner : Ref[ContextState]
+
+  fn new() -> ShapeContext
 }
 
 ///|
@@ -114,7 +120,7 @@ pub fn ShapeContext::with_max_entries(max_entries : Int) -> ShapeContext {
   } else if max_entries0 > 64 {
     max_entries0 = 64
   }
-  ShapeContext::{ inner: Ref::new(ContextState::new(max_entries0)) }
+  ShapeContext::{ inner: Ref::new(ContextState(max_entries0)) }
 }
 
 ///|
@@ -369,7 +375,7 @@ pub fn ShaperBuilder::build(self : ShaperBuilder) -> Shaper {
   let cx = self.cx
   cx.val.state.buffer.dotted_circle = self.dotted_circle
   cx.val.state.buffer.is_rtl = self.direction == Direction::RightToLeft
-  let engine = Engine::new(
+  let engine = Engine(
     self.font_entry.val.metadata,
     self.font.data(),
     cx.val.coords.op_as_view(),
@@ -469,7 +475,7 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
         s,
         feature_bit_to_mask(s.groups.reph),
         buf,
-        Some(IndexRange::new(start, end)),
+        Some(IndexRange(start, end)),
       )
       |> ignore
       let end = buf.len()
@@ -477,15 +483,13 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
         s,
         feature_bit_to_mask(s.groups.pref),
         buf,
-        Some(IndexRange::new(start, end)),
+        Some(IndexRange(start, end)),
       )
       |> ignore
       let end = buf.len()
-      e.gsub(s, s.groups.stage1, buf, Some(IndexRange::new(start, end)))
-      |> ignore
+      e.gsub(s, s.groups.stage1, buf, Some(IndexRange(start, end))) |> ignore
       let end = buf.len()
-      e.gsub(s, s.groups.stage2, buf, Some(IndexRange::new(start, end)))
-      |> ignore
+      e.gsub(s, s.groups.stage2, buf, Some(IndexRange(start, end))) |> ignore
     }
     EngineMode::Complex => {
       let e = self.engine
@@ -511,12 +515,12 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
       let total = buf.len() - start
       let len = if total < 3 { total } else { 3 }
       let end = start + len
-      buf.clear_flags(SUBSTITUTED, Some(IndexRange::new(start, end)))
+      buf.clear_flags(SUBSTITUTED, Some(IndexRange(start, end)))
       e.gsub(
         s,
         feature_bit_to_mask(s.groups.reph),
         buf,
-        Some(IndexRange::new(start, end)),
+        Some(IndexRange(start, end)),
       )
       |> ignore
       for i in start..<end {
@@ -529,12 +533,12 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
       }
       // Pref identification.
       let end = buf.len()
-      buf.clear_flags(SUBSTITUTED, Some(IndexRange::new(start, end)))
+      buf.clear_flags(SUBSTITUTED, Some(IndexRange(start, end)))
       e.gsub(
         s,
         feature_bit_to_mask(s.groups.pref),
         buf,
-        Some(IndexRange::new(start, end)),
+        Some(IndexRange(start, end)),
       )
       |> ignore
       for i in start..<end {
@@ -547,8 +551,7 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
       }
       // Orthographic group.
       let end = buf.len()
-      e.gsub(s, s.groups.stage1, buf, Some(IndexRange::new(start, end)))
-      |> ignore
+      e.gsub(s, s.groups.stage1, buf, Some(IndexRange(start, end))) |> ignore
       // Reordering.
       let total = buf.len() - start
       let len = if total < 64 { total } else { 64 }

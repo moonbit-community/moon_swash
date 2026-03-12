@@ -29,7 +29,7 @@ priv struct AtScript {
 
 ///|
 fn AtScript::languages(self : AtScript) -> AtLanguages {
-  AtLanguages::new(
+  AtLanguages(
     self.data,
     self.gsub,
     self.gpos,
@@ -43,6 +43,8 @@ priv struct AtScripts {
   data : Bytes
   gsub : UInt
   gpos : UInt
+
+  fn new(data : Bytes, gsub : UInt, gpos : UInt) -> AtScripts
 }
 
 ///|
@@ -130,6 +132,14 @@ priv struct AtLanguages {
   gpos : UInt
   gsub_script : UInt
   gpos_script : UInt
+
+  fn new(
+    data : Bytes,
+    gsub : UInt,
+    gpos : UInt,
+    gsub_script : UInt,
+    gpos_script : UInt,
+  ) -> AtLanguages
 }
 
 ///|
@@ -236,12 +246,14 @@ fn AtWritingSystem::language_tag(self : AtWritingSystem) -> Tag {
 
 ///|
 fn AtWritingSystem::features(self : AtWritingSystem) -> AtFeatures {
-  AtFeatures::new(self.lang)
+  AtFeatures(self.lang)
 }
 
 ///|
 priv struct AtWritingSystems {
   scripts : AtScripts
+
+  fn new(scripts : AtScripts) -> AtWritingSystems
 }
 
 ///|
@@ -285,6 +297,8 @@ priv struct AtFeature {
 ///|
 priv struct AtFeatures {
   lang : AtLangSys
+
+  fn new(lang : AtLangSys) -> AtFeatures
 }
 
 ///|
@@ -343,13 +357,15 @@ priv struct AtAllFeatures {
   stage : Int
   len : Int
   cur : Int
+
+  fn new(data : Bytes, gsub : UInt, gpos : UInt) -> AtAllFeatures
 }
 
 ///|
 fn AtAllFeatures::new(data : Bytes, gsub : UInt, gpos : UInt) -> AtAllFeatures {
   AtAllFeatures::{
     data,
-    seen: SeenFeatures::new(),
+    seen: SeenFeatures(),
     table: gsub,
     next_table: gpos,
     stage: 0,

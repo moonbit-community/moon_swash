@@ -74,6 +74,8 @@ priv struct HintingCache {
   glyf_entries : Array[HintingEntry]
   cff_entries : Array[HintingEntry]
   mut serial : UInt64
+
+  fn new() -> HintingCache
 }
 
 ///|

@@ -24,6 +24,8 @@ pub struct Render {
   embolden : Double
   foreground : Array[Byte]
   style : @zeno.Style
+
+  fn new(sources : Array[Source]) -> Render
 }
 
 ///|
@@ -296,7 +298,7 @@ pub fn Render::render(
   scaler : Scaler,
   glyph_id : @swash.GlyphId,
 ) -> Image? {
-  let image = Image::new()
+  let image = Image()
   if self.render_into(scaler, glyph_id, image) {
     Some(image)
   } else {
@@ -306,7 +308,7 @@ pub fn Render::render(
 
 ///|
 test "Render builder scaffolding" {
-  let r = Render::new([Source::Outline])
+  let r = Render([Source::Outline])
     .format(@zeno.Format::Subpixel)
     .offset(@zeno.Vector::new(0.25, 0.75))
   inspect(r.sources.length(), content="1")
@@ -316,9 +318,9 @@ test "Render builder scaffolding" {
 test "Render renders outline into an alpha mask" {
   let data = mk_min_ttf_with_one_simple_glyph()
   let font = @swash.FontRef::from_offset(data, 0).unwrap()
-  let cx = ScaleContext::new()
+  let cx = ScaleContext()
   let scaler = cx.builder(font).size(1000.0).build()
-  let r = Render::new([Source::Outline]).format(@zeno.Format::Alpha)
+  let r = Render([Source::Outline]).format(@zeno.Format::Alpha)
   let img = r.render(scaler, (0).to_uint16()).unwrap()
   let p = img.placement()
   inspect(p.width.reinterpret_as_int() > 0, content="true")
@@ -335,9 +337,9 @@ test "Render renders outline into an alpha mask" {
 test "Render renders COLR/CPAL layers into an RGBA image" {
   let data = mk_min_ttf_with_colr_two_layer_glyph()
   let font = @swash.FontRef::from_offset(data, 0).unwrap()
-  let cx = ScaleContext::new()
+  let cx = ScaleContext()
   let scaler = cx.builder(font).size(1000.0).build()
-  let r = Render::new([Source::ColorOutline((0).to_uint16())]).format(
+  let r = Render([Source::ColorOutline((0).to_uint16())]).format(
     @zeno.Format::Alpha,
   )
   let img = r.render(scaler, (0).to_uint16()).unwrap()

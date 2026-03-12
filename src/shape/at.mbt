@@ -215,7 +215,7 @@ fn feature_var_offset(data : Bytes, gsubgpos_offset : UInt) -> UInt {
     return 0U
   }
   let base = gsubgpos_offset.reinterpret_as_int()
-  let b = @internal.BeBytes::new(data)
+  let b = @internal.BeBytes(data)
   let major = b.read_u16(base).unwrap_or(0U)
   let minor = b.read_u16(base + 2).unwrap_or(0U)
   if major > 1U || (major == 1U && minor >= 1U) {
@@ -347,7 +347,7 @@ fn CoverageBuilder::add_coverage(
   data : Bytes,
   base : Int,
 ) -> Unit? {
-  let b = @internal.BeBytes::new(data)
+  let b = @internal.BeBytes(data)
   let fmt = match b.read_u16(base) {
     None => return None
     Some(v) => v.reinterpret_as_int()
@@ -495,7 +495,7 @@ fn FeatureStoreBuilder::build_stage(
   self.indices.clear()
   let gdef_opt : @internal.Gdef? = if gdef.ok() { Some(gdef) } else { None }
   let base = offsets.base.reinterpret_as_int()
-  let b = @internal.BeBytes::new(data)
+  let b = @internal.BeBytes(data)
   let lbase = offsets.lang.reinterpret_as_int()
   let list_base = match b.read_u16(base + 8) {
     None => return
@@ -724,6 +724,18 @@ priv struct ApplyContext {
   mut end : Int
   mut s : LookupState
   buf : Buffer
+
+  fn new(
+    stage : Byte,
+    data : Bytes,
+    gsubgpos : UInt,
+    defs : @internal.Gdef,
+    coords : ArrayView[Int],
+    store : FeatureStore,
+    storage : Storage,
+    buffer : Buffer,
+    range : IndexRange,
+  ) -> ApplyContext
 }
 
 ///|
@@ -845,7 +857,7 @@ fn ApplyContext::update_glyphs(
       self.buf.glyphs.set(i, g)
     }
   }
-  self.update_glyphs_skip(Some(IndexRange::new(start, end)))
+  self.update_glyphs_skip(Some(IndexRange(start, end)))
 }
 
 ///|
@@ -1158,7 +1170,7 @@ fn ApplyContext::apply_subtable(
   cur : Int,
   g : UInt16,
 ) -> Bool? {
-  let b = @internal.BeBytes::new(self.data)
+  let b = @internal.BeBytes(self.data)
   let kind = subtable.kind
   let base = subtable.offset.reinterpret_as_int()
   match kind {
@@ -2178,7 +2190,7 @@ fn ApplyContext::apply_nested(
   if self.top.to_int() == MAX_NESTED_LOOKUPS {
     return None
   }
-  let b = @internal.BeBytes::new(self.data)
+  let b = @internal.BeBytes(self.data)
   let list_rel = match b.read_u16(self.gsubgpos.reinterpret_as_int() + 8) {
     None => return None
     Some(v) => v
@@ -2212,7 +2224,7 @@ fn ApplyContext::apply_uncached(
   end : Int,
   first : Int,
 ) -> Bool? {
-  let b = @internal.BeBytes::new(self.data)
+  let b = @internal.BeBytes(self.data)
   let base = lookup.offset.reinterpret_as_int()
   self.s.cur = cur
   let buf_len = self.buf.len()
@@ -2329,7 +2341,7 @@ fn ApplyContext::value_record(
   format : UInt16,
   pos : Pos4,
 ) -> Unit? {
-  let b = @internal.BeBytes::new(self.data)
+  let b = @internal.BeBytes(self.data)
   let mut offset = offset
   let fmt = format.to_int() & 0xFFFF
   if fmt == 4 {
@@ -2443,7 +2455,7 @@ fn ApplyContext::value_delta(
   if offset == 0 {
     return Some(0.0)
   }
-  let b = @internal.BeBytes::new(self.data)
+  let b = @internal.BeBytes(self.data)
   let offset = parent_offset + offset.to_int()
   let format = match b.read_u16(offset + 4) {
     None => return None
@@ -2465,7 +2477,7 @@ fn ApplyContext::value_delta(
 
 ///|
 fn ApplyContext::anchor(self : ApplyContext, offset : Int) -> (Double, Double)? {
-  let b = @internal.BeBytes::new(self.data)
+  let b = @internal.BeBytes(self.data)
   let format = match b.read_u16(offset) {
     None => return None
     Some(v) => v.reinterpret_as_int() & 0xFFFF
@@ -2513,7 +2525,7 @@ fn ApplyContext::mark_anchor(
   marks : Int,
   index : UInt16,
 ) -> (UInt16, (Double, Double))? {
-  let b = @internal.BeBytes::new(self.data)
+  let b = @internal.BeBytes(self.data)
   let count = match b.read_u16(marks) {
     None => return None
     Some(v) => v.to_uint16()
@@ -2584,10 +2596,10 @@ pub fn apply(
     return Some(false)
   }
   let range = match buffer_range {
-    None => IndexRange::new(0, buffer.len())
+    None => IndexRange(0, buffer.len())
     Some(r) => r
   }
-  let acx = ApplyContext::new(
+  let acx = ApplyContext(
     stage, data, base, gdef, coords, store, storage, buffer, range,
   )
   let (lookup_start, lookup_end) = if stage == (0).to_byte() {

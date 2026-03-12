@@ -10,6 +10,7 @@ This folder contains a static web demo for `moon_swash` shaping output.
 - Renders the resulting SVG directly on the page.
 - Supports custom font upload.
 - Includes preset samples across supported formats (`ttf`, `otf`, `ttc`).
+- Supports share URLs (query-string encoded text/settings for deep links).
 
 ## Local preview
 

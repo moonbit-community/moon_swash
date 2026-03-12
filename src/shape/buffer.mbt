@@ -111,7 +111,7 @@ pub fn PositionData::default() -> PositionData {
 fn Glyph::new(g : GlyphData, p : PositionData) -> Glyph {
   Glyph::{
     id: g.id,
-    info: GlyphInfo::new(p.flags),
+    info: GlyphInfo(p.flags),
     x: p.x,
     y: p.y,
     advance: p.advance,
@@ -123,6 +123,8 @@ fn Glyph::new(g : GlyphData, p : PositionData) -> Glyph {
 pub struct IndexRange {
   start : Int
   end : Int
+
+  fn new(start : Int, end : Int) -> IndexRange
 }
 
 ///|
@@ -156,6 +158,8 @@ pub struct Buffer {
   mut skip_state : SkipState
   sub_args : Array[UInt16]
   pos_args : Array[UInt16]
+
+  fn new() -> Buffer
 }
 
 ///|
@@ -321,7 +325,7 @@ pub fn Buffer::push(self : Buffer, cluster : CharCluster) -> IndexRange {
   }
   self.next_cluster = self.next_cluster + 1U
   self.push_cluster(cluster)
-  IndexRange::new(start, self.glyphs.length())
+  IndexRange(start, self.glyphs.length())
 }
 
 ///|
@@ -359,7 +363,7 @@ pub fn Buffer::push_order(
   }
   self.next_cluster = self.next_cluster + 1U
   self.push_cluster(cluster)
-  IndexRange::new(start, self.glyphs.length())
+  IndexRange(start, self.glyphs.length())
 }
 
 ///|
@@ -391,7 +395,7 @@ pub fn Buffer::_push_hangul(self : Buffer, cluster : CharCluster) -> IndexRange 
   }
   self.next_cluster = self.next_cluster + 1U
   self.push_cluster(cluster)
-  IndexRange::new(start, self.glyphs.length())
+  IndexRange(start, self.glyphs.length())
 }
 
 ///|
@@ -714,7 +718,7 @@ pub fn reorder_myanmar(
   }
   match chars[0].shape_class() {
     ShapeClass::Kinzi => {
-      kinzi = Some(IndexRange::new(0, 3))
+      kinzi = Some(IndexRange(0, 3))
       ignored[0] = true
       ignored[1] = true
       ignored[2] = true
@@ -729,8 +733,8 @@ pub fn reorder_myanmar(
       match k {
         ShapeClass::Anusvara => {
           anus = match anus {
-            Some(r) => Some(IndexRange::new(r.start(), i - r.start() + 1))
-            None => Some(IndexRange::new(i, i + 1))
+            Some(r) => Some(IndexRange(r.start(), i - r.start() + 1))
+            None => Some(IndexRange(i, i + 1))
           }
           ignored[i] = true
           i = i + 1
@@ -762,8 +766,8 @@ pub fn reorder_myanmar(
           }
           ShapeClass::VPre => {
             vpre = match vpre {
-              Some(r) => Some(IndexRange::new(r.start(), i - r.start() + 1))
-              None => Some(IndexRange::new(i, i + 1))
+              Some(r) => Some(IndexRange(r.start(), i - r.start() + 1))
+              None => Some(IndexRange(i, i + 1))
             }
             ignored[i] = true
           }
@@ -777,8 +781,8 @@ pub fn reorder_myanmar(
           }
           ShapeClass::VPre => {
             vpre = match vpre {
-              Some(r) => Some(IndexRange::new(r.start(), i - r.start() + 1))
-              None => Some(IndexRange::new(i, i + 1))
+              Some(r) => Some(IndexRange(r.start(), i - r.start() + 1))
+              None => Some(IndexRange(i, i + 1))
             }
             ignored[i] = true
           }
@@ -904,15 +908,15 @@ pub fn reorder_complex(
         }
       ShapeClass::VPre => {
         vpre = match vpre {
-          Some(r) => Some(IndexRange::new(r.start(), i - r.start() + 1))
-          None => Some(IndexRange::new(i, i + 1))
+          Some(r) => Some(IndexRange(r.start(), i - r.start() + 1))
+          None => Some(IndexRange(i, i + 1))
         }
         ignored[i] = true
       }
       ShapeClass::VMPre => {
         vmpre = match vmpre {
-          Some(r) => Some(IndexRange::new(r.start(), i - r.start() + 1))
-          None => Some(IndexRange::new(i, i + 1))
+          Some(r) => Some(IndexRange(r.start(), i - r.start() + 1))
+          None => Some(IndexRange(i, i + 1))
         }
         ignored[i] = true
       }

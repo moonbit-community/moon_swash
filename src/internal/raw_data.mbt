@@ -57,20 +57,20 @@ const TRUE : RawTag = 0x74727565 // "true"
 
 ///|
 pub fn is_collection(data : Bytes) -> Bool {
-  let tag = BeBytes::new(data).read_u32(0).unwrap_or(0)
+  let tag = BeBytes(data).read_u32(0).unwrap_or(0)
   tag == TTCF
 }
 
 ///|
 pub fn is_font(data : Bytes, offset : Int) -> Bool {
-  let tag = BeBytes::new(data).read_u32(offset).unwrap_or(0)
+  let tag = BeBytes(data).read_u32(offset).unwrap_or(0)
   tag == FONT || tag == OTTO || tag == TRUE
 }
 
 ///|
 pub fn count(data : Bytes) -> Int {
   if is_collection(data) {
-    BeBytes::new(data).read_u32(8).unwrap_or(0).reinterpret_as_int()
+    BeBytes(data).read_u32(8).unwrap_or(0).reinterpret_as_int()
   } else if is_font(data, 0) {
     1
   } else {
@@ -87,6 +87,6 @@ pub fn offset(data : Bytes, index : Int) -> Int? {
   if is_font(data, 0) {
     Some(0)
   } else {
-    BeBytes::new(data).read_u32(12 + index * 4).map(x => x.reinterpret_as_int())
+    BeBytes(data).read_u32(12 + index * 4).map(x => x.reinterpret_as_int())
   }
 }

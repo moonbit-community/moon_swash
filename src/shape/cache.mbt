@@ -24,6 +24,8 @@ pub struct FontEntry {
   charmap : @swash.CharmapProxy
   coord_count : UInt16
   metadata : EngineMetadata
+
+  fn new(font : @swash.FontRef) -> FontEntry
 }
 
 ///|
@@ -52,6 +54,8 @@ priv struct FeatureCache {
   entries : Array[FeatureEntry]
   mut epoch : Epoch
   max_entries : Int
+
+  fn new(max_entries : Int) -> FeatureCache
 }
 
 ///|
