@@ -9,6 +9,7 @@ This folder contains a static web demo for `moon_swash` shaping output.
 - Runs `moon_swash_svg_dump.wasm` in-browser via WASI shim.
 - Renders the resulting SVG directly on the page.
 - Supports custom font upload.
+- Includes preset samples across supported formats (`ttf`, `otf`, `ttc`).
 
 ## Local preview
 
@@ -27,10 +28,11 @@ Then open:
 - `index.html`: demo UI
 - `app.js`: in-browser WASI execution and rendering logic
 - `assets/moon_swash_svg_dump.wasm`: shaping-to-SVG wasm binary
-- `assets/NotoNaskhArabic-wght.ttf`: bundled Arabic font
-- `assets/NotoSans-Latin-wght.ttf`: bundled Latin font
-- `assets/NotoSansHebrew-wght.ttf`: bundled Hebrew font
+- `assets/*-wght.ttf`: bundled TTF fonts
+- `assets/*.otf`: bundled OTF fonts
+- `assets/*.ttc`: bundled TTC collections
 - `assets/*-OFL.txt`: bundled font licenses
+- `assets/*-NOTICE.txt`: generated collection/license mapping notes
 - `wasm/moon_swash_svg_dump/`: wasm source package (tracked, no private dependency)
 
 ## Rebuild wasm asset

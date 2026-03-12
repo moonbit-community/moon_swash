@@ -1,0 +1,8 @@
+NotoLatinCollection.ttc is generated from:
+- NotoSans-Latin-wght.ttf
+- NotoSerif-Latin-wght.ttf
+
+Both source fonts are licensed under SIL Open Font License 1.1.
+See:
+- NotoSans-OFL.txt
+- NotoSerif-OFL.txt

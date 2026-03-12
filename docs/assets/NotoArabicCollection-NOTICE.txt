@@ -1,0 +1,8 @@
+NotoArabicCollection.ttc is generated from:
+- NotoNaskhArabic-wght.ttf
+- NotoSansArabic-wght.ttf
+
+Both source fonts are licensed under SIL Open Font License 1.1.
+See:
+- NotoNaskhArabic-OFL.txt
+- NotoSansArabic-OFL.txt

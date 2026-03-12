@@ -12,24 +12,101 @@ const CUSTOM_FONT_ID = "custom";
 const FONT_PRESETS = [
   {
     id: "noto-naskh-arabic",
-    label: "Noto Naskh Arabic (Bundled)",
+    label: "Noto Naskh Arabic [TTF]",
     file: "NotoNaskhArabic-wght.ttf",
     licenseFile: "NotoNaskhArabic-OFL.txt",
     licenseLabel: "OFL-1.1",
   },
   {
     id: "noto-sans-latin",
-    label: "Noto Sans (Bundled)",
+    label: "Noto Sans [TTF]",
     file: "NotoSans-Latin-wght.ttf",
     licenseFile: "NotoSans-OFL.txt",
     licenseLabel: "OFL-1.1",
   },
   {
+    id: "noto-serif-latin",
+    label: "Noto Serif [TTF]",
+    file: "NotoSerif-Latin-wght.ttf",
+    licenseFile: "NotoSerif-OFL.txt",
+    licenseLabel: "OFL-1.1",
+  },
+  {
     id: "noto-sans-hebrew",
-    label: "Noto Sans Hebrew (Bundled)",
+    label: "Noto Sans Hebrew [TTF]",
     file: "NotoSansHebrew-wght.ttf",
     licenseFile: "NotoSansHebrew-OFL.txt",
     licenseLabel: "OFL-1.1",
+  },
+  {
+    id: "noto-serif-hebrew",
+    label: "Noto Serif Hebrew [TTF]",
+    file: "NotoSerifHebrew-wght.ttf",
+    licenseFile: "NotoSerifHebrew-OFL.txt",
+    licenseLabel: "OFL-1.1",
+  },
+  {
+    id: "noto-sans-arabic",
+    label: "Noto Sans Arabic [TTF]",
+    file: "NotoSansArabic-wght.ttf",
+    licenseFile: "NotoSansArabic-OFL.txt",
+    licenseLabel: "OFL-1.1",
+  },
+  {
+    id: "noto-kufi-arabic",
+    label: "Noto Kufi Arabic [TTF]",
+    file: "NotoKufiArabic-wght.ttf",
+    licenseFile: "NotoKufiArabic-OFL.txt",
+    licenseLabel: "OFL-1.1",
+  },
+  {
+    id: "noto-sans-devanagari",
+    label: "Noto Sans Devanagari [TTF]",
+    file: "NotoSansDevanagari-wght.ttf",
+    licenseFile: "NotoSansDevanagari-OFL.txt",
+    licenseLabel: "OFL-1.1",
+  },
+  {
+    id: "noto-sans-thai",
+    label: "Noto Sans Thai [TTF]",
+    file: "NotoSansThai-wght.ttf",
+    licenseFile: "NotoSansThai-OFL.txt",
+    licenseLabel: "OFL-1.1",
+  },
+  {
+    id: "noto-sans-myanmar",
+    label: "Noto Sans Myanmar [TTF]",
+    file: "NotoSansMyanmar-wght.ttf",
+    licenseFile: "NotoSansMyanmar-OFL.txt",
+    licenseLabel: "OFL-1.1",
+  },
+  {
+    id: "source-sans-otf",
+    label: "Source Sans 3 [OTF]",
+    file: "SourceSans3-Regular.otf",
+    licenseFile: "SourceSans-LICENSE.md",
+    licenseLabel: "OFL-1.1",
+  },
+  {
+    id: "source-serif-otf",
+    label: "Source Serif 4 [OTF]",
+    file: "SourceSerif4-Regular.otf",
+    licenseFile: "SourceSerif-LICENSE.md",
+    licenseLabel: "OFL-1.1",
+  },
+  {
+    id: "noto-latin-collection-ttc",
+    label: "Noto Latin Collection [TTC]",
+    file: "NotoLatinCollection.ttc",
+    licenseFile: "NotoLatinCollection-NOTICE.txt",
+    licenseLabel: "License Notes",
+  },
+  {
+    id: "noto-arabic-collection-ttc",
+    label: "Noto Arabic Collection [TTC]",
+    file: "NotoArabicCollection.ttc",
+    licenseFile: "NotoArabicCollection-NOTICE.txt",
+    licenseLabel: "License Notes",
   },
 ];
 
@@ -82,6 +159,20 @@ function getSelectedPreset() {
     throw new Error(`Unknown font preset: ${ui.fontPreset.value}`);
   }
   return preset;
+}
+
+function initFontPresetOptions() {
+  ui.fontPreset.innerHTML = "";
+  for (const preset of FONT_PRESETS) {
+    const option = document.createElement("option");
+    option.value = preset.id;
+    option.textContent = preset.label;
+    ui.fontPreset.appendChild(option);
+  }
+  const custom = document.createElement("option");
+  custom.value = CUSTOM_FONT_ID;
+  custom.textContent = "Custom Upload";
+  ui.fontPreset.appendChild(custom);
 }
 
 function updateFontUi() {
@@ -352,6 +443,7 @@ ui.font.addEventListener("change", async (ev) => {
 window.addEventListener("DOMContentLoaded", async () => {
   try {
     const defaultPreset = FONT_PRESETS[0];
+    initFontPresetOptions();
     ui.fontPreset.value = defaultPreset.id;
     updateFontUi();
 
