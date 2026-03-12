@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "tools/moon_swash_svg_dump"
+
+// Values
+
+// Errors
+
+// Types and methods
+type PlacedGlyph
+
+// Type aliases
+
+// Traits
+
