@@ -2,8 +2,8 @@
   "name": "Milky2018/moon_swash",
   "version": "0.1.6",
   "deps": {
-    "Milky2018/moon_zeno": "0.1.0",
-    "Milky2018/moon_yazi": "0.1.0",
+    "Milky2018/moon_zeno": "0.1.1",
+    "Milky2018/moon_yazi": "0.1.1",
     "Milky2018/moon_skrifa": "0.1.6"
   },
   "readme": "README.mbt.md",
