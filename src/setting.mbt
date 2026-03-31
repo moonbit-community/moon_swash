@@ -178,7 +178,7 @@ pub fn Setting::parse_feature_list(s : String) -> Iter[FeatureSetting] {
           "" | "on" => (true, 1)
           "off" => (true, 0)
           _ =>
-            try @strconv.parse_int(value_sv, base=10) catch {
+            try @string.parse_int(value_sv, base=10) catch {
               _ => (false, 0)
             } noraise {
               v => if v < 0 || v > 0xFFFF { (false, 0) } else { (true, v) }
@@ -206,7 +206,7 @@ pub fn Setting::parse_variation_list(s : String) -> Iter[VariationSetting] {
     match tokens.next() {
       None => None
       Some((tag, value_sv)) =>
-        try @strconv.parse_double(value_sv) catch {
+        try @string.parse_double(value_sv) catch {
           _ => None
         } noraise {
           v => Some(Setting(tag, v))

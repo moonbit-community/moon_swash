@@ -338,7 +338,7 @@ pub fn Style::parse(s0 : String) -> Style? {
         None => return Some(Style::Oblique(ObliqueAngle::default()))
         Some(v) => v
       }
-      try @strconv.parse_double(a_sv.trim()) catch {
+      try @string.parse_double(a_sv.trim()) catch {
         _ => Some(Style::Oblique(ObliqueAngle::default()))
       } noraise {
         a => Some(Style::Oblique(ObliqueAngle::from_degrees(a)))
@@ -348,7 +348,7 @@ pub fn Style::parse(s0 : String) -> Style? {
         None => return Some(Style::Oblique(ObliqueAngle::default()))
         Some(v) => v
       }
-      try @strconv.parse_double(a_sv.trim()) catch {
+      try @string.parse_double(a_sv.trim()) catch {
         _ => Some(Style::Oblique(ObliqueAngle::default()))
       } noraise {
         a => Some(Style::Oblique(ObliqueAngle::from_gradians(a)))
@@ -358,7 +358,7 @@ pub fn Style::parse(s0 : String) -> Style? {
         None => return Some(Style::Oblique(ObliqueAngle::default()))
         Some(v) => v
       }
-      try @strconv.parse_double(a_sv.trim()) catch {
+      try @string.parse_double(a_sv.trim()) catch {
         _ => Some(Style::Oblique(ObliqueAngle::default()))
       } noraise {
         a => Some(Style::Oblique(ObliqueAngle::from_radians(a)))
@@ -368,7 +368,7 @@ pub fn Style::parse(s0 : String) -> Style? {
         None => return Some(Style::Oblique(ObliqueAngle::default()))
         Some(v) => v
       }
-      try @strconv.parse_double(a_sv.trim()) catch {
+      try @string.parse_double(a_sv.trim()) catch {
         _ => Some(Style::Oblique(ObliqueAngle::default()))
       } noraise {
         a => Some(Style::Oblique(ObliqueAngle::from_turns(a)))
@@ -495,7 +495,7 @@ pub fn Weight::parse(s0 : String) -> Weight? {
   } else if s == "bold" {
     Some(Weight::bold())
   } else {
-    try @strconv.parse_int(s, base=10) catch {
+    try @string.parse_int(s, base=10) catch {
       _ => None
     } noraise {
       v => Some(Weight::{ value: v.max(1).min(1000).to_uint16() })
@@ -649,7 +649,7 @@ pub fn Stretch::parse(s0 : String) -> Stretch? {
       None => return None
       Some(v) => v
     }
-    try @strconv.parse_double(p_sv.trim()) catch {
+    try @string.parse_double(p_sv.trim()) catch {
       _ => None
     } noraise {
       p => Some(Stretch::from_percentage(p))
