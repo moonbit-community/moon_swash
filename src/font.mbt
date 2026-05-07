@@ -25,7 +25,7 @@ pub struct FontDataRef {
 }
 
 ///|
-pub fn FontDataRef::new(data : Bytes) -> FontDataRef? {
+pub fn FontDataRef::from_data(data : Bytes) -> FontDataRef? {
   if !@internal.is_font(data, 0) && !@internal.is_collection(data) {
     None
   } else {
@@ -109,7 +109,7 @@ pub fn FontRef::key(self : FontRef) -> CacheKey {
 
 ///|
 pub fn FontRef::from_index(data : Bytes, index : Int) -> FontRef? {
-  match FontDataRef::new(data) {
+  match FontDataRef::from_data(data) {
     None => None
     Some(d) => d.get(index)
   }
@@ -120,7 +120,7 @@ pub fn FontRef::from_offset(data : Bytes, offset : Int) -> FontRef? {
   if !@internal.is_font(data, offset) {
     None
   } else {
-    Some(FontRef::{ data, offset, key: CacheKey() })
+    Some(FontRef::{ data, offset, key: CacheKey::CacheKey() })
   }
 }
 
@@ -226,7 +226,7 @@ test "FontDataRef/FontRef basic collection support" {
       b'\x00'
     }
   })
-  let fdr_opt = FontDataRef::new(data)
+  let fdr_opt = FontDataRef::from_data(data)
   if fdr_opt is Some(fdr) {
     inspect(fdr.is_collection(), content="true")
     inspect(fdr.len(), content="1")

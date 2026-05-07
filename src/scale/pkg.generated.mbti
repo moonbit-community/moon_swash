@@ -48,7 +48,6 @@ pub fn Image::clear(Self) -> Unit
 pub fn Image::content(Self) -> Content
 pub fn Image::data(Self) -> Bytes
 pub fn Image::data_view(Self) -> ArrayView[Byte]
-pub fn Image::new() -> Self
 pub fn Image::placement(Self) -> @moon_zeno.Placement
 pub fn Image::source(Self) -> Source
 pub fn Image::to_rgba8(Self, Array[Byte]) -> Bool
@@ -93,7 +92,6 @@ pub fn Outline::layer_data(Self, Int) -> LayerData?
 pub fn Outline::len(Self) -> Int
 pub fn Outline::line_to(Self, @moon_zeno.Vector) -> Unit
 pub fn Outline::move_to(Self, @moon_zeno.Vector) -> Unit
-pub fn Outline::new() -> Self
 pub fn Outline::path(Self) -> (Array[@moon_zeno.Vector], Array[@moon_zeno.Verb])
 pub fn Outline::points(Self) -> Array[@moon_zeno.Vector]
 pub fn Outline::quad_to(Self, @moon_zeno.Vector, @moon_zeno.Vector) -> Unit
@@ -117,17 +115,18 @@ pub fn Render::Render(Array[Source]) -> Self
 pub fn Render::default_color(Self, Array[Byte]) -> Self
 pub fn Render::embolden(Self, Double) -> Self
 pub fn Render::format(Self, @moon_zeno.Format) -> Self
-pub fn Render::new(Array[Source]) -> Self
 pub fn Render::offset(Self, @moon_zeno.Vector) -> Self
 pub fn Render::render(Self, Scaler, UInt16) -> Image?
 pub fn Render::render_into(Self, Scaler, UInt16, Image) -> Bool
 pub fn Render::style(Self, @moon_zeno.Style) -> Self
 pub fn Render::transform(Self, @moon_zeno.Transform?) -> Self
 
-type ScaleContext
+pub struct ScaleContext {
+  // private fields
+}
+pub fn ScaleContext::ScaleContext() -> Self
 pub fn ScaleContext::builder(Self, @moon_swash.FontRef) -> ScalerBuilder
 pub fn ScaleContext::builder_with_id(Self, @moon_swash.FontRef, (UInt64, UInt64)) -> ScalerBuilder
-pub fn ScaleContext::new() -> Self
 pub fn ScaleContext::with_max_entries(Int) -> Self
 
 type Scaler

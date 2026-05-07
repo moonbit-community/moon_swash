@@ -24,9 +24,6 @@ pub struct GlyphInfo {
 }
 
 ///|
-pub fn GlyphInfo::GlyphInfo(bits : UInt16) -> GlyphInfo {
-  GlyphInfo::new(bits)
-}
 
 ///|
 pub fn GlyphInfo::default() -> GlyphInfo {
@@ -34,7 +31,7 @@ pub fn GlyphInfo::default() -> GlyphInfo {
 }
 
 ///|
-pub fn GlyphInfo::new(bits : UInt16) -> GlyphInfo {
+pub fn GlyphInfo::GlyphInfo(bits : UInt16) -> GlyphInfo {
   GlyphInfo::{ bits, }
 }
 

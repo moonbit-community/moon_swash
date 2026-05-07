@@ -189,7 +189,7 @@ fn dump_svg(
     Some(f) => f
   }
 
-  let shaper_cx = @shape.ShapeContext::new()
+  let shaper_cx = @shape.ShapeContext::ShapeContext()
   let shaper = shaper_cx
     .builder(font)
     .script(script)
@@ -240,7 +240,7 @@ fn dump_svg(
     }
   }
 
-  let scale_cx = @scale.ScaleContext::new()
+  let scale_cx = @scale.ScaleContext::ScaleContext()
   let scaler = scale_cx
     .builder(font)
     .size(size)
@@ -259,7 +259,7 @@ fn dump_svg(
     if pg.id == 0 {
       continue
     }
-    let outline = @scale.Outline::new()
+    let outline = @scale.Outline::Outline()
     if !scaler.scale_outline_into(pg.id, outline) {
       continue
     }

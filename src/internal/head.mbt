@@ -40,21 +40,18 @@ pub struct Head {
 }
 
 ///|
-pub fn Head::Head(data : BytesView) -> Head {
-  Head::new(data)
-}
 
 ///|
 pub const HEAD_MAGIC : UInt = 0x5F0F3CF5
 
 ///|
-pub fn Head::new(data : BytesView) -> Head {
+pub fn Head::Head(data : BytesView) -> Head {
   Head::{ data, }
 }
 
 ///|
 pub fn[T : RawFont] Head::from_font(font : T) -> Head? {
-  table_data(font, HEAD).map(Head::new)
+  table_data(font, HEAD).map(data => Head::Head(data))
 }
 
 ///|
@@ -144,18 +141,15 @@ pub struct Os2 {
 }
 
 ///|
-pub fn Os2::Os2(data : BytesView) -> Os2 {
-  Os2::new(data)
-}
 
 ///|
-pub fn Os2::new(data : BytesView) -> Os2 {
+pub fn Os2::Os2(data : BytesView) -> Os2 {
   Os2::{ data, }
 }
 
 ///|
 pub fn[T : RawFont] Os2::from_font(font : T) -> Os2? {
-  table_data(font, OS_2).map(Os2::new)
+  table_data(font, OS_2).map(data => Os2::Os2(data))
 }
 
 ///|
@@ -253,18 +247,15 @@ pub struct Post {
 }
 
 ///|
-pub fn Post::Post(data : BytesView) -> Post {
-  Post::new(data)
-}
 
 ///|
-pub fn Post::new(data : BytesView) -> Post {
+pub fn Post::Post(data : BytesView) -> Post {
   Post::{ data, }
 }
 
 ///|
 pub fn[T : RawFont] Post::from_font(font : T) -> Post? {
-  table_data(font, POST).map(Post::new)
+  table_data(font, POST).map(data => Post::Post(data))
 }
 
 ///|
@@ -330,18 +321,15 @@ pub struct Maxp {
 }
 
 ///|
-pub fn Maxp::Maxp(data : BytesView) -> Maxp {
-  Maxp::new(data)
-}
 
 ///|
-pub fn Maxp::new(data : BytesView) -> Maxp {
+pub fn Maxp::Maxp(data : BytesView) -> Maxp {
   Maxp::{ data, }
 }
 
 ///|
 pub fn[T : RawFont] Maxp::from_font(font : T) -> Maxp? {
-  table_data(font, MAXP).map(Maxp::new)
+  table_data(font, MAXP).map(data => Maxp::Maxp(data))
 }
 
 ///|
@@ -431,18 +419,15 @@ pub struct Hhea {
 }
 
 ///|
-pub fn Hhea::Hhea(data : BytesView) -> Hhea {
-  Hhea::new(data)
-}
 
 ///|
-pub fn Hhea::new(data : BytesView) -> Hhea {
+pub fn Hhea::Hhea(data : BytesView) -> Hhea {
   Hhea::{ data, }
 }
 
 ///|
 pub fn[T : RawFont] Hhea::from_font(font : T) -> Hhea? {
-  table_data(font, HHEA).map(Hhea::new)
+  table_data(font, HHEA).map(data => Hhea::Hhea(data))
 }
 
 ///|
@@ -477,18 +462,15 @@ pub struct Vhea {
 }
 
 ///|
-pub fn Vhea::Vhea(data : BytesView) -> Vhea {
-  Vhea::new(data)
-}
 
 ///|
-pub fn Vhea::new(data : BytesView) -> Vhea {
+pub fn Vhea::Vhea(data : BytesView) -> Vhea {
   Vhea::{ data, }
 }
 
 ///|
 pub fn[T : RawFont] Vhea::from_font(font : T) -> Vhea? {
-  table_data(font, VHEA).map(Vhea::new)
+  table_data(font, VHEA).map(data => Vhea::Vhea(data))
 }
 
 ///|

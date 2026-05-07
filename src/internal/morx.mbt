@@ -220,11 +220,16 @@ pub fn MorxSubtable::kind(self : MorxSubtable) -> MorxSubtableKind? {
   let data = aat_subview(self.b.data(), self.offset + 12)
   match self.kind {
     0U =>
-      MorxRearrangement::new(data).map(x => MorxSubtableKind::Rearrangement(x))
-    1U => MorxContextual::new(data).map(x => MorxSubtableKind::Contextual(x))
-    2U => MorxLigature::new(data).map(x => MorxSubtableKind::Ligature(x))
-    4U => Some(MorxSubtableKind::NonContextual(MorxNonContextual(data)))
-    5U => MorxInsertion::new(data).map(x => MorxSubtableKind::Insertion(x))
+      MorxRearrangement::parse(data).map(x => MorxSubtableKind::Rearrangement(x))
+    1U => MorxContextual::parse(data).map(x => MorxSubtableKind::Contextual(x))
+    2U => MorxLigature::parse(data).map(x => MorxSubtableKind::Ligature(x))
+    4U =>
+      Some(
+        MorxSubtableKind::NonContextual(
+          MorxNonContextual::MorxNonContextual(data),
+        ),
+      )
+    5U => MorxInsertion::parse(data).map(x => MorxSubtableKind::Insertion(x))
     _ => None
   }
 }
@@ -237,8 +242,10 @@ pub struct MorxRearrangement {
 }
 
 ///|
-fn MorxRearrangement::new(data : BytesView) -> MorxRearrangement? {
-  ExtendedStateTable::new(data).map(t => MorxRearrangement::{ state_table: t })
+fn MorxRearrangement::parse(data : BytesView) -> MorxRearrangement? {
+  ExtendedStateTable::from_view(data).map(t => MorxRearrangement::{
+    state_table: t,
+  })
 }
 
 ///|
@@ -270,12 +277,9 @@ pub struct MorxRearrangementState {
 }
 
 ///|
-pub fn MorxRearrangementState::MorxRearrangementState() -> MorxRearrangementState {
-  MorxRearrangementState::new()
-}
 
 ///|
-pub fn MorxRearrangementState::new() -> MorxRearrangementState {
+pub fn MorxRearrangementState::MorxRearrangementState() -> MorxRearrangementState {
   MorxRearrangementState::{ state: 0, first: 0, last: 0, cycles: 0 }
 }
 
@@ -439,13 +443,13 @@ pub struct MorxContextual {
 }
 
 ///|
-fn MorxContextual::new(data : BytesView) -> MorxContextual? {
+fn MorxContextual::parse(data : BytesView) -> MorxContextual? {
   let b = BeBytes::from_view(data)
   let table = match b.read_u32(16) {
     None => return None
     Some(v) => v.reinterpret_as_int()
   }
-  let state_table = match ExtendedStateTable::new(data) {
+  let state_table = match ExtendedStateTable::from_view(data) {
     None => return None
     Some(v) => v
   }
@@ -461,12 +465,9 @@ pub struct MorxContextualState {
 }
 
 ///|
-pub fn MorxContextualState::MorxContextualState() -> MorxContextualState {
-  MorxContextualState::new()
-}
 
 ///|
-pub fn MorxContextualState::new() -> MorxContextualState {
+pub fn MorxContextualState::MorxContextualState() -> MorxContextualState {
   MorxContextualState::{
     state: 0,
     mark_set: false,
@@ -576,9 +577,9 @@ pub struct MorxLigature {
 }
 
 ///|
-fn MorxLigature::new(data : BytesView) -> MorxLigature? {
+fn MorxLigature::parse(data : BytesView) -> MorxLigature? {
   let b = BeBytes::from_view(data)
-  let state_table = match ExtendedStateTable::new(data) {
+  let state_table = match ExtendedStateTable::from_view(data) {
     None => return None
     Some(v) => v
   }
@@ -606,12 +607,9 @@ pub struct MorxLigatureState {
 }
 
 ///|
-pub fn MorxLigatureState::MorxLigatureState() -> MorxLigatureState {
-  MorxLigatureState::new()
-}
 
 ///|
-pub fn MorxLigatureState::new() -> MorxLigatureState {
+pub fn MorxLigatureState::MorxLigatureState() -> MorxLigatureState {
   MorxLigatureState::{
     state: 0,
     indices: Array::make(32, 0),
@@ -752,14 +750,9 @@ pub struct MorxNonContextual {
 }
 
 ///|
-pub fn MorxNonContextual::MorxNonContextual(
-  data : BytesView,
-) -> MorxNonContextual {
-  MorxNonContextual::new(data)
-}
 
 ///|
-fn MorxNonContextual::new(data : BytesView) -> MorxNonContextual {
+fn MorxNonContextual::MorxNonContextual(data : BytesView) -> MorxNonContextual {
   MorxNonContextual::{ b: BeBytes::from_view(data) }
 }
 
@@ -800,9 +793,9 @@ pub struct MorxInsertion {
 }
 
 ///|
-fn MorxInsertion::new(data : BytesView) -> MorxInsertion? {
+fn MorxInsertion::parse(data : BytesView) -> MorxInsertion? {
   let b = BeBytes::from_view(data)
-  let state_table = match ExtendedStateTable::new(data) {
+  let state_table = match ExtendedStateTable::from_view(data) {
     None => return None
     Some(v) => v
   }
@@ -821,12 +814,9 @@ pub struct MorxInsertionState {
 }
 
 ///|
-pub fn MorxInsertionState::MorxInsertionState() -> MorxInsertionState {
-  MorxInsertionState::new()
-}
 
 ///|
-pub fn MorxInsertionState::new() -> MorxInsertionState {
+pub fn MorxInsertionState::MorxInsertionState() -> MorxInsertionState {
   MorxInsertionState::{ state: 0, mark: 0, cycles: 0 }
 }
 

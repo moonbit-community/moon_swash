@@ -69,17 +69,17 @@ fn make_kern_format0_data() -> Bytes {
 
 ///|
 fn make_buffer_ab() -> Buffer {
-  let buf = Buffer::new()
+  let buf = Buffer::Buffer()
   let tokens : Array[@swash.Token] = []
   let mut offset = 0U
   for ch in "ab" {
     tokens.push(
-      @swash.Token::new(ch, offset, 1U, @swash.CharInfo::from_char(ch), 0U),
+      @swash.Token::Token(ch, offset, 1U, @swash.CharInfo::from_char(ch), 0U),
     )
     offset = offset + 1U
   }
-  let parser = @swash.Parser::new(@swash.Script::Latin, tokens.iter())
-  let cluster = @swash.CharCluster::new()
+  let parser = @swash.Parser::Parser(@swash.Script::Latin, tokens.iter())
+  let cluster = @swash.CharCluster::CharCluster()
   while parser.next(cluster) {
     cluster.map(fn(ch) {
       if ch == 'a' {

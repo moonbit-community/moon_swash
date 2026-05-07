@@ -66,7 +66,6 @@ pub fn Buffer::ensure_order(Self, Bool) -> Unit
 pub fn Buffer::glyphs(Self) -> ArrayView[GlyphData]
 pub fn Buffer::len(Self) -> Int
 pub fn Buffer::multiply(Self, Int, Int) -> Unit
-pub fn Buffer::new() -> Self
 pub fn Buffer::position(Self, Int, Double, Double, Double, Double) -> Unit
 pub fn Buffer::position_cursive(Self, Int, Int, Double, Double) -> Unit
 pub fn Buffer::position_mark(Self, Int, Int, Double, Double) -> Unit
@@ -117,7 +116,6 @@ pub fn Engine::has_feature_vars(Self) -> Bool
 pub fn Engine::kern(Self, Buffer) -> Unit
 pub fn Engine::kerx(Self, Buffer, Bool) -> Unit
 pub fn Engine::morx(Self, Buffer, ArrayView[(UInt16, UInt16)]) -> Unit
-pub fn Engine::new(EngineMetadata, Bytes, ArrayView[Int], @moon_swash.Script, @moon_swash.Language?) -> Self
 pub fn Engine::set_classes(Self, Buffer, IndexRange?) -> Unit
 pub fn Engine::tags(Self) -> (UInt, UInt, UInt, UInt)
 
@@ -201,7 +199,6 @@ pub struct FontEntry {
   metadata : EngineMetadata
 }
 pub fn FontEntry::FontEntry(@moon_swash.FontRef) -> Self
-pub fn FontEntry::new(@moon_swash.FontRef) -> Self
 
 pub struct Glyph {
   id : UInt16
@@ -262,7 +259,6 @@ pub struct GlyphInfo {
 pub fn GlyphInfo::GlyphInfo(UInt16) -> Self
 pub fn GlyphInfo::default() -> Self
 pub fn GlyphInfo::is_mark(Self) -> Bool
-pub fn GlyphInfo::new(UInt16) -> Self
 
 pub struct IndexRange {
   start : Int
@@ -270,7 +266,6 @@ pub struct IndexRange {
 }
 pub fn IndexRange::IndexRange(Int, Int) -> Self
 pub fn IndexRange::end(Self) -> Int
-pub fn IndexRange::new(Int, Int) -> Self
 pub fn IndexRange::start(Self) -> Int
 
 type LookupState
@@ -300,7 +295,6 @@ pub struct SelectedFont {
 pub fn SelectedFont::SelectedFont(@moon_swash.FontRef) -> Self
 pub fn SelectedFont::font(Self) -> @moon_swash.FontRef
 pub fn SelectedFont::id_override(Self) -> (UInt64, UInt64)?
-pub fn SelectedFont::new(@moon_swash.FontRef) -> Self
 pub fn SelectedFont::synthesis(Self) -> @moon_swash.Synthesis?
 pub fn SelectedFont::with_id_override(Self, (UInt64, UInt64)) -> Self
 pub fn SelectedFont::with_synthesis(Self, @moon_swash.Synthesis) -> Self
@@ -311,7 +305,6 @@ pub struct ShapeContext {
 pub fn ShapeContext::ShapeContext() -> Self
 pub fn ShapeContext::builder(Self, @moon_swash.FontRef) -> ShaperBuilder
 pub fn ShapeContext::builder_with_id(Self, @moon_swash.FontRef, (UInt64, UInt64)) -> ShaperBuilder
-pub fn ShapeContext::new() -> Self
 pub fn ShapeContext::with_max_entries(Int) -> Self
 
 pub struct Shaper {
@@ -389,7 +382,7 @@ pub struct StageOffsets {
   vars : UInt
 }
 pub fn StageOffsets::default() -> Self
-pub fn StageOffsets::new(Bytes, UInt, UInt, UInt?) -> (Self, (UInt, UInt))?
+pub fn StageOffsets::from_layout(Bytes, UInt, UInt, UInt?) -> (Self, (UInt, UInt))?
 
 pub struct Storage {
   stack : Array[LookupState]

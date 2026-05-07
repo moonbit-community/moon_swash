@@ -38,9 +38,6 @@ pub struct Outline {
 }
 
 ///|
-pub fn Outline::Outline() -> Outline {
-  Outline::new()
-}
 
 ///|
 /// Reference to a layer in a scaled outline.
@@ -79,7 +76,7 @@ pub fn Layer::color_index(self : Layer) -> UInt16? {
 }
 
 ///|
-pub fn Outline::new() -> Outline {
+pub fn Outline::Outline() -> Outline {
   Outline::{ layers: [], points: [], verbs: [], is_color: false }
 }
 
@@ -462,7 +459,7 @@ pub fn Outline::close(self : Outline) -> Unit {
 
 ///|
 test "Outline basic path recording" {
-  let o = Outline::new()
+  let o = Outline::Outline()
   o.set_color(false)
   o.begin_layer(None)
   o.move_to(Vector::new(0.0, 0.0))

@@ -200,7 +200,6 @@ pub fn BeBytes::data(Self) -> BytesView
 pub fn BeBytes::ensure_range(Self, Int, Int) -> Bool
 pub fn BeBytes::from_view(BytesView) -> Self
 pub fn BeBytes::len(Self) -> Int
-pub fn BeBytes::new(Bytes) -> Self
 pub fn BeBytes::read_i16(Self, Int) -> Int?
 pub fn BeBytes::read_i32(Self, Int) -> Int?
 pub fn BeBytes::read_u16(Self, Int) -> UInt?
@@ -219,13 +218,13 @@ pub(all) struct ExtendedStateTable {
 }
 pub fn ExtendedStateTable::class(Self, UInt16) -> UInt16
 pub fn[T] ExtendedStateTable::entry(Self, UInt16, UInt16, Int, (BeBytes, Int) -> T?) -> AatEntry[T]?
-pub fn ExtendedStateTable::new(BytesView) -> Self?
+pub fn ExtendedStateTable::from_view(BytesView) -> Self?
 
 pub struct FeatureSubsts {
   offset : UInt
 }
 pub fn FeatureSubsts::apply(Self, Bytes, UInt16) -> UInt?
-pub fn FeatureSubsts::new(Bytes, UInt, ArrayView[Int]) -> Self?
+pub fn FeatureSubsts::from_data(Bytes, UInt, ArrayView[Int]) -> Self?
 
 pub struct Fixed {
   value : Int
@@ -270,7 +269,6 @@ pub fn Fvar::get_axis(Self, UInt) -> VarAxis?
 pub fn Fvar::get_axis_by_tag(Self, UInt) -> VarAxis?
 pub fn Fvar::get_instance(Self, UInt) -> VarInstance?
 pub fn Fvar::instance_count(Self) -> UInt
-pub fn Fvar::new(BytesView) -> Self
 
 pub struct Gdef {
   data : Bytes
@@ -283,6 +281,7 @@ pub struct Gdef {
 pub fn Gdef::class(Self, UInt16) -> UInt16
 pub fn Gdef::delta(Self, UInt16, UInt16, ArrayView[Int]) -> Double
 pub fn Gdef::empty() -> Self
+pub fn Gdef::from_base(Bytes, Int) -> Self?
 pub fn Gdef::from_offset(Bytes, UInt) -> Self?
 pub fn Gdef::has_classes(Self) -> Bool
 pub fn Gdef::has_mark_classes(Self) -> Bool
@@ -290,7 +289,6 @@ pub fn Gdef::has_var_store(Self) -> Bool
 pub fn Gdef::mark_class(Self, UInt16) -> UInt16
 pub fn Gdef::mark_set_coverage(Self, UInt, UInt16) -> UInt16?
 pub fn Gdef::mark_set_offset(Self, UInt16) -> UInt?
-pub fn Gdef::new(Bytes, Int) -> Self?
 pub fn Gdef::ok(Self) -> Bool
 
 pub struct Head {
@@ -311,7 +309,6 @@ pub fn Head::magic(Self) -> UInt
 pub fn Head::major_version(Self) -> UInt
 pub fn Head::minor_version(Self) -> UInt
 pub fn Head::modified(Self) -> UInt64
-pub fn Head::new(BytesView) -> Self
 pub fn Head::revision(Self) -> UInt
 pub fn Head::units_per_em(Self) -> UInt
 
@@ -324,7 +321,6 @@ pub fn Hhea::descender(Self) -> Int
 pub fn[T : RawFont] Hhea::from_font(T) -> Self?
 pub fn Hhea::line_gap(Self) -> Int
 pub fn Hhea::max_advance(Self) -> UInt
-pub fn Hhea::new(BytesView) -> Self
 pub fn Hhea::num_long_metrics(Self) -> UInt
 
 pub struct KernFormat0 {
@@ -348,7 +344,6 @@ pub struct KernFormat1State {
   mut cycles : Int
 }
 pub fn KernFormat1State::KernFormat1State() -> Self
-pub fn KernFormat1State::new() -> Self
 
 pub struct KernSubtable {
   b : BeBytes
@@ -391,7 +386,6 @@ pub struct KerxContextualState {
   mut cycles : Int
 }
 pub fn KerxContextualState::KerxContextualState() -> Self
-pub fn KerxContextualState::new() -> Self
 
 pub struct KerxFormat0 {
   b : BeBytes
@@ -432,7 +426,6 @@ pub struct KerxFormat4State {
   mut cycles : Int
 }
 pub fn KerxFormat4State::KerxFormat4State() -> Self
-pub fn KerxFormat4State::new() -> Self
 
 pub struct KerxSubtable {
   b : BeBytes
@@ -521,7 +514,6 @@ pub fn Maxp::max_stack_depth(Self) -> UInt
 pub fn Maxp::max_storage(Self) -> UInt
 pub fn Maxp::max_twilight_points(Self) -> UInt
 pub fn Maxp::max_zones(Self) -> UInt
-pub fn Maxp::new(BytesView) -> Self
 pub fn Maxp::version(Self) -> UInt
 
 pub struct MorxChain {
@@ -557,7 +549,6 @@ pub struct MorxContextualState {
   mut mark_id : UInt16
 }
 pub fn MorxContextualState::MorxContextualState() -> Self
-pub fn MorxContextualState::new() -> Self
 
 pub struct MorxFeature {
   selector : UInt16
@@ -579,7 +570,6 @@ pub struct MorxInsertionState {
   mut cycles : Int
 }
 pub fn MorxInsertionState::MorxInsertionState() -> Self
-pub fn MorxInsertionState::new() -> Self
 
 pub struct MorxLigature {
   b : BeBytes
@@ -597,12 +587,10 @@ pub struct MorxLigatureState {
   mut pos : Int
 }
 pub fn MorxLigatureState::MorxLigatureState() -> Self
-pub fn MorxLigatureState::new() -> Self
 
 pub struct MorxNonContextual {
   b : BeBytes
 }
-pub fn MorxNonContextual::MorxNonContextual(BytesView) -> Self
 pub fn MorxNonContextual::substitute(Self, UInt16) -> UInt16?
 
 pub struct MorxRearrange {
@@ -627,7 +615,6 @@ pub struct MorxRearrangementState {
   mut cycles : Int
 }
 pub fn MorxRearrangementState::MorxRearrangementState() -> Self
-pub fn MorxRearrangementState::new() -> Self
 
 pub struct MorxSubtable {
   b : BeBytes
@@ -665,7 +652,7 @@ pub struct Mvar {
   store : UInt
 }
 pub fn Mvar::delta(Self, UInt) -> Double
-pub fn Mvar::new(Bytes, UInt, ArrayView[Int]) -> Self?
+pub fn Mvar::from_data(Bytes, UInt, ArrayView[Int]) -> Self?
 
 pub struct Os2 {
   data : BytesView
@@ -674,7 +661,6 @@ pub fn Os2::Os2(BytesView) -> Self
 pub fn Os2::average_char_width(Self) -> Int
 pub fn Os2::cap_height(Self) -> Int
 pub fn[T : RawFont] Os2::from_font(T) -> Self?
-pub fn Os2::new(BytesView) -> Self
 pub fn Os2::selection_flags(Self) -> Os2Flags
 pub fn Os2::strikeout_position(Self) -> Int
 pub fn Os2::strikeout_size(Self) -> Int
@@ -703,7 +689,6 @@ pub fn Post::has_names(Self) -> Bool
 pub fn Post::is_fixed_pitch(Self) -> Bool
 pub fn Post::italic_angle(Self) -> UInt
 pub fn Post::name(Self, UInt16) -> String?
-pub fn Post::new(BytesView) -> Self
 pub fn Post::underline_position(Self) -> Int
 pub fn Post::underline_size(Self) -> Int
 pub fn Post::version(Self) -> UInt
@@ -719,7 +704,7 @@ pub(all) struct StateTable {
 }
 pub fn StateTable::class(Self, UInt16) -> UInt16
 pub fn[T] StateTable::entry(Self, UInt16, UInt16, Int, (BeBytes, Int) -> T?) -> AatEntry[T]?
-pub fn StateTable::new(BytesView) -> Self?
+pub fn StateTable::from_view(BytesView) -> Self?
 
 pub struct Stream {
   data : BytesView
@@ -730,7 +715,6 @@ pub fn Stream::check_range(Self, Int) -> Bool
 pub fn Stream::data(Self) -> BytesView
 pub fn Stream::from_view(BytesView) -> Self
 pub fn Stream::len(Self) -> Int
-pub fn Stream::new(Bytes) -> Self
 pub fn Stream::offset(Self) -> Int
 pub fn Stream::read_i16(Self) -> Int?
 pub fn Stream::read_u16(Self) -> UInt?
@@ -800,7 +784,6 @@ pub fn Vhea::descender(Self) -> Int
 pub fn[T : RawFont] Vhea::from_font(T) -> Self?
 pub fn Vhea::line_gap(Self) -> Int
 pub fn Vhea::max_advance(Self) -> UInt
-pub fn Vhea::new(BytesView) -> Self
 pub fn Vhea::num_long_metrics(Self) -> UInt
 
 // Type aliases

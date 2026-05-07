@@ -138,18 +138,9 @@ pub struct Engine {
 }
 
 ///|
-pub fn Engine::Engine(
-  metadata : EngineMetadata,
-  font_data : Bytes,
-  coords : ArrayView[Int],
-  script : @swash.Script,
-  language : @swash.Language?,
-) -> Engine {
-  Engine::new(metadata, font_data, coords, script, language)
-}
 
 ///|
-pub fn Engine::new(
+pub fn Engine::Engine(
   metadata : EngineMetadata,
   font_data : Bytes,
   coords : ArrayView[Int],
@@ -166,7 +157,8 @@ pub fn Engine::new(
     Some(l) => l.to_opentype()
   }
   let (gsub, stags) = if metadata.sub_mode == SubMode::Gsub {
-    match StageOffsets::new(font_data, metadata.gsub, script_tag, lang_tag) {
+    match
+      StageOffsets::from_layout(font_data, metadata.gsub, script_tag, lang_tag) {
       None => (StageOffsets::default(), (0U, 0U))
       Some((off, tags)) => (off, tags)
     }
@@ -174,7 +166,8 @@ pub fn Engine::new(
     (StageOffsets::default(), (0U, 0U))
   }
   let (gpos, ptags) = if metadata.pos_mode == PosMode::Gpos {
-    match StageOffsets::new(font_data, metadata.gpos, script_tag, lang_tag) {
+    match
+      StageOffsets::from_layout(font_data, metadata.gpos, script_tag, lang_tag) {
       None => (StageOffsets::default(), (0U, 0U))
       Some((off, tags)) => (off, tags)
     }

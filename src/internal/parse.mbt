@@ -23,12 +23,9 @@ pub struct BeBytes {
 }
 
 ///|
-pub fn BeBytes::BeBytes(data : Bytes) -> BeBytes {
-  BeBytes::new(data)
-}
 
 ///|
-pub fn BeBytes::new(data : Bytes) -> BeBytes {
+pub fn BeBytes::BeBytes(data : Bytes) -> BeBytes {
   BeBytes::{ data: data[:] }
 }
 
@@ -197,12 +194,9 @@ pub struct Stream {
 }
 
 ///|
-pub fn Stream::Stream(data : Bytes) -> Stream {
-  Stream::new(data)
-}
 
 ///|
-pub fn Stream::new(data : Bytes) -> Stream {
+pub fn Stream::Stream(data : Bytes) -> Stream {
   Stream::{ data: data[:], offset: 0 }
 }
 

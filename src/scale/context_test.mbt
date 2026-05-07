@@ -29,7 +29,7 @@ test "ScaleContext::with_max_entries clamps to 1..=64" {
 test "ScaleContext::builder_with_id overrides hinting cache id" {
   let font_opt = @swash.FontRef::from_offset(b"\x00\x01\x00\x00", 0)
   if font_opt is Some(font) {
-    let scaler = ScaleContext::new()
+    let scaler = ScaleContext::ScaleContext()
       .builder_with_id(font, ((123).to_uint64(), (456).to_uint64()))
       .build()
     inspect(scaler.hint(), content="false")

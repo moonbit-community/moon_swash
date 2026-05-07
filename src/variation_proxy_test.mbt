@@ -157,7 +157,7 @@ test "VariationsProxy: materialize + find_by_tag + normalized_coords" {
   let vars = proxy.materialize(font)
   let axis = vars.find_by_tag(0x77676874).unwrap()
   inspect(axis.normalize(650.0), content="8192")
-  let settings : Array[VariationSetting] = [Setting(0x77676874, 650.0)]
+  let settings : Array[VariationSetting] = [Setting::Setting(0x77676874, 650.0)]
   inspect(vars.normalized_coords(settings.iter()).to_array(), content="[8192]")
 }
 

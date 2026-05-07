@@ -15,7 +15,7 @@
 ///|
 test "BeBytes.read_u16/read_u32 big-endian" {
   let bytes = b"\x01\x02\x03\x04\x05"
-  let reader = BeBytes::new(bytes)
+  let reader = BeBytes::BeBytes(bytes)
   debug_inspect(reader.read_u16(0), content="Some(258)")
   debug_inspect(reader.read_u16(1), content="Some(515)")
   debug_inspect(reader.read_u32(0), content="Some(16909060)")

@@ -30,13 +30,10 @@ pub struct SelectedFont {
 }
 
 ///|
-pub fn SelectedFont::SelectedFont(font : @swash.FontRef) -> SelectedFont {
-  SelectedFont::new(font)
-}
 
 ///|
 /// Creates a selected font wrapper.
-pub fn SelectedFont::new(font : @swash.FontRef) -> SelectedFont {
+pub fn SelectedFont::SelectedFont(font : @swash.FontRef) -> SelectedFont {
   SelectedFont::{ font, id_override: None, synthesis: None }
 }
 
@@ -181,10 +178,10 @@ pub fn[S : Selector, O : ShapeOptions] shape(
   tokens : Iter[@swash.Token],
   f : (SelectedFont, Shaper) -> Unit,
 ) -> Unit {
-  let mut cluster = @swash.CharCluster::new()
+  let mut cluster = @swash.CharCluster::CharCluster()
   let parser0 = if options.direction() == Direction::RightToLeft {
     // Mirror characters for RTL text.
-    @swash.Parser::new(
+    @swash.Parser::Parser(
       options.script(),
       tokens.map((t : @swash.Token) => {
         let ch0 = t.ch()
@@ -192,11 +189,11 @@ pub fn[S : Selector, O : ShapeOptions] shape(
           None => ch0
           Some(m) => m
         }
-        @swash.Token::new(ch, t.offset(), t.len(), t.info(), t.data())
+        @swash.Token::Token(ch, t.offset(), t.len(), t.info(), t.data())
       }),
     )
   } else {
-    @swash.Parser::new(options.script(), tokens)
+    @swash.Parser::Parser(options.script(), tokens)
   }
   if !parser0.next(cluster) {
     return

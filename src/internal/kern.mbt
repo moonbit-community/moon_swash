@@ -133,11 +133,11 @@ pub(all) enum KernSubtableKind {
 pub fn KernSubtable::kind(self : KernSubtable) -> KernSubtableKind? {
   match self.format.to_int() {
     0 =>
-      KernFormat0::new(self.b, self.offset).map(x => {
+      KernFormat0::parse(self.b, self.offset).map(x => {
         KernSubtableKind::Format0(x)
       })
     1 =>
-      KernFormat1::new(self.b, self.offset, self.cross_stream).map(x => {
+      KernFormat1::parse(self.b, self.offset, self.cross_stream).map(x => {
         KernSubtableKind::Format1(x)
       })
     _ => None
@@ -154,7 +154,7 @@ pub struct KernFormat0 {
 }
 
 ///|
-fn KernFormat0::new(b : BeBytes, offset : Int) -> KernFormat0? {
+fn KernFormat0::parse(b : BeBytes, offset : Int) -> KernFormat0? {
   let count = match b.read_u16(offset) {
     None => return None
     Some(v) => v.reinterpret_as_int()
@@ -201,12 +201,9 @@ pub struct KernFormat1State {
 }
 
 ///|
-pub fn KernFormat1State::KernFormat1State() -> KernFormat1State {
-  KernFormat1State::new()
-}
 
 ///|
-pub fn KernFormat1State::new() -> KernFormat1State {
+pub fn KernFormat1State::KernFormat1State() -> KernFormat1State {
   KernFormat1State::{ state: 0, stack: Array::make(8, 0), pos: 0, cycles: 0 }
 }
 
@@ -218,14 +215,14 @@ pub struct KernFormat1 {
 }
 
 ///|
-fn KernFormat1::new(
+fn KernFormat1::parse(
   b0 : BeBytes,
   offset : Int,
   cross_stream : Bool,
 ) -> KernFormat1? {
   let data_view = aat_subview(b0.data(), offset)
   let b = BeBytes::from_view(data_view)
-  let state_table = match StateTable::new(data_view) {
+  let state_table = match StateTable::from_view(data_view) {
     None => return None
     Some(v) => v
   }

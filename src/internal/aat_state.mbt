@@ -67,7 +67,7 @@ pub(all) struct ExtendedStateTable {
 }
 
 ///|
-pub fn ExtendedStateTable::new(view : BytesView) -> ExtendedStateTable? {
+pub fn ExtendedStateTable::from_view(view : BytesView) -> ExtendedStateTable? {
   let b = BeBytes::from_view(view)
   let classes = match b.read_u32(0) {
     None => return None
@@ -135,7 +135,7 @@ pub(all) struct StateTable {
 }
 
 ///|
-pub fn StateTable::new(view : BytesView) -> StateTable? {
+pub fn StateTable::from_view(view : BytesView) -> StateTable? {
   let b = BeBytes::from_view(view)
   let class_count = match b.read_u16(0) {
     None => return None

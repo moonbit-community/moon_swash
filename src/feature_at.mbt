@@ -29,7 +29,7 @@ priv struct AtScript {
 
 ///|
 fn AtScript::languages(self : AtScript) -> AtLanguages {
-  AtLanguages(
+  AtLanguages::AtLanguages(
     self.data,
     self.gsub,
     self.gpos,
@@ -46,12 +46,9 @@ priv struct AtScripts {
 }
 
 ///|
-fn AtScripts::AtScripts(data : Bytes, gsub : UInt, gpos : UInt) -> AtScripts {
-  AtScripts::new(data, gsub, gpos)
-}
 
 ///|
-fn AtScripts::new(data : Bytes, gsub : UInt, gpos : UInt) -> AtScripts {
+fn AtScripts::AtScripts(data : Bytes, gsub : UInt, gpos : UInt) -> AtScripts {
   AtScripts::{ data, gsub, gpos }
 }
 
@@ -138,18 +135,9 @@ priv struct AtLanguages {
 }
 
 ///|
-fn AtLanguages::AtLanguages(
-  data : Bytes,
-  gsub : UInt,
-  gpos : UInt,
-  gsub_script : UInt,
-  gpos_script : UInt,
-) -> AtLanguages {
-  AtLanguages::new(data, gsub, gpos, gsub_script, gpos_script)
-}
 
 ///|
-fn AtLanguages::new(
+fn AtLanguages::AtLanguages(
   data : Bytes,
   gsub : UInt,
   gpos : UInt,
@@ -252,7 +240,7 @@ fn AtWritingSystem::language_tag(self : AtWritingSystem) -> Tag {
 
 ///|
 fn AtWritingSystem::features(self : AtWritingSystem) -> AtFeatures {
-  AtFeatures(self.lang)
+  AtFeatures::AtFeatures(self.lang)
 }
 
 ///|
@@ -261,12 +249,9 @@ priv struct AtWritingSystems {
 }
 
 ///|
-fn AtWritingSystems::AtWritingSystems(scripts : AtScripts) -> AtWritingSystems {
-  AtWritingSystems::new(scripts)
-}
 
 ///|
-fn AtWritingSystems::new(scripts : AtScripts) -> AtWritingSystems {
+fn AtWritingSystems::AtWritingSystems(scripts : AtScripts) -> AtWritingSystems {
   AtWritingSystems::{ scripts, }
 }
 
@@ -309,12 +294,9 @@ priv struct AtFeatures {
 }
 
 ///|
-fn AtFeatures::AtFeatures(lang : AtLangSys) -> AtFeatures {
-  AtFeatures::new(lang)
-}
 
 ///|
-fn AtFeatures::new(lang : AtLangSys) -> AtFeatures {
+fn AtFeatures::AtFeatures(lang : AtLangSys) -> AtFeatures {
   AtFeatures::{ lang, }
 }
 
@@ -372,19 +354,16 @@ priv struct AtAllFeatures {
 }
 
 ///|
+
+///|
 fn AtAllFeatures::AtAllFeatures(
   data : Bytes,
   gsub : UInt,
   gpos : UInt,
 ) -> AtAllFeatures {
-  AtAllFeatures::new(data, gsub, gpos)
-}
-
-///|
-fn AtAllFeatures::new(data : Bytes, gsub : UInt, gpos : UInt) -> AtAllFeatures {
   AtAllFeatures::{
     data,
-    seen: SeenFeatures(),
+    seen: SeenFeatures::SeenFeatures(),
     table: gsub,
     next_table: gpos,
     stage: 0,

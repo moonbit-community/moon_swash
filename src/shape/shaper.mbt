@@ -52,14 +52,11 @@ priv struct State {
 }
 
 ///|
-fn State::State() -> State {
-  State::new()
-}
 
 ///|
-fn State::new() -> State {
+fn State::State() -> State {
   State::{
-    buffer: Buffer(),
+    buffer: Buffer::Buffer(),
     order: [],
     glyphs: [],
     store_builder: FeatureStoreBuilder::default(),
@@ -86,17 +83,14 @@ struct ContextState {
 }
 
 ///|
-fn ContextState::ContextState(max_entries : Int) -> ContextState {
-  ContextState::new(max_entries)
-}
 
 ///|
-fn ContextState::new(max_entries : Int) -> ContextState {
+fn ContextState::ContextState(max_entries : Int) -> ContextState {
   ContextState::{
-    font_cache: @swash.FontCache(max_entries),
-    feature_cache: FeatureCache(max_entries),
+    font_cache: @swash.FontCache::FontCache(max_entries),
+    feature_cache: FeatureCache::FeatureCache(max_entries),
     coords: [],
-    state: State(),
+    state: State::State(),
   }
 }
 
@@ -110,13 +104,10 @@ pub struct ShapeContext {
 }
 
 ///|
-pub fn ShapeContext::ShapeContext() -> ShapeContext {
-  ShapeContext::new()
-}
 
 ///|
 /// Creates a new shaping context.
-pub fn ShapeContext::new() -> ShapeContext {
+pub fn ShapeContext::ShapeContext() -> ShapeContext {
   ShapeContext::with_max_entries(DEFAULT_SIZE)
 }
 
@@ -129,7 +120,7 @@ pub fn ShapeContext::with_max_entries(max_entries : Int) -> ShapeContext {
   } else if max_entries0 > 64 {
     max_entries0 = 64
   }
-  ShapeContext::{ inner: Ref(ContextState(max_entries0)) }
+  ShapeContext::{ inner: Ref(ContextState::ContextState(max_entries0)) }
 }
 
 ///|
@@ -150,11 +141,9 @@ pub fn ShapeContext::builder_with_id(
   font : @swash.FontRef,
   id : (UInt64, UInt64),
 ) -> ShaperBuilder {
-  let (font_id, font_entry) = self.inner.val.font_cache.get(
-    font,
-    Some(id),
-    FontEntry::new,
-  )
+  let (font_id, font_entry) = self.inner.val.font_cache.get(font, Some(id), font => {
+    FontEntry::FontEntry(font)
+  })
   self.inner.val.state.reset()
   self.inner.val.coords.clear()
   ShaperBuilder::{
@@ -384,7 +373,7 @@ pub fn ShaperBuilder::build(self : ShaperBuilder) -> Shaper {
   let cx = self.cx
   cx.val.state.buffer.dotted_circle = self.dotted_circle
   cx.val.state.buffer.is_rtl = self.direction == Direction::RightToLeft
-  let engine = Engine(
+  let engine = Engine::Engine(
     self.font_entry.val.metadata,
     self.font.data(),
     cx.val.coords.op_as_view(),
@@ -484,7 +473,7 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
         s,
         feature_bit_to_mask(s.groups.reph),
         buf,
-        Some(IndexRange(start, end)),
+        Some(IndexRange::IndexRange(start, end)),
       )
       |> ignore
       let end = buf.len()
@@ -492,13 +481,15 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
         s,
         feature_bit_to_mask(s.groups.pref),
         buf,
-        Some(IndexRange(start, end)),
+        Some(IndexRange::IndexRange(start, end)),
       )
       |> ignore
       let end = buf.len()
-      e.gsub(s, s.groups.stage1, buf, Some(IndexRange(start, end))) |> ignore
+      e.gsub(s, s.groups.stage1, buf, Some(IndexRange::IndexRange(start, end)))
+      |> ignore
       let end = buf.len()
-      e.gsub(s, s.groups.stage2, buf, Some(IndexRange(start, end))) |> ignore
+      e.gsub(s, s.groups.stage2, buf, Some(IndexRange::IndexRange(start, end)))
+      |> ignore
     }
     EngineMode::Complex => {
       let e = self.engine
@@ -524,12 +515,12 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
       let total = buf.len() - start
       let len = if total < 3 { total } else { 3 }
       let end = start + len
-      buf.clear_flags(SUBSTITUTED, Some(IndexRange(start, end)))
+      buf.clear_flags(SUBSTITUTED, Some(IndexRange::IndexRange(start, end)))
       e.gsub(
         s,
         feature_bit_to_mask(s.groups.reph),
         buf,
-        Some(IndexRange(start, end)),
+        Some(IndexRange::IndexRange(start, end)),
       )
       |> ignore
       for i in start..<end {
@@ -542,12 +533,12 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
       }
       // Pref identification.
       let end = buf.len()
-      buf.clear_flags(SUBSTITUTED, Some(IndexRange(start, end)))
+      buf.clear_flags(SUBSTITUTED, Some(IndexRange::IndexRange(start, end)))
       e.gsub(
         s,
         feature_bit_to_mask(s.groups.pref),
         buf,
-        Some(IndexRange(start, end)),
+        Some(IndexRange::IndexRange(start, end)),
       )
       |> ignore
       for i in start..<end {
@@ -560,7 +551,8 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
       }
       // Orthographic group.
       let end = buf.len()
-      e.gsub(s, s.groups.stage1, buf, Some(IndexRange(start, end))) |> ignore
+      e.gsub(s, s.groups.stage1, buf, Some(IndexRange::IndexRange(start, end)))
+      |> ignore
       // Reordering.
       let total = buf.len() - start
       let len = if total < 64 { total } else { 64 }
@@ -586,12 +578,18 @@ pub fn Shaper::add_str(self : Shaper, s : String) -> Unit {
     // Keep source ranges in UTF-8 byte offsets to match upstream swash.
     let ch_len = @utf8.encode(ch.to_string())[:].length().reinterpret_as_uint()
     tokens.push(
-      @swash.Token::new(ch, offset, ch_len, @swash.CharInfo::from_char(ch), 0U),
+      @swash.Token::Token(
+        ch,
+        offset,
+        ch_len,
+        @swash.CharInfo::from_char(ch),
+        0U,
+      ),
     )
     offset = offset + ch_len
   }
-  let parser = @swash.Parser::new(self.script, tokens.iter())
-  let cluster = @swash.CharCluster::new()
+  let parser = @swash.Parser::Parser(self.script, tokens.iter())
+  let cluster = @swash.CharCluster::CharCluster()
   while parser.next(cluster) {
     cluster.map(fn(ch) { self.charmap.map(ch.to_int().reinterpret_as_uint()) })
     |> ignore
@@ -659,7 +657,7 @@ pub fn Shaper::shape_with(self : Shaper, f : (GlyphCluster) -> Unit) -> Unit {
         if buf.shaped_glyphs.length() != 0 {
           // We have some glyphs. Emit the cluster.
           let source0 = buf.ranges[start]
-          let source = @swash.SourceRange::new(
+          let source = @swash.SourceRange::SourceRange(
             source0.start(),
             buf.ranges[group_end - 1].end(),
           )
@@ -702,7 +700,7 @@ pub fn Shaper::shape_with(self : Shaper, f : (GlyphCluster) -> Unit) -> Unit {
     }
     last_cluster = g.cluster
     if self.retain_ignorables || (g.flags & IGNORABLE) == 0 {
-      buf.shaped_glyphs.push(Glyph::new(g, p))
+      buf.shaped_glyphs.push(Glyph::Glyph(g, p))
     }
   }
 }

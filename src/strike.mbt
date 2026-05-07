@@ -152,7 +152,7 @@ fn materialize_impl(
   is_apple : Bool,
 ) -> BitmapStrikes {
   if loc == 0U {
-    BitmapStrikes(
+    BitmapStrikes::BitmapStrikes(
       strike_empty_bytes_view(),
       strike_empty_bytes_view(),
       upem,
@@ -161,9 +161,9 @@ fn materialize_impl(
     )
   } else if loc == dat {
     let slice = slice_from(data, loc)
-    BitmapStrikes(slice, slice, upem, is_sbix, is_apple)
+    BitmapStrikes::BitmapStrikes(slice, slice, upem, is_sbix, is_apple)
   } else {
-    BitmapStrikes(
+    BitmapStrikes::BitmapStrikes(
       slice_from(data, loc),
       slice_from(data, dat),
       upem,
@@ -185,18 +185,9 @@ pub struct BitmapStrikes {
 }
 
 ///|
-pub fn BitmapStrikes::BitmapStrikes(
-  data : BytesView,
-  bitmap_data : BytesView,
-  upem : UInt,
-  is_sbix : Bool,
-  is_apple : Bool,
-) -> BitmapStrikes {
-  BitmapStrikes::new(data, bitmap_data, upem, is_sbix, is_apple)
-}
 
 ///|
-fn BitmapStrikes::new(
+fn BitmapStrikes::BitmapStrikes(
   data : BytesView,
   bitmap_data : BytesView,
   upem : UInt,

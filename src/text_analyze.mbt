@@ -35,7 +35,10 @@ fn WordBreakStrength::default() -> WordBreakStrength {
 /// Returns an iterator yielding unicode properties and boundary analysis for
 /// each character in the specified sequence.
 pub fn analyze(chars : Iter[Char]) -> Analyze {
-  Analyze::{ chars: CharStream(chars), state: BoundaryState() }
+  Analyze::{
+    chars: CharStream::CharStream(chars),
+    state: BoundaryState::BoundaryState(),
+  }
 }
 
 ///|
@@ -80,12 +83,9 @@ struct CharStream {
 }
 
 ///|
-fn CharStream::CharStream(iter : Iter[Char]) -> CharStream {
-  CharStream::new(iter)
-}
 
 ///|
-fn CharStream::new(iter : Iter[Char]) -> CharStream {
+fn CharStream::CharStream(iter : Iter[Char]) -> CharStream {
   CharStream::{ iter, buf: ([] : Array[Char]), buf_offset: 0, done: false }
 }
 
@@ -147,12 +147,9 @@ struct BoundaryState {
 }
 
 ///|
-fn BoundaryState::BoundaryState() -> BoundaryState {
-  BoundaryState::new()
-}
 
 ///|
-fn BoundaryState::new() -> BoundaryState {
+fn BoundaryState::BoundaryState() -> BoundaryState {
   BoundaryState::{
     strength: WordBreakStrength::default(),
     prev: WordBreak::EX,

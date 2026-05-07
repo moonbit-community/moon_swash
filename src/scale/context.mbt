@@ -27,9 +27,6 @@ struct ScaleContext {
 }
 
 ///|
-fn ScaleContext::ScaleContext() -> ScaleContext {
-  ScaleContext::new()
-}
 
 ///|
 priv struct State {
@@ -40,22 +37,19 @@ priv struct State {
 }
 
 ///|
-fn State::State() -> State {
-  State::new()
-}
 
 ///|
-fn State::new() -> State {
+fn State::State() -> State {
   State::{
     _scratch0: [],
     _scratch1: [],
-    outline: Outline::new(),
+    outline: Outline::Outline(),
     rcx: Ref(@zeno.Scratch::new()),
   }
 }
 
 ///|
-pub fn ScaleContext::new() -> ScaleContext {
+pub fn ScaleContext::ScaleContext() -> ScaleContext {
   ScaleContext::with_max_entries(8)
 }
 
@@ -72,9 +66,9 @@ pub fn ScaleContext::with_max_entries(max_entries : Int) -> ScaleContext {
     max_entries
   }
   ScaleContext::{
-    fonts: Ref(@swash.FontCache(max_entries)),
-    state: Ref(State()),
-    hinting_cache: Ref(HintingCache()),
+    fonts: Ref(@swash.FontCache::FontCache(max_entries)),
+    state: Ref(State::State()),
+    hinting_cache: Ref(HintingCache::HintingCache()),
   }
 }
 
@@ -345,7 +339,7 @@ pub fn Scaler::scale_color_outline_into(
 
 ///|
 fn find_font_index_by_offset(data : Bytes, offset : Int) -> UInt? {
-  match @swash.FontDataRef::new(data) {
+  match @swash.FontDataRef::from_data(data) {
     None => None
     Some(fdr) => {
       let mut i = 0
@@ -378,12 +372,9 @@ struct OutlineWriter {
 }
 
 ///|
-fn OutlineWriter::OutlineWriter(outline : Outline) -> OutlineWriter {
-  OutlineWriter::new(outline)
-}
 
 ///|
-fn OutlineWriter::new(outline : Outline) -> OutlineWriter {
+fn OutlineWriter::OutlineWriter(outline : Outline) -> OutlineWriter {
   OutlineWriter::{ outline, }
 }
 
@@ -439,7 +430,7 @@ pub fn Scaler::scale_outline(
 ) -> Outline? {
   let self = _self
   let glyph_id = _glyph_id
-  let outline = Outline::new()
+  let outline = Outline::Outline()
   if self.scale_outline_into(glyph_id, outline) {
     Some(outline)
   } else {
@@ -452,7 +443,7 @@ pub fn Scaler::scale_color_outline(
   self : Scaler,
   glyph_id : @swash.GlyphId,
 ) -> Outline? {
-  let outline = Outline::new()
+  let outline = Outline::Outline()
   if self.scale_color_outline_into(glyph_id, outline) {
     Some(outline)
   } else {
@@ -506,7 +497,7 @@ pub fn Scaler::scale_bitmap(
   glyph_id : @swash.GlyphId,
   strike : StrikeWith,
 ) -> Image? {
-  let image = Image()
+  let image = Image::Image()
   if self.scale_bitmap_into(glyph_id, strike, image) {
     Some(image)
   } else {
@@ -533,7 +524,7 @@ pub fn Scaler::scale_color_bitmap(
   glyph_id : @swash.GlyphId,
   strike : StrikeWith,
 ) -> Image? {
-  let image = Image()
+  let image = Image::Image()
   if self.scale_color_bitmap_into(glyph_id, strike, image) {
     Some(image)
   } else {
@@ -859,7 +850,7 @@ fn Scaler::scale_outline_layer_into(
               @skrifa_outline.DrawSettings::unhinted(self.skrifa_size, loc)
             Some(h) => @skrifa_outline.DrawSettings::hinted(h, false)
           }
-          let pen = OutlineWriter(outline)
+          let pen = OutlineWriter::OutlineWriter(outline)
           match glyph.draw(settings, pen) {
             Ok(_) => {
               outline.maybe_close()
@@ -879,7 +870,7 @@ test "ScaleContext builder scaffolding" {
   // Minimal TTF header tag 0x00010000 is enough for FontRef::from_offset.
   let data = Bytes::from_array([0, 1, 0, 0])
   let font = @swash.FontRef::from_offset(data, 0).unwrap()
-  let cx = ScaleContext()
+  let cx = ScaleContext::ScaleContext()
   let scaler = cx.builder(font).size(14.0).hint(true).build()
   inspect(scaler.size().to_int(), content="14")
   inspect(scaler.hint(), content="true")

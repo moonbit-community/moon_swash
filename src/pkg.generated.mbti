@@ -63,7 +63,6 @@ pub fn Attributes::has_oblique_variation(Self) -> Bool
 pub fn Attributes::has_stretch_variation(Self) -> Bool
 pub fn Attributes::has_variations(Self) -> Bool
 pub fn Attributes::has_weight_variation(Self) -> Bool
-pub fn Attributes::new(Stretch, Weight, Style) -> Self
 pub fn Attributes::parts(Self) -> (Stretch, Weight, Style)
 pub fn Attributes::stretch(Self) -> Stretch
 pub fn Attributes::style(Self) -> Style
@@ -120,7 +119,6 @@ pub struct BitmapStrikes {
   upem : UInt
   len : Int
 }
-pub fn BitmapStrikes::BitmapStrikes(BytesView, BytesView, UInt, Bool, Bool) -> Self
 pub fn BitmapStrikes::find_by_exact_ppem(Self, UInt16, UInt16) -> BitmapStrike?
 pub fn BitmapStrikes::find_by_largest_ppem(Self, UInt16) -> BitmapStrike?
 pub fn BitmapStrikes::find_by_nearest_ppem(Self, UInt16, UInt16) -> BitmapStrike?
@@ -470,7 +468,6 @@ pub struct CacheKey {
   value : UInt64
 }
 pub fn CacheKey::CacheKey() -> Self
-pub fn CacheKey::new() -> Self
 pub fn CacheKey::value(Self) -> UInt64
 
 pub(all) enum Category {
@@ -514,18 +511,23 @@ pub(all) enum Category {
   SpaceSeparator
 }
 
-type CharCluster
+pub struct CharCluster {
+  // private fields
+}
+pub fn CharCluster::CharCluster() -> Self
 pub fn CharCluster::chars(Self) -> ArrayView[ClusterChar]
 pub fn CharCluster::clear(Self) -> Unit
 pub fn CharCluster::info(Self) -> ClusterInfo
 pub fn CharCluster::is_empty(Self) -> Bool
 pub fn CharCluster::map(Self, (Char) -> UInt16) -> Status
 pub fn CharCluster::mapped_chars(Self) -> ArrayView[ClusterChar]
-pub fn CharCluster::new() -> Self
 pub fn CharCluster::range(Self) -> SourceRange
 pub fn CharCluster::user_data(Self) -> UInt
 
-type CharInfo
+pub struct CharInfo {
+  // private fields
+}
+pub fn CharInfo::CharInfo(Properties, Boundary) -> Self
 pub fn CharInfo::boundary(Self) -> Boundary
 pub fn CharInfo::category(Self) -> Category
 pub fn CharInfo::cluster_break(Self) -> ClusterBreak
@@ -537,7 +539,6 @@ pub fn CharInfo::is_ignorable(Self) -> Bool
 pub fn CharInfo::is_variation_selector(Self) -> Bool
 pub fn CharInfo::joining_type(Self) -> JoiningType
 pub fn CharInfo::myanmar_class(Self) -> (MyanmarClass, Bool)
-pub fn CharInfo::new(Properties, Boundary) -> Self
 pub fn CharInfo::properties(Self) -> Properties
 pub fn CharInfo::use_class(Self) -> (UseClass, Bool, Bool)
 
@@ -585,14 +586,16 @@ pub(all) enum ClusterBreak {
   ZWJ
 }
 
-type ClusterChar
+pub struct ClusterChar {
+  // private fields
+}
+pub fn ClusterChar::ClusterChar(Char, UInt, ShapeClass, JoiningType, Bool, Bool, UInt16, UInt) -> Self
 pub fn ClusterChar::ch(Self) -> Char
 pub fn ClusterChar::contributes_to_shaping(Self) -> Bool
 pub fn ClusterChar::data(Self) -> UInt
 pub fn ClusterChar::glyph_id(Self) -> UInt16
 pub fn ClusterChar::is_ignorable(Self) -> Bool
 pub fn ClusterChar::joining_type(Self) -> JoiningType
-pub fn ClusterChar::new(Char, UInt, ShapeClass, JoiningType, Bool, Bool, UInt16, UInt) -> Self
 pub fn ClusterChar::offset(Self) -> UInt
 pub fn ClusterChar::shape_class(Self) -> ShapeClass
 
@@ -723,7 +726,6 @@ pub struct FontCache[T] {
 }
 pub fn[T] FontCache::FontCache(Int) -> Self[T]
 pub fn[T] FontCache::get(Self[T], FontRef, (UInt64, UInt64)?, (FontRef) -> T) -> ((UInt64, UInt64), @ref.Ref[T])
-pub fn[T] FontCache::new(Int) -> Self[T]
 
 pub struct FontDataRef {
   data : Bytes
@@ -731,11 +733,11 @@ pub struct FontDataRef {
 }
 pub fn FontDataRef::data(Self) -> Bytes
 pub fn FontDataRef::fonts(Self) -> Iter[FontRef]
+pub fn FontDataRef::from_data(Bytes) -> Self?
 pub fn FontDataRef::get(Self, Int) -> FontRef?
 pub fn FontDataRef::is_collection(Self) -> Bool
 pub fn FontDataRef::is_empty(Self) -> Bool
 pub fn FontDataRef::len(Self) -> Int
-pub fn FontDataRef::new(Bytes) -> Self?
 
 pub struct FontRef {
   data : Bytes
@@ -893,7 +895,6 @@ pub struct LocalizedStrings {
   len : Int
   storage : Int
 }
-pub fn LocalizedStrings::LocalizedStrings(BytesView) -> Self
 pub fn LocalizedStrings::find_by_id(Self, StringId, String?) -> LocalizedString?
 pub fn LocalizedStrings::iter(Self) -> Iter[LocalizedString]
 pub fn LocalizedStrings::len(Self) -> Int
@@ -966,14 +967,15 @@ pub fn ObliqueAngle::from_radians(Double) -> Self
 pub fn ObliqueAngle::from_turns(Double) -> Self
 pub fn ObliqueAngle::to_degrees(Self) -> Double
 
-type Parser
-pub fn Parser::new(Script, Iter[Token]) -> Self
+pub struct Parser {
+  // private fields
+}
+pub fn Parser::Parser(Script, Iter[Token]) -> Self
 pub fn Parser::next(Self, CharCluster) -> Bool
 
 pub struct Properties {
   bits : UInt
 }
-pub fn Properties::Properties(Int) -> Self
 pub fn Properties::bidi_class(Self) -> BidiClass
 pub fn Properties::block(Self) -> Block
 pub fn Properties::boundary(Self) -> UInt
@@ -1166,14 +1168,12 @@ pub struct SeenFeatures {
 }
 pub fn SeenFeatures::SeenFeatures() -> Self
 pub fn SeenFeatures::mark(Self, Int) -> Bool
-pub fn SeenFeatures::new() -> Self
 
 pub struct Setting[T] {
   tag : UInt
   value : T
 }
 pub fn[T] Setting::Setting(UInt, T) -> Self[T]
-pub fn[T] Setting::new(UInt, T) -> Self[T]
 pub fn Setting::parse_feature(String) -> Self[UInt16]?
 pub fn Setting::parse_feature_list(String) -> Iter[Self[UInt16]]
 pub fn Setting::parse_variation(String) -> Self[Double]?
@@ -1198,9 +1198,11 @@ pub(all) enum ShapeClass {
   Other
 }
 
-type SourceRange
+pub struct SourceRange {
+  // private fields
+}
+pub fn SourceRange::SourceRange(UInt, UInt) -> Self
 pub fn SourceRange::end(Self) -> UInt
-pub fn SourceRange::new(UInt, UInt) -> Self
 pub fn SourceRange::start(Self) -> UInt
 
 pub(all) enum Status {
@@ -1287,13 +1289,15 @@ pub fn Synthesis::skew(Self) -> Double?
 pub fn Synthesis::variations(Self) -> ArrayView[Setting[Double]]
 pub impl Eq for Synthesis
 
-type Token
+pub struct Token {
+  // private fields
+}
+pub fn Token::Token(Char, UInt, UInt, CharInfo, UInt) -> Self
 pub fn Token::ch(Self) -> Char
 pub fn Token::data(Self) -> UInt
 pub fn Token::default() -> Self
 pub fn Token::info(Self) -> CharInfo
 pub fn Token::len(Self) -> UInt
-pub fn Token::new(Char, UInt, UInt, CharInfo, UInt) -> Self
 pub fn Token::offset(Self) -> UInt
 
 pub(all) enum Usability {

@@ -156,9 +156,6 @@ pub struct LocalizedStrings {
 }
 
 ///|
-pub fn LocalizedStrings::LocalizedStrings(data : BytesView) -> LocalizedStrings {
-  LocalizedStrings::new(data)
-}
 
 ///|
 fn empty_view() -> BytesView {
@@ -166,7 +163,7 @@ fn empty_view() -> BytesView {
 }
 
 ///|
-fn LocalizedStrings::new(data : BytesView) -> LocalizedStrings {
+fn LocalizedStrings::LocalizedStrings(data : BytesView) -> LocalizedStrings {
   let b = @internal.BeBytes::from_view(data)
   let len = b.read_u16(2).unwrap_or(0).reinterpret_as_int()
   let storage = b.read_u16(4).unwrap_or(0).reinterpret_as_int()
@@ -176,8 +173,8 @@ fn LocalizedStrings::new(data : BytesView) -> LocalizedStrings {
 ///|
 pub fn FontRef::localized_strings(self : FontRef) -> LocalizedStrings {
   match self.table_data(NAME) {
-    None => LocalizedStrings(empty_view())
-    Some(v) => LocalizedStrings(v)
+    None => LocalizedStrings::LocalizedStrings(empty_view())
+    Some(v) => LocalizedStrings::LocalizedStrings(v)
   }
 }
 

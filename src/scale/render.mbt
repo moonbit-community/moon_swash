@@ -27,9 +27,6 @@ pub struct Render {
 }
 
 ///|
-pub fn Render::Render(sources : Array[Source]) -> Render {
-  Render::new(sources)
-}
 
 ///|
 fn ensure_zeroed(buf : Array[Byte], len : Int) -> Array[Byte] {
@@ -56,7 +53,7 @@ fn ensure_zeroed(buf : Array[Byte], len : Int) -> Array[Byte] {
 }
 
 ///|
-pub fn Render::new(sources : Array[Source]) -> Render {
+pub fn Render::Render(sources : Array[Source]) -> Render {
   Render::{
     sources,
     format: @zeno.Format::Alpha,
@@ -301,7 +298,7 @@ pub fn Render::render(
   scaler : Scaler,
   glyph_id : @swash.GlyphId,
 ) -> Image? {
-  let image = Image()
+  let image = Image::Image()
   if self.render_into(scaler, glyph_id, image) {
     Some(image)
   } else {
@@ -311,7 +308,7 @@ pub fn Render::render(
 
 ///|
 test "Render builder scaffolding" {
-  let r = Render([Source::Outline])
+  let r = Render::Render([Source::Outline])
     .format(@zeno.Format::Subpixel)
     .offset(@zeno.Vector::new(0.25, 0.75))
   inspect(r.sources.length(), content="1")

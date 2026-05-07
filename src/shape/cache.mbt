@@ -27,12 +27,9 @@ pub struct FontEntry {
 }
 
 ///|
-pub fn FontEntry::FontEntry(font : @swash.FontRef) -> FontEntry {
-  FontEntry::new(font)
-}
 
 ///|
-pub fn FontEntry::new(font : @swash.FontRef) -> FontEntry {
+pub fn FontEntry::FontEntry(font : @swash.FontRef) -> FontEntry {
   let coords = font.variations().iter().to_array()
   FontEntry::{
     metrics: @swash.MetricsProxy::from_font(font),
@@ -60,9 +57,6 @@ priv struct FeatureCache {
 }
 
 ///|
-fn FeatureCache::FeatureCache(max_entries : Int) -> FeatureCache {
-  FeatureCache::new(max_entries)
-}
 
 ///|
 priv enum FeatureCacheEntry {
@@ -71,7 +65,7 @@ priv enum FeatureCacheEntry {
 }
 
 ///|
-fn FeatureCache::new(max_entries : Int) -> FeatureCache {
+fn FeatureCache::FeatureCache(max_entries : Int) -> FeatureCache {
   let max_entries = if max_entries < 1 { 1 } else { max_entries }
   FeatureCache::{ entries: [], epoch: 0, max_entries }
 }

@@ -77,12 +77,9 @@ priv struct HintingCache {
 }
 
 ///|
-fn HintingCache::HintingCache() -> HintingCache {
-  HintingCache::new()
-}
 
 ///|
-fn HintingCache::new() -> HintingCache {
+fn HintingCache::HintingCache() -> HintingCache {
   HintingCache::{ glyf_entries: [], cff_entries: [], serial: 0 }
 }
 

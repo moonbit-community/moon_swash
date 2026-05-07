@@ -34,7 +34,7 @@ test "Post.name: version 1.0 uses default glyph names" {
   let buf : Array[Byte] = Array::makei(32, _ => b'\x00')
   // version = 0x00010000
   set_u32_be(buf, 0, 0x00010000)
-  let post = Post::new(Bytes::from_array(buf.op_as_view())[:])
+  let post = Post::Post(Bytes::from_array(buf.op_as_view())[:])
   inspect(post.has_names(), content="true")
   inspect(post.name(0).unwrap_or(""), content=".notdef")
   inspect(post.name(257).unwrap_or(""), content="dcroat")
@@ -55,7 +55,7 @@ test "Post.name: version 2.0 parses custom names" {
   buf[37] = b'f'
   buf[38] = b'o'
   buf[39] = b'o'
-  let post = Post::new(Bytes::from_array(buf.op_as_view())[:])
+  let post = Post::Post(Bytes::from_array(buf.op_as_view())[:])
   inspect(post.has_names(), content="true")
   inspect(post.name(0).unwrap_or(""), content="foo")
   inspect(post.name(1) is None, content="true")

@@ -113,7 +113,7 @@ priv struct AatWritingSystem {
 
 ///|
 fn AatWritingSystem::features(self : AatWritingSystem) -> AatFeatures {
-  AatFeatures(self.data, self.morx, self.kern)
+  AatFeatures::AatFeatures(self.data, self.morx, self.kern)
 }
 
 ///|
@@ -199,11 +199,15 @@ pub fn Features::from_font(font : FontRef) -> Features {
   match Kind::from_font(font) {
     Kind::At(gsub, gpos) =>
       Features::{
-        kind: FeaturesKind::AtAll(AtAllFeatures(font.data(), gsub, gpos)),
+        kind: FeaturesKind::AtAll(
+          AtAllFeatures::AtAllFeatures(font.data(), gsub, gpos),
+        ),
       }
     Kind::Aat(morx, kern) =>
       Features::{
-        kind: FeaturesKind::Aat(AatFeatures(font.data(), morx, kern)),
+        kind: FeaturesKind::Aat(
+          AatFeatures::AatFeatures(font.data(), morx, kern),
+        ),
       }
     Kind::Empty => Features::{ kind: FeaturesKind::Empty }
   }
@@ -300,9 +304,11 @@ struct WritingSystems {
 pub fn WritingSystems::from_font(font : FontRef) -> WritingSystems {
   match Kind::from_font(font) {
     Kind::At(gsub, gpos) => {
-      let scripts = AtScripts(font.data(), gsub, gpos)
+      let scripts = AtScripts::AtScripts(font.data(), gsub, gpos)
       WritingSystems::{
-        kind: WritingSystemsKind::At(AtWritingSystems(scripts)),
+        kind: WritingSystemsKind::At(
+          AtWritingSystems::AtWritingSystems(scripts),
+        ),
       }
     }
     Kind::Aat(morx, kern) =>

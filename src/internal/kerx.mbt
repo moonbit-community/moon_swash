@@ -123,14 +123,16 @@ pub(all) enum KerxSubtableKind {
 pub fn KerxSubtable::kind(self : KerxSubtable) -> KerxSubtableKind? {
   let format = self.coverage & 0xFFU
   match format {
-    0U => KerxFormat0::new(self.b).map(x => KerxSubtableKind::Format0(x))
+    0U => KerxFormat0::parse(self.b).map(x => KerxSubtableKind::Format0(x))
     1U =>
-      KerxFormat1::new(self.b, self.tuple_count).map(x => {
+      KerxFormat1::parse(self.b, self.tuple_count).map(x => {
         KerxSubtableKind::Format1(x)
       })
-    2U => KerxFormat2::new(self.b).map(x => KerxSubtableKind::Format2(x))
+    2U => KerxFormat2::parse(self.b).map(x => KerxSubtableKind::Format2(x))
     4U =>
-      KerxFormat4::new(self.b, self.ankr).map(x => KerxSubtableKind::Format4(x))
+      KerxFormat4::parse(self.b, self.ankr).map(x => {
+        KerxSubtableKind::Format4(x)
+      })
     _ => None
   }
 }
@@ -144,7 +146,7 @@ pub struct KerxFormat0 {
 }
 
 ///|
-fn KerxFormat0::new(b : BeBytes) -> KerxFormat0? {
+fn KerxFormat0::parse(b : BeBytes) -> KerxFormat0? {
   let count = match b.read_u32(12) {
     None => return None
     Some(v) => v.reinterpret_as_int()
@@ -192,12 +194,9 @@ pub struct KerxContextualState {
 }
 
 ///|
-pub fn KerxContextualState::KerxContextualState() -> KerxContextualState {
-  KerxContextualState::new()
-}
 
 ///|
-pub fn KerxContextualState::new() -> KerxContextualState {
+pub fn KerxContextualState::KerxContextualState() -> KerxContextualState {
   KerxContextualState::{ state: 0, stack: Array::make(8, 0), pos: 0, cycles: 0 }
 }
 
@@ -211,11 +210,11 @@ pub struct KerxFormat1 {
 }
 
 ///|
-fn KerxFormat1::new(b0 : BeBytes, tuple_count : UInt) -> KerxFormat1? {
+fn KerxFormat1::parse(b0 : BeBytes, tuple_count : UInt) -> KerxFormat1? {
   // Start of extended state table is at offset 12.
   let data_view = aat_subview(b0.data(), 12)
   let b = BeBytes::from_view(data_view)
-  let state_table = match ExtendedStateTable::new(data_view) {
+  let state_table = match ExtendedStateTable::from_view(data_view) {
     None => return None
     Some(v) => v
   }
@@ -301,7 +300,7 @@ pub struct KerxFormat2 {
 }
 
 ///|
-fn KerxFormat2::new(b : BeBytes) -> KerxFormat2? {
+fn KerxFormat2::parse(b : BeBytes) -> KerxFormat2? {
   let l_table = match b.read_u32(16) {
     None => return None
     Some(v) => v.reinterpret_as_int()
@@ -345,12 +344,9 @@ pub struct KerxFormat4State {
 }
 
 ///|
-pub fn KerxFormat4State::KerxFormat4State() -> KerxFormat4State {
-  KerxFormat4State::new()
-}
 
 ///|
-pub fn KerxFormat4State::new() -> KerxFormat4State {
+pub fn KerxFormat4State::KerxFormat4State() -> KerxFormat4State {
   KerxFormat4State::{ state: 0, mark: 0, mark_id: (0).to_uint16(), cycles: 0 }
 }
 
@@ -364,10 +360,10 @@ pub struct KerxFormat4 {
 }
 
 ///|
-fn KerxFormat4::new(b0 : BeBytes, ankr : BytesView) -> KerxFormat4? {
+fn KerxFormat4::parse(b0 : BeBytes, ankr : BytesView) -> KerxFormat4? {
   let data_view = aat_subview(b0.data(), 12)
   let b = BeBytes::from_view(data_view)
-  let state_table = match ExtendedStateTable::new(data_view) {
+  let state_table = match ExtendedStateTable::from_view(data_view) {
     None => return None
     Some(v) => v
   }

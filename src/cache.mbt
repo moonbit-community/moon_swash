@@ -24,15 +24,12 @@ pub struct CacheKey {
 }
 
 ///|
-pub fn CacheKey::CacheKey() -> CacheKey {
-  CacheKey::new()
-}
 
 ///|
 let key_counter : Ref[UInt64] = Ref((1).to_uint64())
 
 ///|
-pub fn CacheKey::new() -> CacheKey {
+pub fn CacheKey::CacheKey() -> CacheKey {
   // swash uses AtomicUsize; we only target single-thread for now.
   let v = key_counter.val
   key_counter.val = v + 1
@@ -55,9 +52,6 @@ pub struct FontCache[T] {
 }
 
 ///|
-pub fn[T] FontCache::FontCache(max_entries : Int) -> FontCache[T] {
-  FontCache::new(max_entries)
-}
 
 ///|
 struct Entry[T] {
@@ -68,7 +62,7 @@ struct Entry[T] {
 }
 
 ///|
-pub fn[T] FontCache::new(max_entries : Int) -> FontCache[T] {
+pub fn[T] FontCache::FontCache(max_entries : Int) -> FontCache[T] {
   let max_entries = if max_entries < 1 { 1 } else { max_entries }
   FontCache::{ entries: [], max_entries, epoch: 0 }
 }
@@ -135,8 +129,8 @@ pub fn[T] FontCache::get(
 
 ///|
 test "CacheKey::new produces increasing keys" {
-  let a = CacheKey().value()
-  let b = CacheKey().value()
+  let a = CacheKey::CacheKey().value()
+  let b = CacheKey::CacheKey().value()
   inspect(a < b, content="true")
 }
 
@@ -146,7 +140,7 @@ test "FontCache caches and evicts by max_entries" {
   let data = Bytes::from_array([0, 1, 0, 0])
   let f0 = FontRef::from_offset(data, 0).unwrap()
   let f1 = FontRef::from_offset(data, 0).unwrap()
-  let cache : FontCache[Int] = FontCache(1)
+  let cache : FontCache[Int] = FontCache::FontCache(1)
   let calls = Ref(0)
   fn mk(calls : Ref[Int], v : Int) -> (FontRef) -> Int {
     fn(font) {

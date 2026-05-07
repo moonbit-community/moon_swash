@@ -113,8 +113,12 @@ test "FontRef::attributes from OS/2 italic/oblique flags" {
 
 ///|
 test "Attributes::synthesize embolden and skew fallbacks" {
-  let base = Attributes::new(Stretch::normal(), Weight::normal(), Style::Normal)
-  let req_bold = Attributes::new(
+  let base = Attributes::Attributes(
+    Stretch::normal(),
+    Weight::normal(),
+    Style::Normal,
+  )
+  let req_bold = Attributes::Attributes(
     Stretch::normal(),
     Weight::bold(),
     Style::Normal,
@@ -122,7 +126,7 @@ test "Attributes::synthesize embolden and skew fallbacks" {
   let s0 = base.synthesize(req_bold)
   inspect(s0.embolden(), content="true")
   inspect(s0.variations().length(), content="0")
-  let req_italic = Attributes::new(
+  let req_italic = Attributes::Attributes(
     Stretch::normal(),
     Weight::normal(),
     Style::Italic,

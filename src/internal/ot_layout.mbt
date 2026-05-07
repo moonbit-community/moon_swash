@@ -79,7 +79,7 @@ pub fn LookupData::subtable_data(
   data : Bytes,
   index : UInt16,
 ) -> SubtableData? {
-  let b = BeBytes(data)
+  let b = BeBytes::BeBytes(data)
   let base = self.offset.reinterpret_as_int()
   let subtable_base = base + 6
   let mut offset = match b.read_u16(subtable_base + index.to_int() * 2) {
@@ -152,7 +152,7 @@ pub struct FeatureSubsts {
 }
 
 ///|
-pub fn FeatureSubsts::new(
+pub fn FeatureSubsts::from_data(
   data : Bytes,
   offset : UInt,
   coords : ArrayView[Int],
@@ -160,7 +160,7 @@ pub fn FeatureSubsts::new(
   if offset == 0U || coords.length() == 0 {
     return None
   }
-  let b = BeBytes(data)
+  let b = BeBytes::BeBytes(data)
   let base = offset.reinterpret_as_int()
   let count = match b.read_u32(base + 4) {
     None => return None
@@ -230,7 +230,7 @@ pub fn FeatureSubsts::apply(
   data : Bytes,
   index : UInt16,
 ) -> UInt? {
-  let b = BeBytes(data)
+  let b = BeBytes::BeBytes(data)
   let mut base = self.offset.reinterpret_as_int()
   let count = match b.read_u16(base + 4) {
     None => return None
@@ -274,7 +274,7 @@ pub fn lookup_data(
   if list_base == 0U {
     return None
   }
-  let b = BeBytes(data)
+  let b = BeBytes::BeBytes(data)
   let base0 = list_base.reinterpret_as_int()
   let rec = base0 + 2 + index.to_int() * 2
   let offset = match b.read_u16(rec) {
@@ -378,7 +378,7 @@ pub fn subtable_data(
   kind : LookupKind,
   fmt : UInt16,
 ) -> SubtableData? {
-  let b = BeBytes(data)
+  let b = BeBytes::BeBytes(data)
   let base = offset.reinterpret_as_int()
   fn cov(data : Bytes, b : BeBytes, base : Int, rel : Int) -> UInt16? {
     let c = match b.read_u16(base + rel) {

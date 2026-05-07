@@ -31,7 +31,7 @@ struct VariationsProxy {
 pub fn VariationsProxy::from_font(font : FontRef) -> VariationsProxy {
   let fvar = font.table_offset(@internal.FVAR)
   let table = match @internal.Fvar::from_font(font) {
-    None => @internal.Fvar(b""[:])
+    None => @internal.Fvar::Fvar(b""[:])
     Some(v) => v
   }
   let avar = font.table_offset(@internal.AVAR)
@@ -57,7 +57,7 @@ pub fn VariationsProxy::materialize(
   }
   Variations::{
     font,
-    fvar: @internal.Fvar(view),
+    fvar: @internal.Fvar::Fvar(view),
     avar: self.avar,
     len: self.len,
     pos: 0,
@@ -76,7 +76,7 @@ struct Variations {
 ///|
 fn Variations::from_font(font : FontRef) -> Variations {
   let fvar = match @internal.Fvar::from_font(font) {
-    None => @internal.Fvar(b""[:])
+    None => @internal.Fvar::Fvar(b""[:])
     Some(v) => v
   }
   let avar = font.table_offset(@internal.AVAR)
@@ -235,7 +235,7 @@ struct Instances {
 ///|
 fn Instances::from_font(font : FontRef) -> Instances {
   let fvar = match @internal.Fvar::from_font(font) {
-    None => @internal.Fvar(b""[:])
+    None => @internal.Fvar::Fvar(b""[:])
     Some(v) => v
   }
   let avar = font.table_offset(@internal.AVAR)

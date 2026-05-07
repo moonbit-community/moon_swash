@@ -39,16 +39,9 @@ pub struct Attributes {
 }
 
 ///|
-pub fn Attributes::Attributes(
-  stretch : Stretch,
-  weight : Weight,
-  style : Style,
-) -> Attributes {
-  Attributes::new(stretch, weight, style)
-}
 
 ///|
-pub fn Attributes::new(
+pub fn Attributes::Attributes(
   stretch : Stretch,
   weight : Weight,
   style : Style,
@@ -91,7 +84,7 @@ fn Attributes::from_os2(os2 : @internal.Os2?) -> Attributes {
       }
       let weight = Weight::{ value: os2.weight_class().to_uint16() }
       let stretch = Stretch::from_raw(os2.width_class().to_uint16())
-      Attributes(stretch, weight, style)
+      Attributes::Attributes(stretch, weight, style)
     }
   }
 }
@@ -160,7 +153,7 @@ pub fn Attributes::synthesize(
     let stretch = self.stretch()
     let req_stretch = requested.stretch()
     if stretch != req_stretch {
-      vars.push(Setting(WDTH, req_stretch.to_percentage()))
+      vars.push(Setting::Setting(WDTH, req_stretch.to_percentage()))
     }
   }
   let weight = self.weight()
@@ -169,7 +162,7 @@ pub fn Attributes::synthesize(
   if weight != req_weight {
     if self.has_weight_variation() {
       if vars.length() < 4 {
-        vars.push(Setting(WGHT, req_weight.value.to_int().to_double()))
+        vars.push(Setting::Setting(WGHT, req_weight.value.to_int().to_double()))
       }
     } else if req_weight > weight {
       embolden = true
@@ -185,11 +178,11 @@ pub fn Attributes::synthesize(
         if style == Style::Normal {
           if self.has_italic_variation() {
             if vars.length() < 4 {
-              vars.push(Setting(ITAL, 1.0))
+              vars.push(Setting::Setting(ITAL, 1.0))
             }
           } else if self.has_oblique_variation() {
             if vars.length() < 4 {
-              vars.push(Setting(SLNT, 14.0))
+              vars.push(Setting::Setting(SLNT, 14.0))
             }
           } else {
             skew = 14
@@ -200,11 +193,11 @@ pub fn Attributes::synthesize(
           let degrees = angle.to_degrees()
           if self.has_oblique_variation() {
             if vars.length() < 4 {
-              vars.push(Setting(SLNT, degrees))
+              vars.push(Setting::Setting(SLNT, degrees))
             }
           } else if self.has_italic_variation() && degrees > 0.0 {
             if vars.length() < 4 {
-              vars.push(Setting(ITAL, 1.0))
+              vars.push(Setting::Setting(ITAL, 1.0))
             }
           } else {
             skew = degrees.to_int()
@@ -217,7 +210,7 @@ pub fn Attributes::synthesize(
 
 ///|
 fn Attributes::default() -> Attributes {
-  Attributes(Stretch::normal(), Weight::normal(), Style::Normal)
+  Attributes::Attributes(Stretch::normal(), Weight::normal(), Style::Normal)
 }
 
 ///|

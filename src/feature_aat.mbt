@@ -30,16 +30,9 @@ priv struct AatFeatures {
 }
 
 ///|
-fn AatFeatures::AatFeatures(
-  data : Bytes,
-  morx_offset : UInt,
-  kern : Bool,
-) -> AatFeatures {
-  AatFeatures::new(data, morx_offset, kern)
-}
 
 ///|
-fn AatFeatures::new(
+fn AatFeatures::AatFeatures(
   data : Bytes,
   morx_offset : UInt,
   kern : Bool,
@@ -50,7 +43,7 @@ fn AatFeatures::new(
     has_features: false,
     features: Iter::new(fn() { None }),
     kern,
-    seen: SeenFeatures(),
+    seen: SeenFeatures::SeenFeatures(),
   }
 }
 

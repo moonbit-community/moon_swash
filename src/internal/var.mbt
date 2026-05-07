@@ -44,12 +44,9 @@ pub struct Fvar {
 }
 
 ///|
-pub fn Fvar::Fvar(data : BytesView) -> Fvar {
-  Fvar::new(data)
-}
 
 ///|
-pub fn Fvar::new(data : BytesView) -> Fvar {
+pub fn Fvar::Fvar(data : BytesView) -> Fvar {
   let b = BeBytes::from_view(data)
   Fvar::{
     data,
@@ -63,7 +60,7 @@ pub fn Fvar::new(data : BytesView) -> Fvar {
 
 ///|
 pub fn[T : RawFont] Fvar::from_font(font : T) -> Fvar? {
-  table_data(font, FVAR).map(Fvar::new)
+  table_data(font, FVAR).map(data => Fvar::Fvar(data))
 }
 
 ///|
@@ -331,7 +328,11 @@ pub struct Mvar {
 }
 
 ///|
-pub fn Mvar::new(data : Bytes, mvar : UInt, coords : ArrayView[Int]) -> Mvar? {
+pub fn Mvar::from_data(
+  data : Bytes,
+  mvar : UInt,
+  coords : ArrayView[Int],
+) -> Mvar? {
   let base = mvar.reinterpret_as_int()
   let b = match BeBytes::with_offset(data, base) {
     None => return None
@@ -373,7 +374,7 @@ pub fn Mvar::delta(self : Mvar, metric : RawTag) -> Double {
 ///|
 fn Mvar::read_delta(self : Mvar, metric : RawTag) -> Fixed? {
   let base = self.base
-  let b = BeBytes(self.data)
+  let b = BeBytes::BeBytes(self.data)
   let rec_size = self.rec_size
   let mut l = 0
   let mut h = self.rec_count
@@ -433,7 +434,7 @@ pub fn sb_delta(
 
 ///|
 fn read_i8(data : Bytes, offset : Int) -> Int? {
-  match BeBytes(data).read_u8(offset) {
+  match BeBytes::BeBytes(data).read_u8(offset) {
     None => None
     Some(b) => {
       let u = b.to_int()
@@ -463,7 +464,7 @@ pub fn item_delta(
   if offset == 0 {
     return None
   }
-  let b = BeBytes(data)
+  let b = BeBytes::BeBytes(data)
   let store = offset.reinterpret_as_int()
   let count = match b.read_u16(store + 6) {
     None => return None
@@ -583,7 +584,7 @@ fn metric_delta(
   if base == 0 {
     return None
   }
-  let b = BeBytes(data)
+  let b = BeBytes::BeBytes(data)
   let base_i = base.reinterpret_as_int()
   let mut store = match b.read_u32(base_i + 4) {
     None => return None

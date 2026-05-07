@@ -33,7 +33,7 @@ pub(open) trait RawFont {
 pub fn[T : RawFont] table_range(font : T, tag : RawTag) -> (UInt, UInt)? {
   let base = font.offset()
   let data = font.data()
-  let b = BeBytes(data)
+  let b = BeBytes::BeBytes(data)
 
   // numTables is at offset + 4
   let len = match b.read_u16(base + 4) {

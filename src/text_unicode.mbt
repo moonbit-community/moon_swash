@@ -28,12 +28,9 @@ pub struct Properties {
 }
 
 ///|
-pub fn Properties::Properties(cp : Int) -> Properties {
-  Properties::new(cp)
-}
 
 ///|
-fn Properties::new(cp : Int) -> Properties {
+fn Properties::Properties(cp : Int) -> Properties {
   Properties::{ bits: get_record_index(cp).reinterpret_as_uint() }
 }
 
@@ -218,7 +215,7 @@ pub(open) trait Codepoint {
 
 ///|
 pub impl Codepoint for Char with properties(self) {
-  Properties(self.to_int())
+  Properties::Properties(self.to_int())
 }
 
 ///|

@@ -18,7 +18,7 @@ fn tokens_from_string(s : String) -> Array[@swash.Token] {
   let mut offset = 0U
   for ch in s {
     tokens.push(
-      @swash.Token::new(ch, offset, 1U, @swash.CharInfo::from_char(ch), 0U),
+      @swash.Token::Token(ch, offset, 1U, @swash.CharInfo::from_char(ch), 0U),
     )
     offset = offset + 1U
   }
@@ -28,9 +28,9 @@ fn tokens_from_string(s : String) -> Array[@swash.Token] {
 ///|
 test "shape buffer: push cluster records range and glyphs" {
   let tokens = tokens_from_string("ab")
-  let parser = @swash.Parser::new(@swash.Script::Latin, tokens.iter())
-  let cluster = @swash.CharCluster::new()
-  let buf = Buffer::new()
+  let parser = @swash.Parser::Parser(@swash.Script::Latin, tokens.iter())
+  let cluster = @swash.CharCluster::CharCluster()
+  let buf = Buffer::Buffer()
   inspect(parser.next(cluster), content="true")
   cluster.map(fn(_ch) { (1).to_uint16() }) |> ignore
   let r = buf.push(cluster)

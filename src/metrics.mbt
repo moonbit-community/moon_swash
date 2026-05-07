@@ -127,7 +127,7 @@ pub fn MetricsProxy::materialize_metrics(
   let mut strikeout_offset = self.strikeout_offset.to_double()
   let mut stroke_size = self.stroke_size.to_double()
   if self.mvar != 0 && coords.length() > 0 {
-    match @internal.Mvar::new(font.data(), self.mvar, coords) {
+    match @internal.Mvar::from_data(font.data(), self.mvar, coords) {
       None => ()
       Some(v) => {
         ascent = ascent + v.delta(@internal.HASC)
@@ -181,7 +181,8 @@ pub fn MetricsProxy::materialize_glyph_metrics(
   if coords.length() > 0 &&
     kind == VERTICAL_KIND_SYNTHESIZED &&
     self.vertical_synth_mvar != 0 {
-    match @internal.Mvar::new(font.data(), self.vertical_synth_mvar, coords) {
+    match
+      @internal.Mvar::from_data(font.data(), self.vertical_synth_mvar, coords) {
       None => ()
       Some(v) => {
         let ascent_delta = v.delta(@internal.HASC)

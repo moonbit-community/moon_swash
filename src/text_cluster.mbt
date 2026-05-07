@@ -59,7 +59,10 @@ struct CharInfo {
 }
 
 ///|
-pub fn CharInfo::new(properties : Properties, boundary : Boundary) -> CharInfo {
+pub fn CharInfo::CharInfo(
+  properties : Properties,
+  boundary : Boundary,
+) -> CharInfo {
   CharInfo::{ props: properties.with_boundary(boundary_to_raw(boundary)) }
 }
 
@@ -166,12 +169,9 @@ struct ClusterInfo {
 }
 
 ///|
-fn ClusterInfo::ClusterInfo(bits : UInt) -> ClusterInfo {
-  ClusterInfo::new(bits)
-}
 
 ///|
-fn ClusterInfo::new(bits : UInt) -> ClusterInfo {
+fn ClusterInfo::ClusterInfo(bits : UInt) -> ClusterInfo {
   ClusterInfo::{ bits, }
 }
 
@@ -295,7 +295,7 @@ struct Token {
 }
 
 ///|
-pub fn Token::new(
+pub fn Token::Token(
   ch : Char,
   offset : UInt,
   len : UInt,
@@ -376,7 +376,7 @@ struct ClusterChar {
 }
 
 ///|
-pub fn ClusterChar::new(
+pub fn ClusterChar::ClusterChar(
   ch : Char,
   offset : UInt,
   shape_class : ShapeClass,
@@ -454,7 +454,7 @@ struct SourceRange {
 }
 
 ///|
-pub fn SourceRange::new(start : UInt, end : UInt) -> SourceRange {
+pub fn SourceRange::SourceRange(start : UInt, end : UInt) -> SourceRange {
   SourceRange::{ start, end }
 }
 
@@ -494,12 +494,9 @@ priv struct Form {
 }
 
 ///|
-fn Form::Form() -> Form {
-  Form::new()
-}
 
 ///|
-fn Form::new() -> Form {
+fn Form::Form() -> Form {
   Form::{ chars: ([] : Array[ClusterChar]), map_len: 0, state: FormState::None }
 }
 
@@ -586,7 +583,7 @@ struct CharCluster {
 }
 
 ///|
-pub fn CharCluster::new() -> CharCluster {
+pub fn CharCluster::CharCluster() -> CharCluster {
   CharCluster::{
     info_bits: 0U,
     chars: ([] : Array[ClusterChar]),
@@ -594,8 +591,8 @@ pub fn CharCluster::new() -> CharCluster {
     start: 0U,
     end: 0U,
     force_normalize: false,
-    comp: Form(),
-    decomp: Form(),
+    comp: Form::Form(),
+    decomp: Form::Form(),
     form: FormKind::Original,
     best_ratio: 0.0,
   }
@@ -603,7 +600,7 @@ pub fn CharCluster::new() -> CharCluster {
 
 ///|
 pub fn CharCluster::info(self : CharCluster) -> ClusterInfo {
-  ClusterInfo(self.info_bits)
+  ClusterInfo::ClusterInfo(self.info_bits)
 }
 
 ///|
@@ -886,12 +883,9 @@ priv struct TokenStream {
 }
 
 ///|
-fn TokenStream::TokenStream(iter : Iter[Token]) -> TokenStream {
-  TokenStream::new(iter)
-}
 
 ///|
-fn TokenStream::new(iter : Iter[Token]) -> TokenStream {
+fn TokenStream::TokenStream(iter : Iter[Token]) -> TokenStream {
   TokenStream::{ iter, buf: ([] : Array[Token]), buf_offset: 0, done: false }
 }
 
@@ -949,13 +943,10 @@ priv struct SimpleState {
 }
 
 ///|
-fn SimpleState::SimpleState(chars : Iter[Token]) -> SimpleState {
-  SimpleState::new(chars)
-}
 
 ///|
-fn SimpleState::new(chars : Iter[Token]) -> SimpleState {
-  let stream = TokenStream(chars)
+fn SimpleState::SimpleState(chars : Iter[Token]) -> SimpleState {
+  let stream = TokenStream::TokenStream(chars)
   match stream.next() {
     None =>
       SimpleState::{
@@ -1360,17 +1351,14 @@ priv struct ComplexTokens {
 }
 
 ///|
+
+///|
 fn ComplexTokens::ComplexTokens(
   script : Script,
   iter : Iter[Token],
 ) -> ComplexTokens {
-  ComplexTokens::new(script, iter)
-}
-
-///|
-fn ComplexTokens::new(script : Script, iter : Iter[Token]) -> ComplexTokens {
   ComplexTokens::{
-    stream: TokenStream(iter),
+    stream: TokenStream::TokenStream(iter),
     decomp: ([] : Array[(Token, UseClass)]),
     decomp_offset: 0,
     script,
@@ -1516,16 +1504,13 @@ priv struct ComplexState {
 }
 
 ///|
+
+///|
 fn ComplexState::ComplexState(
   script : Script,
   chars : Iter[Token],
 ) -> ComplexState {
-  ComplexState::new(script, chars)
-}
-
-///|
-fn ComplexState::new(script : Script, chars : Iter[Token]) -> ComplexState {
-  let tokens = ComplexTokens(script, chars)
+  let tokens = ComplexTokens::ComplexTokens(script, chars)
   match tokens.next() {
     None =>
       ComplexState::{
@@ -2227,13 +2212,10 @@ priv struct MyanmarState {
 }
 
 ///|
-fn MyanmarState::MyanmarState(chars : Iter[Token]) -> MyanmarState {
-  MyanmarState::new(chars)
-}
 
 ///|
-fn MyanmarState::new(chars : Iter[Token]) -> MyanmarState {
-  let stream = TokenStream(chars)
+fn MyanmarState::MyanmarState(chars : Iter[Token]) -> MyanmarState {
+  let stream = TokenStream::TokenStream(chars)
   match stream.next() {
     None =>
       MyanmarState::{
@@ -2939,14 +2921,14 @@ priv enum Inner {
 }
 
 ///|
-pub fn Parser::new(script : Script, tokens : Iter[Token]) -> Parser {
+pub fn Parser::Parser(script : Script, tokens : Iter[Token]) -> Parser {
   let inner = if script.is_complex() {
     match script {
-      Script::Myanmar => Inner::Myanmar(MyanmarState(tokens))
-      _ => Inner::Complex(ComplexState(script, tokens))
+      Script::Myanmar => Inner::Myanmar(MyanmarState::MyanmarState(tokens))
+      _ => Inner::Complex(ComplexState::ComplexState(script, tokens))
     }
   } else {
-    Inner::Simple(SimpleState(tokens))
+    Inner::Simple(SimpleState::SimpleState(tokens))
   }
   Parser::{ inner, }
 }
