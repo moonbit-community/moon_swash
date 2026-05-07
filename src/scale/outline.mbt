@@ -253,14 +253,14 @@ fn embolden_contour(
         } else {
           sy = sy * l / q
         }
-        Vector::new(sx, sy)
+        Vector::Vector(sx, sy)
       } else {
         Vector::zero()
       }
       while i != j {
         let abs_i = start + i
         let p = points[abs_i]
-        points[abs_i] = Vector::new(
+        points[abs_i] = Vector::Vector(
           p.x() + x_strength + shift.x(),
           p.y() + y_strength + shift.y(),
         )
@@ -462,14 +462,14 @@ test "Outline basic path recording" {
   let o = Outline::Outline()
   o.set_color(false)
   o.begin_layer(None)
-  o.move_to(Vector::new(0.0, 0.0))
-  o.line_to(Vector::new(10.0, 0.0))
-  o.line_to(Vector::new(10.0, 10.0))
-  o.quad_to(Vector::new(0.0, 10.0), Vector::new(0.0, 0.0))
+  o.move_to(Vector::Vector(0.0, 0.0))
+  o.line_to(Vector::Vector(10.0, 0.0))
+  o.line_to(Vector::Vector(10.0, 10.0))
+  o.quad_to(Vector::Vector(0.0, 10.0), Vector::Vector(0.0, 0.0))
   o.curve_to(
-    Vector::new(1.0, 1.0),
-    Vector::new(2.0, 2.0),
-    Vector::new(3.0, 3.0),
+    Vector::Vector(1.0, 1.0),
+    Vector::Vector(2.0, 2.0),
+    Vector::Vector(3.0, 3.0),
   )
   o.close()
   o.finish()

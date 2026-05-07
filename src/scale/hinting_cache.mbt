@@ -137,7 +137,7 @@ fn HintingCache::get(
       self.serial = self.serial + 1
       if ix == entries.length() {
         match
-          @skrifa_outline.HintingInstance::new(
+          @skrifa_outline.HintingInstance::create(
             outlines,
             size,
             loc,

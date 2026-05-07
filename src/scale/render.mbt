@@ -57,7 +57,7 @@ pub fn Render::Render(sources : Array[Source]) -> Render {
   Render::{
     sources,
     format: @zeno.Format::Alpha,
-    offset: @zeno.Vector::new(0.0, 0.0),
+    offset: @zeno.Vector::Vector(0.0, 0.0),
     transform: None,
     embolden: 0.0,
     foreground: [b'\x80', b'\x80', b'\x80', b'\xFF'],
@@ -310,6 +310,6 @@ pub fn Render::render(
 test "Render builder scaffolding" {
   let r = Render::Render([Source::Outline])
     .format(@zeno.Format::Subpixel)
-    .offset(@zeno.Vector::new(0.25, 0.75))
+    .offset(@zeno.Vector::Vector(0.25, 0.75))
   inspect(r.sources.length(), content="1")
 }

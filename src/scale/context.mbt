@@ -44,7 +44,7 @@ fn State::State() -> State {
     _scratch0: [],
     _scratch1: [],
     outline: Outline::Outline(),
-    rcx: Ref(@zeno.Scratch::new()),
+    rcx: Ref(@zeno.Scratch::Scratch()),
   }
 }
 
@@ -214,14 +214,14 @@ pub fn ScalerBuilder::normalized_coords(
 pub fn ScalerBuilder::build(self : ScalerBuilder) -> Scaler {
   let upem = self.proxy.val.metrics.units_per_em().to_int()
   let skrifa_size = if self.size != 0.0 && upem != 0 {
-    @skrifa.Size::new(self.size)
+    @skrifa.Size::Size(self.size)
   } else {
     @skrifa.Size::unscaled()
   }
   let loc = if self.coords.is_empty() {
     @skrifa.LocationRef::default()
   } else {
-    @skrifa.LocationRef::new(self.coords.op_as_view())
+    @skrifa.LocationRef::LocationRef(self.coords.op_as_view())
   }
   let skrifa_font = to_skrifa_font(self.font)
   let outlines = match skrifa_font {
@@ -357,7 +357,7 @@ fn find_font_index_by_offset(data : Bytes, offset : Int) -> UInt? {
 ///|
 fn to_skrifa_font(font : @swash.FontRef) -> @skrifa.FontRef? {
   if font.offset() == 0 {
-    @skrifa.FontRef::new(font.data())
+    @skrifa.FontRef::from_bytes(font.data())
   } else {
     match find_font_index_by_offset(font.data(), font.offset()) {
       None => None
@@ -380,12 +380,12 @@ fn OutlineWriter::OutlineWriter(outline : Outline) -> OutlineWriter {
 
 ///|
 pub impl @skrifa_outline.OutlinePen for OutlineWriter with move_to(self, x, y) {
-  self.outline.move_to(Vector::new(x, y))
+  self.outline.move_to(Vector::Vector(x, y))
 }
 
 ///|
 pub impl @skrifa_outline.OutlinePen for OutlineWriter with line_to(self, x, y) {
-  self.outline.line_to(Vector::new(x, y))
+  self.outline.line_to(Vector::Vector(x, y))
 }
 
 ///|
@@ -396,7 +396,7 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with quad_to(
   x,
   y,
 ) {
-  self.outline.quad_to(Vector::new(cx0, cy0), Vector::new(x, y))
+  self.outline.quad_to(Vector::Vector(cx0, cy0), Vector::Vector(x, y))
 }
 
 ///|
@@ -410,9 +410,9 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with curve_to(
   y,
 ) {
   self.outline.curve_to(
-    Vector::new(cx0, cy0),
-    Vector::new(cx1, cy1),
-    Vector::new(x, y),
+    Vector::Vector(cx0, cy0),
+    Vector::Vector(cx1, cy1),
+    Vector::Vector(x, y),
   )
 }
 
@@ -567,7 +567,7 @@ fn Scaler::scale_bitmap_impl(
     Some(s) => s
   }
   let ppem = size.to_int()
-  let gid = @skrifa.GlyphId::new(glyph_id)
+  let gid = @skrifa.GlyphId::GlyphId(glyph_id)
 
   // Select a strike and glyph, mirroring upstream swash strike selection.
   let mut glyph : @skrifa.BitmapGlyph? = None
@@ -839,12 +839,12 @@ fn Scaler::scale_outline_layer_into(
   match self.outlines {
     None => false
     Some(outlines) => {
-      let gid = @skrifa.GlyphId::new(glyph_id)
+      let gid = @skrifa.GlyphId::GlyphId(glyph_id)
       match outlines.get(gid) {
         None => false
         Some(glyph) => {
           outline.begin_layer(color_index)
-          let loc = @skrifa.LocationRef::new(self.coords.op_as_view())
+          let loc = @skrifa.LocationRef::LocationRef(self.coords.op_as_view())
           let settings = match self.hinting_instance {
             None =>
               @skrifa_outline.DrawSettings::unhinted(self.skrifa_size, loc)
