@@ -135,14 +135,17 @@ pub struct Engine {
   pos_mode : PosMode
   use_ot : Bool
   mode : EngineMode
+}
 
-  fn new(
-    metadata : EngineMetadata,
-    font_data : Bytes,
-    coords : ArrayView[Int],
-    script : @swash.Script,
-    language : @swash.Language?,
-  ) -> Engine
+///|
+pub fn Engine::Engine(
+  metadata : EngineMetadata,
+  font_data : Bytes,
+  coords : ArrayView[Int],
+  script : @swash.Script,
+  language : @swash.Language?,
+) -> Engine {
+  Engine::new(metadata, font_data, coords, script, language)
 }
 
 ///|

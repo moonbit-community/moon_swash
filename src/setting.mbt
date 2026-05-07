@@ -21,8 +21,11 @@
 pub struct Setting[T] {
   tag : Tag
   value : T
+}
 
-  fn[T] new(tag : Tag, value : T) -> Setting[T]
+///|
+pub fn[T] Setting::Setting(tag : Tag, value : T) -> Setting[T] {
+  Setting::new(tag, value)
 }
 
 ///|
@@ -173,7 +176,7 @@ pub fn Setting::parse_feature_list(s : String) -> Iter[FeatureSetting] {
     match tokens.next() {
       None => None
       Some((tag, value_sv)) => {
-        let value_s = value_sv.to_string()
+        let value_s = value_sv.to_owned()
         let (ok, value) = match value_s {
           "" | "on" => (true, 1)
           "off" => (true, 0)

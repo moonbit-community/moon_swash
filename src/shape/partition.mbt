@@ -27,8 +27,11 @@ pub struct SelectedFont {
   font : @swash.FontRef
   id_override : (UInt64, UInt64)?
   synthesis : @swash.Synthesis?
+}
 
-  fn new(font : @swash.FontRef) -> SelectedFont
+///|
+pub fn SelectedFont::SelectedFont(font : @swash.FontRef) -> SelectedFont {
+  SelectedFont::new(font)
 }
 
 ///|

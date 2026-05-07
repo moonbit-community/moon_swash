@@ -41,8 +41,11 @@ pub struct Fvar {
   axis_size : UInt
   inst_count : UInt
   inst_size : UInt
+}
 
-  fn new(data : BytesView) -> Fvar
+///|
+pub fn Fvar::Fvar(data : BytesView) -> Fvar {
+  Fvar::new(data)
 }
 
 ///|

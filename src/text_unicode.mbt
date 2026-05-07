@@ -25,8 +25,11 @@ const BOUNDARY_SHIFT : Int = 13
 /// Compact reference to Unicode properties for a character.
 pub struct Properties {
   bits : UInt
+}
 
-  fn new(cp : Int) -> Properties
+///|
+pub fn Properties::Properties(cp : Int) -> Properties {
+  Properties::new(cp)
 }
 
 ///|

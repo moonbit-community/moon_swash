@@ -267,8 +267,11 @@ pub struct MorxRearrangementState {
   mut first : Int
   mut last : Int
   mut cycles : Int
+}
 
-  fn new() -> MorxRearrangementState
+///|
+pub fn MorxRearrangementState::MorxRearrangementState() -> MorxRearrangementState {
+  MorxRearrangementState::new()
 }
 
 ///|
@@ -455,8 +458,11 @@ pub struct MorxContextualState {
   mut mark_set : Bool
   mut mark_index : Int
   mut mark_id : UInt16
+}
 
-  fn new() -> MorxContextualState
+///|
+pub fn MorxContextualState::MorxContextualState() -> MorxContextualState {
+  MorxContextualState::new()
 }
 
 ///|
@@ -597,8 +603,11 @@ pub struct MorxLigatureState {
   indices : Array[Int]
   glyphs : Array[UInt16]
   mut pos : Int
+}
 
-  fn new() -> MorxLigatureState
+///|
+pub fn MorxLigatureState::MorxLigatureState() -> MorxLigatureState {
+  MorxLigatureState::new()
 }
 
 ///|
@@ -740,8 +749,13 @@ fn MorxLigature::ligature_at(self : MorxLigature, index : UInt) -> UInt16? {
 ///|
 pub struct MorxNonContextual {
   b : BeBytes
+}
 
-  fn new(data : BytesView) -> MorxNonContextual
+///|
+pub fn MorxNonContextual::MorxNonContextual(
+  data : BytesView,
+) -> MorxNonContextual {
+  MorxNonContextual::new(data)
 }
 
 ///|
@@ -804,8 +818,11 @@ pub struct MorxInsertionState {
   mut state : UInt16
   mut mark : Int
   mut cycles : Int
+}
 
-  fn new() -> MorxInsertionState
+///|
+pub fn MorxInsertionState::MorxInsertionState() -> MorxInsertionState {
+  MorxInsertionState::new()
 }
 
 ///|

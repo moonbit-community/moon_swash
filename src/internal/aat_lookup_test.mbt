@@ -36,8 +36,8 @@ test "aat_lookup_u16 format0" {
   push_u16_be(bytes, 11)
   push_u16_be(bytes, 12)
   let b = BeBytes::new(Bytes::from_array(bytes))
-  inspect(aat_lookup_u16(b, 0, (0).to_uint16()), content="Some(10)")
-  inspect(aat_lookup_u16(b, 0, (2).to_uint16()), content="Some(12)")
+  debug_inspect(aat_lookup_u16(b, 0, (0).to_uint16()), content="Some(10)")
+  debug_inspect(aat_lookup_u16(b, 0, (2).to_uint16()), content="Some(12)")
 }
 
 ///|
@@ -54,9 +54,9 @@ test "aat_lookup_u16 format6" {
   push_u16_be(bytes, 10)
   push_u16_be(bytes, 7)
   let b = BeBytes::new(Bytes::from_array(bytes))
-  inspect(aat_lookup_u16(b, 0, (3).to_uint16()), content="Some(9)")
-  inspect(aat_lookup_u16(b, 0, (10).to_uint16()), content="Some(7)")
-  inspect(aat_lookup_u16(b, 0, (4).to_uint16()), content="None")
+  debug_inspect(aat_lookup_u16(b, 0, (3).to_uint16()), content="Some(9)")
+  debug_inspect(aat_lookup_u16(b, 0, (10).to_uint16()), content="Some(7)")
+  debug_inspect(aat_lookup_u16(b, 0, (4).to_uint16()), content="None")
 }
 
 ///|
@@ -69,7 +69,7 @@ test "aat_lookup_u16 format8" {
   push_u16_be(bytes, 101)
   push_u16_be(bytes, 102)
   let b = BeBytes::new(Bytes::from_array(bytes))
-  inspect(aat_lookup_u16(b, 0, (5).to_uint16()), content="Some(100)")
-  inspect(aat_lookup_u16(b, 0, (7).to_uint16()), content="Some(102)")
-  inspect(aat_lookup_u16(b, 0, (8).to_uint16()), content="None")
+  debug_inspect(aat_lookup_u16(b, 0, (5).to_uint16()), content="Some(100)")
+  debug_inspect(aat_lookup_u16(b, 0, (7).to_uint16()), content="Some(102)")
+  debug_inspect(aat_lookup_u16(b, 0, (8).to_uint16()), content="None")
 }

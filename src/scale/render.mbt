@@ -24,8 +24,11 @@ pub struct Render {
   embolden : Double
   foreground : Array[Byte]
   style : @zeno.Style
+}
 
-  fn new(sources : Array[Source]) -> Render
+///|
+pub fn Render::Render(sources : Array[Source]) -> Render {
+  Render::new(sources)
 }
 
 ///|

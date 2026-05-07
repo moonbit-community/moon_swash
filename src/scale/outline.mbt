@@ -35,8 +35,11 @@ pub struct Outline {
   points : Array[Point]
   verbs : Array[Verb]
   mut is_color : Bool
+}
 
-  fn new() -> Outline
+///|
+pub fn Outline::Outline() -> Outline {
+  Outline::new()
 }
 
 ///|

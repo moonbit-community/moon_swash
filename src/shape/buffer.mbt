@@ -123,8 +123,11 @@ fn Glyph::new(g : GlyphData, p : PositionData) -> Glyph {
 pub struct IndexRange {
   start : Int
   end : Int
+}
 
-  fn new(start : Int, end : Int) -> IndexRange
+///|
+pub fn IndexRange::IndexRange(start : Int, end : Int) -> IndexRange {
+  IndexRange::new(start, end)
 }
 
 ///|
@@ -158,8 +161,11 @@ pub struct Buffer {
   mut skip_state : SkipState
   sub_args : Array[UInt16]
   pos_args : Array[UInt16]
+}
 
-  fn new() -> Buffer
+///|
+pub fn Buffer::Buffer() -> Buffer {
+  Buffer::new()
 }
 
 ///|

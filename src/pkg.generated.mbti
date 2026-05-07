@@ -55,9 +55,8 @@ pub fn Analyze::set_break_strength(Self, WordBreakStrength) -> Unit
 
 pub struct Attributes {
   value : UInt
-
-  fn new(Stretch, Weight, Style) -> Attributes
 }
+pub fn Attributes::Attributes(Stretch, Weight, Style) -> Self
 pub fn Attributes::from_font(FontRef) -> Self
 pub fn Attributes::has_italic_variation(Self) -> Bool
 pub fn Attributes::has_oblique_variation(Self) -> Bool
@@ -120,9 +119,8 @@ pub struct BitmapStrikes {
   is_apple : Bool
   upem : UInt
   len : Int
-
-  fn new(BytesView, BytesView, UInt, Bool, Bool) -> BitmapStrikes
 }
+pub fn BitmapStrikes::BitmapStrikes(BytesView, BytesView, UInt, Bool, Bool) -> Self
 pub fn BitmapStrikes::find_by_exact_ppem(Self, UInt16, UInt16) -> BitmapStrike?
 pub fn BitmapStrikes::find_by_largest_ppem(Self, UInt16) -> BitmapStrike?
 pub fn BitmapStrikes::find_by_nearest_ppem(Self, UInt16, UInt16) -> BitmapStrike?
@@ -470,9 +468,8 @@ pub(all) enum BracketType {
 
 pub struct CacheKey {
   value : UInt64
-
-  fn new() -> CacheKey
 }
+pub fn CacheKey::CacheKey() -> Self
 pub fn CacheKey::new() -> Self
 pub fn CacheKey::value(Self) -> UInt64
 
@@ -723,9 +720,8 @@ pub struct FontCache[T] {
   entries : Array[Entry[T]]
   max_entries : Int
   mut epoch : UInt64
-
-  fn[T] new(Int) -> FontCache[T]
 }
+pub fn[T] FontCache::FontCache(Int) -> Self[T]
 pub fn[T] FontCache::get(Self[T], FontRef, (UInt64, UInt64)?, (FontRef) -> T) -> ((UInt64, UInt64), @ref.Ref[T])
 pub fn[T] FontCache::new(Int) -> Self[T]
 
@@ -896,9 +892,8 @@ pub struct LocalizedStrings {
   b : @internal.BeBytes
   len : Int
   storage : Int
-
-  fn new(BytesView) -> LocalizedStrings
 }
+pub fn LocalizedStrings::LocalizedStrings(BytesView) -> Self
 pub fn LocalizedStrings::find_by_id(Self, StringId, String?) -> LocalizedString?
 pub fn LocalizedStrings::iter(Self) -> Iter[LocalizedString]
 pub fn LocalizedStrings::len(Self) -> Int
@@ -977,9 +972,8 @@ pub fn Parser::next(Self, CharCluster) -> Bool
 
 pub struct Properties {
   bits : UInt
-
-  fn new(Int) -> Properties
 }
+pub fn Properties::Properties(Int) -> Self
 pub fn Properties::bidi_class(Self) -> BidiClass
 pub fn Properties::block(Self) -> Block
 pub fn Properties::boundary(Self) -> UInt
@@ -1169,18 +1163,16 @@ pub fn Script::to_opentype(Self) -> UInt
 
 pub struct SeenFeatures {
   bits : Array[UInt]
-
-  fn new() -> SeenFeatures
 }
+pub fn SeenFeatures::SeenFeatures() -> Self
 pub fn SeenFeatures::mark(Self, Int) -> Bool
 pub fn SeenFeatures::new() -> Self
 
 pub struct Setting[T] {
   tag : UInt
   value : T
-
-  fn[T] new(UInt, T) -> Setting[T]
 }
+pub fn[T] Setting::Setting(UInt, T) -> Self[T]
 pub fn[T] Setting::new(UInt, T) -> Self[T]
 pub fn Setting::parse_feature(String) -> Self[UInt16]?
 pub fn Setting::parse_feature_list(String) -> Iter[Self[UInt16]]

@@ -24,8 +24,11 @@ pub struct FontEntry {
   charmap : @swash.CharmapProxy
   coord_count : UInt16
   metadata : EngineMetadata
+}
 
-  fn new(font : @swash.FontRef) -> FontEntry
+///|
+pub fn FontEntry::FontEntry(font : @swash.FontRef) -> FontEntry {
+  FontEntry::new(font)
 }
 
 ///|
@@ -54,8 +57,11 @@ priv struct FeatureCache {
   entries : Array[FeatureEntry]
   mut epoch : Epoch
   max_entries : Int
+}
 
-  fn new(max_entries : Int) -> FeatureCache
+///|
+fn FeatureCache::FeatureCache(max_entries : Int) -> FeatureCache {
+  FeatureCache::new(max_entries)
 }
 
 ///|
@@ -131,9 +137,9 @@ fn FeatureCache::find_entry(
       epoch: self.epoch,
       id0: id.0,
       id1: id.1,
-      coords: coords.to_array(),
+      coords: coords.to_owned(),
       tags,
-      store: Ref::new(FeatureStore::default()),
+      store: Ref(FeatureStore::default()),
     })
   } else {
     let e = self.entries.at(lowest_index)

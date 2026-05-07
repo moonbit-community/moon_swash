@@ -182,14 +182,17 @@ pub struct BitmapStrikes {
   is_apple : Bool
   upem : UInt
   len : Int
+}
 
-  fn new(
-    data : BytesView,
-    bitmap_data : BytesView,
-    upem : UInt,
-    is_sbix : Bool,
-    is_apple : Bool,
-  ) -> BitmapStrikes
+///|
+pub fn BitmapStrikes::BitmapStrikes(
+  data : BytesView,
+  bitmap_data : BytesView,
+  upem : UInt,
+  is_sbix : Bool,
+  is_apple : Bool,
+) -> BitmapStrikes {
+  BitmapStrikes::new(data, bitmap_data, upem, is_sbix, is_apple)
 }
 
 ///|

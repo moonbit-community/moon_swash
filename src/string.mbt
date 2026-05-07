@@ -153,8 +153,11 @@ pub struct LocalizedStrings {
   b : @internal.BeBytes
   len : Int
   storage : Int
+}
 
-  fn new(data : BytesView) -> LocalizedStrings
+///|
+pub fn LocalizedStrings::LocalizedStrings(data : BytesView) -> LocalizedStrings {
+  LocalizedStrings::new(data)
 }
 
 ///|

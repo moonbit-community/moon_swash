@@ -36,8 +36,15 @@ const ITAL : Tag = 0x6974616C // "ital"
 /// This struct is created by the `attributes()` method on `FontRef`.
 pub struct Attributes {
   value : UInt
+}
 
-  fn new(stretch : Stretch, weight : Weight, style : Style) -> Attributes
+///|
+pub fn Attributes::Attributes(
+  stretch : Stretch,
+  weight : Weight,
+  style : Style,
+) -> Attributes {
+  Attributes::new(stretch, weight, style)
 }
 
 ///|

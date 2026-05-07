@@ -43,8 +43,11 @@ priv struct AtScripts {
   data : Bytes
   gsub : UInt
   gpos : UInt
+}
 
-  fn new(data : Bytes, gsub : UInt, gpos : UInt) -> AtScripts
+///|
+fn AtScripts::AtScripts(data : Bytes, gsub : UInt, gpos : UInt) -> AtScripts {
+  AtScripts::new(data, gsub, gpos)
 }
 
 ///|
@@ -132,14 +135,17 @@ priv struct AtLanguages {
   gpos : UInt
   gsub_script : UInt
   gpos_script : UInt
+}
 
-  fn new(
-    data : Bytes,
-    gsub : UInt,
-    gpos : UInt,
-    gsub_script : UInt,
-    gpos_script : UInt,
-  ) -> AtLanguages
+///|
+fn AtLanguages::AtLanguages(
+  data : Bytes,
+  gsub : UInt,
+  gpos : UInt,
+  gsub_script : UInt,
+  gpos_script : UInt,
+) -> AtLanguages {
+  AtLanguages::new(data, gsub, gpos, gsub_script, gpos_script)
 }
 
 ///|
@@ -252,8 +258,11 @@ fn AtWritingSystem::features(self : AtWritingSystem) -> AtFeatures {
 ///|
 priv struct AtWritingSystems {
   scripts : AtScripts
+}
 
-  fn new(scripts : AtScripts) -> AtWritingSystems
+///|
+fn AtWritingSystems::AtWritingSystems(scripts : AtScripts) -> AtWritingSystems {
+  AtWritingSystems::new(scripts)
 }
 
 ///|
@@ -297,8 +306,11 @@ priv struct AtFeature {
 ///|
 priv struct AtFeatures {
   lang : AtLangSys
+}
 
-  fn new(lang : AtLangSys) -> AtFeatures
+///|
+fn AtFeatures::AtFeatures(lang : AtLangSys) -> AtFeatures {
+  AtFeatures::new(lang)
 }
 
 ///|
@@ -357,8 +369,15 @@ priv struct AtAllFeatures {
   stage : Int
   len : Int
   cur : Int
+}
 
-  fn new(data : Bytes, gsub : UInt, gpos : UInt) -> AtAllFeatures
+///|
+fn AtAllFeatures::AtAllFeatures(
+  data : Bytes,
+  gsub : UInt,
+  gpos : UInt,
+) -> AtAllFeatures {
+  AtAllFeatures::new(data, gsub, gpos)
 }
 
 ///|

@@ -27,8 +27,15 @@ priv struct AatFeatures {
   features : Iter[@internal.MorxFeature]
   kern : Bool
   seen : SeenFeatures
+}
 
-  fn new(data : Bytes, morx_offset : UInt, kern : Bool) -> AatFeatures
+///|
+fn AatFeatures::AatFeatures(
+  data : Bytes,
+  morx_offset : UInt,
+  kern : Bool,
+) -> AatFeatures {
+  AatFeatures::new(data, morx_offset, kern)
 }
 
 ///|

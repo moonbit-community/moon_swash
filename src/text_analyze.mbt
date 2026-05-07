@@ -77,8 +77,11 @@ struct CharStream {
   mut buf : Array[Char]
   mut buf_offset : Int
   mut done : Bool
+}
 
-  fn new(iter : Iter[Char]) -> CharStream
+///|
+fn CharStream::CharStream(iter : Iter[Char]) -> CharStream {
+  CharStream::new(iter)
 }
 
 ///|
@@ -141,8 +144,11 @@ struct BoundaryState {
   mut line_state : (UInt, LineBreak?)
   mut first : Bool
   mut needs_bidi : Bool
+}
 
-  fn new() -> BoundaryState
+///|
+fn BoundaryState::BoundaryState() -> BoundaryState {
+  BoundaryState::new()
 }
 
 ///|

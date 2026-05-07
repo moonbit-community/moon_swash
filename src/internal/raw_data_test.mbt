@@ -14,10 +14,10 @@
 
 ///|
 test "raw_data is_font detects font headers" {
-  inspect(is_font(b"\x00\x01\x00\x00", 0), content="true")
-  inspect(is_font(b"OTTO", 0), content="true")
-  inspect(is_font(b"true", 0), content="true")
-  inspect(is_font(b"xxxx", 0), content="false")
+  debug_inspect(is_font(b"\x00\x01\x00\x00", 0), content="true")
+  debug_inspect(is_font(b"OTTO", 0), content="true")
+  debug_inspect(is_font(b"true", 0), content="true")
+  debug_inspect(is_font(b"xxxx", 0), content="false")
 }
 
 ///|
@@ -63,8 +63,8 @@ test "raw_data collection count and offsets" {
       b'\x00'
     }
   })
-  inspect(is_collection(data), content="true")
-  inspect(count(data), content="2")
-  inspect(offset(data, 0), content="Some(32)")
-  inspect(offset(data, 1), content="Some(64)")
+  debug_inspect(is_collection(data), content="true")
+  debug_inspect(count(data), content="2")
+  debug_inspect(offset(data, 0), content="Some(32)")
+  debug_inspect(offset(data, 1), content="Some(64)")
 }

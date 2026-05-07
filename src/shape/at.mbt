@@ -724,18 +724,23 @@ priv struct ApplyContext {
   mut end : Int
   mut s : LookupState
   buf : Buffer
+}
 
-  fn new(
-    stage : Byte,
-    data : Bytes,
-    gsubgpos : UInt,
-    defs : @internal.Gdef,
-    coords : ArrayView[Int],
-    store : FeatureStore,
-    storage : Storage,
-    buffer : Buffer,
-    range : IndexRange,
-  ) -> ApplyContext
+///|
+fn ApplyContext::ApplyContext(
+  stage : Byte,
+  data : Bytes,
+  gsubgpos : UInt,
+  defs : @internal.Gdef,
+  coords : ArrayView[Int],
+  store : FeatureStore,
+  storage : Storage,
+  buffer : Buffer,
+  range : IndexRange,
+) -> ApplyContext {
+  ApplyContext::new(
+    stage, data, gsubgpos, defs, coords, store, storage, buffer, range,
+  )
 }
 
 ///|

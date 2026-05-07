@@ -42,9 +42,8 @@ pub struct Image {
   mut content : Content
   mut placement : @moon_zeno.Placement
   mut data : Array[Byte]
-
-  fn new() -> Image
 }
+pub fn Image::Image() -> Self
 pub fn Image::clear(Self) -> Unit
 pub fn Image::content(Self) -> Content
 pub fn Image::data(Self) -> Bytes
@@ -78,9 +77,8 @@ pub struct Outline {
   points : Array[@moon_zeno.Vector]
   verbs : Array[@moon_zeno.Verb]
   mut is_color : Bool
-
-  fn new() -> Outline
 }
+pub fn Outline::Outline() -> Self
 pub fn Outline::begin_layer(Self, UInt16?) -> Unit
 pub fn Outline::bounds(Self) -> @moon_zeno.Bounds
 pub fn Outline::clear(Self) -> Unit
@@ -114,9 +112,8 @@ pub struct Render {
   embolden : Double
   foreground : Array[Byte]
   style : @moon_zeno.Style
-
-  fn new(Array[Source]) -> Render
 }
+pub fn Render::Render(Array[Source]) -> Self
 pub fn Render::default_color(Self, Array[Byte]) -> Self
 pub fn Render::embolden(Self, Double) -> Self
 pub fn Render::format(Self, @moon_zeno.Format) -> Self

@@ -44,8 +44,11 @@ pub struct Image {
   mut placement : Placement
   /// Raw image data.
   mut data : Array[Byte]
+}
 
-  fn new() -> Image
+///|
+pub fn Image::Image() -> Image {
+  Image::new()
 }
 
 ///|

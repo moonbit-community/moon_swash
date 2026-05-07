@@ -49,8 +49,11 @@ priv struct State {
   mut disable_kern : Bool
   features : Array[@swash.FeatureSetting]
   selectors : Array[(UInt16, UInt16)]
+}
 
-  fn new() -> State
+///|
+fn State::State() -> State {
+  State::new()
 }
 
 ///|
@@ -80,8 +83,11 @@ struct ContextState {
   feature_cache : FeatureCache
   coords : Array[Int]
   state : State
+}
 
-  fn new(max_entries : Int) -> ContextState
+///|
+fn ContextState::ContextState(max_entries : Int) -> ContextState {
+  ContextState::new(max_entries)
 }
 
 ///|
@@ -101,8 +107,11 @@ fn ContextState::new(max_entries : Int) -> ContextState {
 /// in later shaping tasks.
 pub struct ShapeContext {
   inner : Ref[ContextState]
+}
 
-  fn new() -> ShapeContext
+///|
+pub fn ShapeContext::ShapeContext() -> ShapeContext {
+  ShapeContext::new()
 }
 
 ///|
@@ -120,7 +129,7 @@ pub fn ShapeContext::with_max_entries(max_entries : Int) -> ShapeContext {
   } else if max_entries0 > 64 {
     max_entries0 = 64
   }
-  ShapeContext::{ inner: Ref::new(ContextState(max_entries0)) }
+  ShapeContext::{ inner: Ref(ContextState(max_entries0)) }
 }
 
 ///|

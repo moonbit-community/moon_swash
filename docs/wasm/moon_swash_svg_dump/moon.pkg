@@ -9,8 +9,9 @@ import {
   "Milky2018/moon_swash/scale" @scale,
 }
 
+supported_targets = "wasm"
+
 options(
   "is-main": true,
   link: { "wasm": { "export-memory-name": "memory" } },
-  "supported-targets": "wasm",
 )

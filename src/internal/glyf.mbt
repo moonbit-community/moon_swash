@@ -147,9 +147,9 @@ test "glyf.get + ymax for loca fmt 0" {
   })
   let view_opt = get(data, 0, 0, 20, 0)
   if view_opt is Some(view) {
-    inspect(view.length(), content="10")
+    debug_inspect(view.length(), content="10")
   } else {
     fail("expected Some(view)")
   }
-  inspect(ymax(data, 0, 0, 20, 0), content="Some(16)")
+  debug_inspect(ymax(data, 0, 0, 20, 0), content="Some(16)")
 }

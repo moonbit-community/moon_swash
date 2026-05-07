@@ -24,8 +24,11 @@ struct ScaleContext {
   fonts : Ref[@swash.FontCache[ScalerProxy]]
   state : Ref[State]
   hinting_cache : Ref[HintingCache]
+}
 
-  fn new() -> ScaleContext
+///|
+fn ScaleContext::ScaleContext() -> ScaleContext {
+  ScaleContext::new()
 }
 
 ///|
@@ -34,8 +37,11 @@ priv struct State {
   mut _scratch1 : Array[Byte]
   outline : Outline
   rcx : Ref[@zeno.Scratch]
+}
 
-  fn new() -> State
+///|
+fn State::State() -> State {
+  State::new()
 }
 
 ///|
@@ -44,7 +50,7 @@ fn State::new() -> State {
     _scratch0: [],
     _scratch1: [],
     outline: Outline::new(),
-    rcx: Ref::new(@zeno.Scratch::new()),
+    rcx: Ref(@zeno.Scratch::new()),
   }
 }
 
@@ -66,9 +72,9 @@ pub fn ScaleContext::with_max_entries(max_entries : Int) -> ScaleContext {
     max_entries
   }
   ScaleContext::{
-    fonts: Ref::new(@swash.FontCache(max_entries)),
-    state: Ref::new(State()),
-    hinting_cache: Ref::new(HintingCache()),
+    fonts: Ref(@swash.FontCache(max_entries)),
+    state: Ref(State()),
+    hinting_cache: Ref(HintingCache()),
   }
 }
 
@@ -369,8 +375,11 @@ fn to_skrifa_font(font : @swash.FontRef) -> @skrifa.FontRef? {
 ///|
 struct OutlineWriter {
   outline : Outline
+}
 
-  fn new(outline : Outline) -> OutlineWriter
+///|
+fn OutlineWriter::OutlineWriter(outline : Outline) -> OutlineWriter {
+  OutlineWriter::new(outline)
 }
 
 ///|

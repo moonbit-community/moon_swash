@@ -91,7 +91,7 @@ test "RawFont.table_range/table_data reads the table directory" {
   let data = mk_min_font()
   let font = TestFont::{ data, offset: 0 }
   let head_tag : RawTag = 0x68656164 // "head"
-  inspect(table_range(font, head_tag), content="Some((32, 36))")
+  debug_inspect(table_range(font, head_tag), content="Some((32, 36))")
   let view_opt = table_data(font, head_tag)
   if view_opt is Some(view) {
     inspect(view.length(), content="4")

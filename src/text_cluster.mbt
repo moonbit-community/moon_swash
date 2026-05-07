@@ -163,8 +163,11 @@ const EMOJI_MASK : UInt = 0b11U
 /// Information about a cluster including content properties and boundary analysis.
 struct ClusterInfo {
   bits : UInt
+}
 
-  fn new(bits : UInt) -> ClusterInfo
+///|
+fn ClusterInfo::ClusterInfo(bits : UInt) -> ClusterInfo {
+  ClusterInfo::new(bits)
 }
 
 ///|
@@ -488,8 +491,11 @@ priv struct Form {
   chars : Array[ClusterChar]
   mut map_len : Int
   mut state : FormState
+}
 
-  fn new() -> Form
+///|
+fn Form::Form() -> Form {
+  Form::new()
 }
 
 ///|
@@ -877,8 +883,11 @@ priv struct TokenStream {
   mut buf : Array[Token]
   mut buf_offset : Int
   mut done : Bool
+}
 
-  fn new(iter : Iter[Token]) -> TokenStream
+///|
+fn TokenStream::TokenStream(iter : Iter[Token]) -> TokenStream {
+  TokenStream::new(iter)
 }
 
 ///|
@@ -937,8 +946,11 @@ priv struct SimpleState {
   mut cur_kind : ClusterBreak
   mut cur_emoji : Bool
   mut done : Bool
+}
 
-  fn new(chars : Iter[Token]) -> SimpleState
+///|
+fn SimpleState::SimpleState(chars : Iter[Token]) -> SimpleState {
+  SimpleState::new(chars)
 }
 
 ///|
@@ -1345,8 +1357,14 @@ priv struct ComplexTokens {
   decomp : Array[(Token, UseClass)]
   mut decomp_offset : Int
   script : Script
+}
 
-  fn new(script : Script, iter : Iter[Token]) -> ComplexTokens
+///|
+fn ComplexTokens::ComplexTokens(
+  script : Script,
+  iter : Iter[Token],
+) -> ComplexTokens {
+  ComplexTokens::new(script, iter)
 }
 
 ///|
@@ -1495,8 +1513,14 @@ priv struct ComplexState {
   mut cur_kind : UseClass
   mut cur_emoji : Bool
   mut done : Bool
+}
 
-  fn new(script : Script, chars : Iter[Token]) -> ComplexState
+///|
+fn ComplexState::ComplexState(
+  script : Script,
+  chars : Iter[Token],
+) -> ComplexState {
+  ComplexState::new(script, chars)
 }
 
 ///|
@@ -2029,7 +2053,7 @@ fn complex_parse_standard(
 
 ///|
 fn complex_parse(s : ComplexState, cluster : CharCluster) -> Unit? {
-  let vt = Ref::new(false)
+  let vt = Ref(false)
   if s.done {
     return Some(())
   }
@@ -2200,8 +2224,11 @@ priv struct MyanmarState {
   mut cur_kind : MyanmarClass
   mut cur_emoji : Bool
   mut done : Bool
+}
 
-  fn new(chars : Iter[Token]) -> MyanmarState
+///|
+fn MyanmarState::MyanmarState(chars : Iter[Token]) -> MyanmarState {
+  MyanmarState::new(chars)
 }
 
 ///|
@@ -2578,7 +2605,7 @@ fn myanmar_parse_pwo_tone_mark(
 
 ///|
 fn myanmar_parse(s : MyanmarState, cluster : CharCluster) -> Unit? {
-  let vt = Ref::new(false)
+  let vt = Ref(false)
   if s.done {
     return Some(())
   }

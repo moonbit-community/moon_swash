@@ -155,13 +155,13 @@ fn mk_font_with_cmap_format4() -> Bytes {
 test "cmap.subtable finds format 4 unicode encoding" {
   let data = mk_font_with_cmap_format4()
   let font = CmapTestFont::{ data, offset: 0 }
-  inspect(subtable(font), content="Some((44, 4, false))")
+  debug_inspect(subtable(font), content="Some((44, 4, false))")
 }
 
 ///|
 test "cmap.map maps U+0041 to glyph id" {
   let data = mk_font_with_cmap_format4()
   // subtable absolute offset is 0x20 + 0x0c = 44
-  inspect(map(data, 44, 4, 0x41), content="Some(3)")
-  inspect(map(data, 44, 4, 0x42), content="None")
+  debug_inspect(map(data, 44, 4, 0x41), content="Some(3)")
+  debug_inspect(map(data, 44, 4, 0x42), content="None")
 }

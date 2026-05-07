@@ -56,9 +56,8 @@ pub struct Buffer {
   mut skip_state : SkipState
   sub_args : Array[UInt16]
   pos_args : Array[UInt16]
-
-  fn new() -> Buffer
 }
+pub fn Buffer::Buffer() -> Self
 pub fn Buffer::_push_hangul(Self, @moon_swash.CharCluster) -> IndexRange
 pub fn Buffer::clear(Self) -> Unit
 pub fn Buffer::clear_flags(Self, UInt16, IndexRange?) -> Unit
@@ -108,9 +107,8 @@ pub struct Engine {
   pos_mode : PosMode
   use_ot : Bool
   mode : EngineMode
-
-  fn new(EngineMetadata, Bytes, ArrayView[Int], @moon_swash.Script, @moon_swash.Language?) -> Engine
 }
+pub fn Engine::Engine(EngineMetadata, Bytes, ArrayView[Int], @moon_swash.Script, @moon_swash.Language?) -> Self
 pub fn Engine::collect_features(Self, FeatureStoreBuilder, @ref.Ref[FeatureStore]) -> Unit
 pub fn Engine::collect_selectors(Self, ArrayView[@moon_swash.Setting[UInt16]], Array[(UInt16, UInt16)]) -> Unit
 pub fn Engine::gpos(Self, FeatureStore, FeatureMask, Buffer, IndexRange?) -> Bool
@@ -201,9 +199,8 @@ pub struct FontEntry {
   charmap : @moon_swash.CharmapProxy
   coord_count : UInt16
   metadata : EngineMetadata
-
-  fn new(@moon_swash.FontRef) -> FontEntry
 }
+pub fn FontEntry::FontEntry(@moon_swash.FontRef) -> Self
 pub fn FontEntry::new(@moon_swash.FontRef) -> Self
 
 pub struct Glyph {
@@ -261,9 +258,8 @@ pub fn GlyphData::is_component(Self) -> Bool
 
 pub struct GlyphInfo {
   bits : UInt16
-
-  fn new(UInt16) -> GlyphInfo
 }
+pub fn GlyphInfo::GlyphInfo(UInt16) -> Self
 pub fn GlyphInfo::default() -> Self
 pub fn GlyphInfo::is_mark(Self) -> Bool
 pub fn GlyphInfo::new(UInt16) -> Self
@@ -271,9 +267,8 @@ pub fn GlyphInfo::new(UInt16) -> Self
 pub struct IndexRange {
   start : Int
   end : Int
-
-  fn new(Int, Int) -> IndexRange
 }
+pub fn IndexRange::IndexRange(Int, Int) -> Self
 pub fn IndexRange::end(Self) -> Int
 pub fn IndexRange::new(Int, Int) -> Self
 pub fn IndexRange::start(Self) -> Int
@@ -301,9 +296,8 @@ pub struct SelectedFont {
   font : @moon_swash.FontRef
   id_override : (UInt64, UInt64)?
   synthesis : @moon_swash.Synthesis?
-
-  fn new(@moon_swash.FontRef) -> SelectedFont
 }
+pub fn SelectedFont::SelectedFont(@moon_swash.FontRef) -> Self
 pub fn SelectedFont::font(Self) -> @moon_swash.FontRef
 pub fn SelectedFont::id_override(Self) -> (UInt64, UInt64)?
 pub fn SelectedFont::new(@moon_swash.FontRef) -> Self
@@ -313,9 +307,8 @@ pub fn SelectedFont::with_synthesis(Self, @moon_swash.Synthesis) -> Self
 
 pub struct ShapeContext {
   inner : @ref.Ref[ContextState]
-
-  fn new() -> ShapeContext
 }
+pub fn ShapeContext::ShapeContext() -> Self
 pub fn ShapeContext::builder(Self, @moon_swash.FontRef) -> ShaperBuilder
 pub fn ShapeContext::builder_with_id(Self, @moon_swash.FontRef, (UInt64, UInt64)) -> ShaperBuilder
 pub fn ShapeContext::new() -> Self

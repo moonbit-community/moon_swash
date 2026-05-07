@@ -193,9 +193,8 @@ pub(all) struct AatEntry[T] {
 
 pub struct BeBytes {
   data : BytesView
-
-  fn new(Bytes) -> BeBytes
 }
+pub fn BeBytes::BeBytes(Bytes) -> Self
 pub fn BeBytes::check_range(Self, Int, Int) -> Bool
 pub fn BeBytes::data(Self) -> BytesView
 pub fn BeBytes::ensure_range(Self, Int, Int) -> Bool
@@ -263,9 +262,8 @@ pub struct Fvar {
   axis_size : UInt
   inst_count : UInt
   inst_size : UInt
-
-  fn new(BytesView) -> Fvar
 }
+pub fn Fvar::Fvar(BytesView) -> Self
 pub fn Fvar::axis_count(Self) -> UInt
 pub fn[T : RawFont] Fvar::from_font(T) -> Self?
 pub fn Fvar::get_axis(Self, UInt) -> VarAxis?
@@ -297,9 +295,8 @@ pub fn Gdef::ok(Self) -> Bool
 
 pub struct Head {
   data : BytesView
-
-  fn new(BytesView) -> Head
 }
+pub fn Head::Head(BytesView) -> Self
 pub fn Head::bounds(Self) -> ((Int, Int), (Int, Int))
 pub fn Head::checksum_adjustment(Self) -> UInt
 pub fn Head::created(Self) -> UInt64
@@ -320,9 +317,8 @@ pub fn Head::units_per_em(Self) -> UInt
 
 pub struct Hhea {
   data : BytesView
-
-  fn new(BytesView) -> Hhea
 }
+pub fn Hhea::Hhea(BytesView) -> Self
 pub fn Hhea::ascender(Self) -> Int
 pub fn Hhea::descender(Self) -> Int
 pub fn[T : RawFont] Hhea::from_font(T) -> Self?
@@ -350,9 +346,8 @@ pub struct KernFormat1State {
   stack : Array[Int]
   mut pos : Int
   mut cycles : Int
-
-  fn new() -> KernFormat1State
 }
+pub fn KernFormat1State::KernFormat1State() -> Self
 pub fn KernFormat1State::new() -> Self
 
 pub struct KernSubtable {
@@ -394,9 +389,8 @@ pub struct KerxContextualState {
   stack : Array[Int]
   mut pos : Int
   mut cycles : Int
-
-  fn new() -> KerxContextualState
 }
+pub fn KerxContextualState::KerxContextualState() -> Self
 pub fn KerxContextualState::new() -> Self
 
 pub struct KerxFormat0 {
@@ -436,9 +430,8 @@ pub struct KerxFormat4State {
   mut mark : Int
   mut mark_id : UInt16
   mut cycles : Int
-
-  fn new() -> KerxFormat4State
 }
+pub fn KerxFormat4State::KerxFormat4State() -> Self
 pub fn KerxFormat4State::new() -> Self
 
 pub struct KerxSubtable {
@@ -510,9 +503,8 @@ pub(all) enum LookupKind {
 
 pub struct Maxp {
   data : BytesView
-
-  fn new(BytesView) -> Maxp
 }
+pub fn Maxp::Maxp(BytesView) -> Self
 pub fn[T : RawFont] Maxp::from_font(T) -> Self?
 pub fn Maxp::glyph_count(Self) -> UInt
 pub fn Maxp::is_truetype(Self) -> Bool
@@ -563,9 +555,8 @@ pub struct MorxContextualState {
   mut mark_set : Bool
   mut mark_index : Int
   mut mark_id : UInt16
-
-  fn new() -> MorxContextualState
 }
+pub fn MorxContextualState::MorxContextualState() -> Self
 pub fn MorxContextualState::new() -> Self
 
 pub struct MorxFeature {
@@ -586,9 +577,8 @@ pub struct MorxInsertionState {
   mut state : UInt16
   mut mark : Int
   mut cycles : Int
-
-  fn new() -> MorxInsertionState
 }
+pub fn MorxInsertionState::MorxInsertionState() -> Self
 pub fn MorxInsertionState::new() -> Self
 
 pub struct MorxLigature {
@@ -605,16 +595,14 @@ pub struct MorxLigatureState {
   indices : Array[Int]
   glyphs : Array[UInt16]
   mut pos : Int
-
-  fn new() -> MorxLigatureState
 }
+pub fn MorxLigatureState::MorxLigatureState() -> Self
 pub fn MorxLigatureState::new() -> Self
 
 pub struct MorxNonContextual {
   b : BeBytes
-
-  fn new(BytesView) -> MorxNonContextual
 }
+pub fn MorxNonContextual::MorxNonContextual(BytesView) -> Self
 pub fn MorxNonContextual::substitute(Self, UInt16) -> UInt16?
 
 pub struct MorxRearrange {
@@ -637,9 +625,8 @@ pub struct MorxRearrangementState {
   mut first : Int
   mut last : Int
   mut cycles : Int
-
-  fn new() -> MorxRearrangementState
 }
+pub fn MorxRearrangementState::MorxRearrangementState() -> Self
 pub fn MorxRearrangementState::new() -> Self
 
 pub struct MorxSubtable {
@@ -682,9 +669,8 @@ pub fn Mvar::new(Bytes, UInt, ArrayView[Int]) -> Self?
 
 pub struct Os2 {
   data : BytesView
-
-  fn new(BytesView) -> Os2
 }
+pub fn Os2::Os2(BytesView) -> Self
 pub fn Os2::average_char_width(Self) -> Int
 pub fn Os2::cap_height(Self) -> Int
 pub fn[T : RawFont] Os2::from_font(T) -> Self?
@@ -709,9 +695,8 @@ pub fn Os2Flags::use_typographic_metrics(Self) -> Bool
 
 pub struct Post {
   data : BytesView
-
-  fn new(BytesView) -> Post
 }
+pub fn Post::Post(BytesView) -> Self
 pub fn Post::data(Self) -> BytesView
 pub fn[T : RawFont] Post::from_font(T) -> Self?
 pub fn Post::has_names(Self) -> Bool
@@ -739,9 +724,8 @@ pub fn StateTable::new(BytesView) -> Self?
 pub struct Stream {
   data : BytesView
   mut offset : Int
-
-  fn new(Bytes) -> Stream
 }
+pub fn Stream::Stream(Bytes) -> Self
 pub fn Stream::check_range(Self, Int) -> Bool
 pub fn Stream::data(Self) -> BytesView
 pub fn Stream::from_view(BytesView) -> Self
@@ -809,9 +793,8 @@ pub struct VarInstance {
 
 pub struct Vhea {
   data : BytesView
-
-  fn new(BytesView) -> Vhea
 }
+pub fn Vhea::Vhea(BytesView) -> Self
 pub fn Vhea::ascender(Self) -> Int
 pub fn Vhea::descender(Self) -> Int
 pub fn[T : RawFont] Vhea::from_font(T) -> Self?

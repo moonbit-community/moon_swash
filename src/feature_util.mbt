@@ -21,8 +21,11 @@
 /// Bitset for feature de-duplication.
 pub struct SeenFeatures {
   bits : Array[UInt]
+}
 
-  fn new() -> SeenFeatures
+///|
+pub fn SeenFeatures::SeenFeatures() -> SeenFeatures {
+  SeenFeatures::new()
 }
 
 ///|

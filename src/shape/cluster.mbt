@@ -21,8 +21,11 @@
 /// Information for a glyph.
 pub struct GlyphInfo {
   bits : UInt16
+}
 
-  fn new(bits : UInt16) -> GlyphInfo
+///|
+pub fn GlyphInfo::GlyphInfo(bits : UInt16) -> GlyphInfo {
+  GlyphInfo::new(bits)
 }
 
 ///|

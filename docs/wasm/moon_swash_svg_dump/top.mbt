@@ -198,7 +198,7 @@ fn dump_svg(
     .build()
   shaper.add_str(text)
 
-  let coords = shaper.normalized_coords().to_array()
+  let coords = shaper.normalized_coords().to_owned()
 
   let shaped : Array[PlacedGlyph] = []
   let mut total_advance = 0.0

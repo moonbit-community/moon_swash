@@ -21,12 +21,15 @@
 /// Uniquely generated value for identifying and caching fonts.
 pub struct CacheKey {
   value : UInt64
-
-  fn new() -> CacheKey
 }
 
 ///|
-let key_counter : Ref[UInt64] = Ref::new((1).to_uint64())
+pub fn CacheKey::CacheKey() -> CacheKey {
+  CacheKey::new()
+}
+
+///|
+let key_counter : Ref[UInt64] = Ref((1).to_uint64())
 
 ///|
 pub fn CacheKey::new() -> CacheKey {
@@ -49,8 +52,11 @@ pub struct FontCache[T] {
   entries : Array[Entry[T]]
   max_entries : Int
   mut epoch : UInt64
+}
 
-  fn[T] new(max_entries : Int) -> FontCache[T]
+///|
+pub fn[T] FontCache::FontCache(max_entries : Int) -> FontCache[T] {
+  FontCache::new(max_entries)
 }
 
 ///|
@@ -111,7 +117,7 @@ pub fn[T] FontCache::get(
     ((e.id0, e.id1), e.data)
   } else {
     self.epoch = self.epoch + 1
-    let data = Ref::new(f(font))
+    let data = Ref(f(font))
     if index == self.entries.length() {
       self.entries.push(Entry::{ epoch: self.epoch, id0, id1, data })
       ((id0, id1), self.entries.at(index).data)
@@ -141,7 +147,7 @@ test "FontCache caches and evicts by max_entries" {
   let f0 = FontRef::from_offset(data, 0).unwrap()
   let f1 = FontRef::from_offset(data, 0).unwrap()
   let cache : FontCache[Int] = FontCache(1)
-  let calls = Ref::new(0)
+  let calls = Ref(0)
   fn mk(calls : Ref[Int], v : Int) -> (FontRef) -> Int {
     fn(font) {
       calls.val = calls.val + 1

@@ -16,7 +16,7 @@
 /// Per-font scaling proxy cached by `ScaleContext`.
 ///
 /// Ported from `upstream swash/src/scale/proxy.rs`.
-let scaler_proxy_counter : Ref[UInt64] = Ref::new((0).to_uint64())
+let scaler_proxy_counter : Ref[UInt64] = Ref((0).to_uint64())
 
 ///|
 fn next_scaler_proxy_uid() -> UInt64 {
