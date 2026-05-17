@@ -156,9 +156,12 @@ test "VariationsProxy: materialize + find_by_tag + normalized_coords" {
   let proxy = VariationsProxy::from_font(font)
   let vars = proxy.materialize(font)
   let axis = vars.find_by_tag(0x77676874).unwrap()
-  inspect(axis.normalize(650.0), content="8192")
+  debug_inspect(axis.normalize(650.0), content="8192")
   let settings : Array[VariationSetting] = [Setting::Setting(0x77676874, 650.0)]
-  inspect(vars.normalized_coords(settings.iter()).to_array(), content="[8192]")
+  debug_inspect(
+    vars.normalized_coords(settings.iter()).to_array(),
+    content="[8192]",
+  )
 }
 
 ///|
@@ -172,5 +175,5 @@ test "AVAR remapping affects Variation.normalize" {
   let font = FontRef::from_offset(font_data, 0).unwrap()
   let axis = font.variations().find_by_tag(0x77676874).unwrap()
   // 650 maps to 0.5; avar remaps 0.5 -> 0.25.
-  inspect(axis.normalize(650.0), content="4096")
+  debug_inspect(axis.normalize(650.0), content="4096")
 }
