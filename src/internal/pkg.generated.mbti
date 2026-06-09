@@ -791,7 +791,7 @@ pub type RawTag = UInt
 
 // Traits
 pub(open) trait RawFont {
-  data(Self) -> Bytes
-  offset(Self) -> Int
+  fn data(Self) -> Bytes
+  fn offset(Self) -> Int
 }
 

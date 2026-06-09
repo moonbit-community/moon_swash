@@ -423,16 +423,16 @@ pub type UserData = UInt
 
 // Traits
 pub(open) trait Selector {
-  select_font(Self, @moon_swash.CharCluster) -> SelectedFont?
+  fn select_font(Self, @moon_swash.CharCluster) -> SelectedFont?
 }
 
 pub(open) trait ShapeOptions {
-  script(Self) -> @moon_swash.Script
-  language(Self) -> @moon_swash.Language?
-  direction(Self) -> Direction
-  size(Self) -> Double
-  features(Self) -> Iter[@moon_swash.Setting[UInt16]]
-  variations(Self) -> Iter[@moon_swash.Setting[Double]]
-  insert_dotted_circles(Self) -> Bool
+  fn script(Self) -> @moon_swash.Script
+  fn language(Self) -> @moon_swash.Language?
+  fn direction(Self) -> Direction
+  fn size(Self) -> Double
+  fn features(Self) -> Iter[@moon_swash.Setting[UInt16]]
+  fn variations(Self) -> Iter[@moon_swash.Setting[Double]]
+  fn insert_dotted_circles(Self) -> Bool
 }
 

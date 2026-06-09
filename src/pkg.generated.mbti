@@ -1452,17 +1452,17 @@ pub type VariationSetting = Setting[Double]
 
 // Traits
 pub(open) trait Codepoint {
-  properties(Self) -> Properties
-  opening_bracket(Self) -> Char?
-  closing_bracket(Self) -> Char?
-  mirror(Self) -> Char?
-  bracket_type(Self) -> BracketType
-  decompose(Self) -> Iter[Char]
-  decompose_compatible(Self) -> Iter[Char]
+  fn properties(Self) -> Properties
+  fn opening_bracket(Self) -> Char?
+  fn closing_bracket(Self) -> Char?
+  fn mirror(Self) -> Char?
+  fn bracket_type(Self) -> BracketType
+  fn decompose(Self) -> Iter[Char]
+  fn decompose_compatible(Self) -> Iter[Char]
 }
 pub impl Codepoint for Char
 
 pub(open) trait TableProvider {
-  table_by_tag(Self, UInt) -> BytesView?
+  fn table_by_tag(Self, UInt) -> BytesView?
 }
 
