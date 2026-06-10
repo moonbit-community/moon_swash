@@ -1,6 +1,6 @@
 name = "Milky2018/moon_swash"
 
-version = "0.1.8"
+version = "0.1.9"
 
 import {
   "Milky2018/moon_zeno@0.1.3",
