@@ -129,31 +129,31 @@ pub fn Fixed::to_f2dot14(self : Fixed) -> Int {
 }
 
 ///|
-pub impl Add for Fixed with add(self, rhs) {
+pub impl Add for Fixed with fn add(self, rhs) {
   Fixed::{
     value: (self.value.reinterpret_as_uint() + rhs.value.reinterpret_as_uint()).reinterpret_as_int(),
   }
 }
 
 ///|
-pub impl Sub for Fixed with sub(self, rhs) {
+pub impl Sub for Fixed with fn sub(self, rhs) {
   Fixed::{
     value: (self.value.reinterpret_as_uint() - rhs.value.reinterpret_as_uint()).reinterpret_as_int(),
   }
 }
 
 ///|
-pub impl Mul for Fixed with mul(self, rhs) {
+pub impl Mul for Fixed with fn mul(self, rhs) {
   Fixed::{ value: mul(self.value, rhs.value) }
 }
 
 ///|
-pub impl Div for Fixed with div(self, rhs) {
+pub impl Div for Fixed with fn div(self, rhs) {
   Fixed::{ value: div(self.value, rhs.value) }
 }
 
 ///|
-pub impl Neg for Fixed with neg(self) {
+pub impl Neg for Fixed with fn neg(self) {
   Fixed::{ value: -self.value }
 }
 

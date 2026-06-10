@@ -19,12 +19,12 @@ struct TestFont {
 }
 
 ///|
-pub impl RawFont for TestFont with data(self) {
+pub impl RawFont for TestFont with fn data(self) {
   self.data
 }
 
 ///|
-pub impl RawFont for TestFont with offset(self) {
+pub impl RawFont for TestFont with fn offset(self) {
   self.offset
 }
 

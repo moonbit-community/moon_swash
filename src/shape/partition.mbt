@@ -85,19 +85,19 @@ pub fn SelectedFont::synthesis(self : SelectedFont) -> @swash.Synthesis? {
 /// Trait for types that can select appropriate fonts for character clusters.
 pub(open) trait Selector {
   /// Selects a font for the specified character cluster.
-  select_font(Self, cluster : CharCluster) -> SelectedFont?
+  fn select_font(Self, cluster : CharCluster) -> SelectedFont?
 }
 
 ///|
 /// Trait for types that specify shaping options.
 pub(open) trait ShapeOptions {
-  script(Self) -> @swash.Script
-  language(Self) -> @swash.Language?
-  direction(Self) -> Direction
-  size(Self) -> Double
-  features(Self) -> Iter[@swash.FeatureSetting]
-  variations(Self) -> Iter[@swash.VariationSetting]
-  insert_dotted_circles(Self) -> Bool
+  fn script(Self) -> @swash.Script
+  fn language(Self) -> @swash.Language?
+  fn direction(Self) -> Direction
+  fn size(Self) -> Double
+  fn features(Self) -> Iter[@swash.FeatureSetting]
+  fn variations(Self) -> Iter[@swash.VariationSetting]
+  fn insert_dotted_circles(Self) -> Bool
 }
 
 ///|
@@ -126,37 +126,37 @@ pub fn SimpleShapeOptions::default() -> SimpleShapeOptions {
 }
 
 ///|
-pub impl ShapeOptions for SimpleShapeOptions with script(self) {
+pub impl ShapeOptions for SimpleShapeOptions with fn script(self) {
   self.script
 }
 
 ///|
-pub impl ShapeOptions for SimpleShapeOptions with language(self) {
+pub impl ShapeOptions for SimpleShapeOptions with fn language(self) {
   self.language
 }
 
 ///|
-pub impl ShapeOptions for SimpleShapeOptions with direction(self) {
+pub impl ShapeOptions for SimpleShapeOptions with fn direction(self) {
   self.direction
 }
 
 ///|
-pub impl ShapeOptions for SimpleShapeOptions with size(self) {
+pub impl ShapeOptions for SimpleShapeOptions with fn size(self) {
   self.size
 }
 
 ///|
-pub impl ShapeOptions for SimpleShapeOptions with features(self) {
+pub impl ShapeOptions for SimpleShapeOptions with fn features(self) {
   self.features.iter()
 }
 
 ///|
-pub impl ShapeOptions for SimpleShapeOptions with variations(self) {
+pub impl ShapeOptions for SimpleShapeOptions with fn variations(self) {
   self.variations.iter()
 }
 
 ///|
-pub impl ShapeOptions for SimpleShapeOptions with insert_dotted_circles(self) {
+pub impl ShapeOptions for SimpleShapeOptions with fn insert_dotted_circles(self) {
   self.insert_dotted_circles
 }
 

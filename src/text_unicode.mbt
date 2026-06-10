@@ -204,22 +204,22 @@ fn text_unicode_bsearch_second(
 
 ///|
 pub(open) trait Codepoint {
-  properties(Self) -> Properties
-  opening_bracket(Self) -> Char?
-  closing_bracket(Self) -> Char?
-  mirror(Self) -> Char?
-  bracket_type(Self) -> BracketType
-  decompose(Self) -> Decompose
-  decompose_compatible(Self) -> Decompose
+  fn properties(Self) -> Properties
+  fn opening_bracket(Self) -> Char?
+  fn closing_bracket(Self) -> Char?
+  fn mirror(Self) -> Char?
+  fn bracket_type(Self) -> BracketType
+  fn decompose(Self) -> Decompose
+  fn decompose_compatible(Self) -> Decompose
 }
 
 ///|
-pub impl Codepoint for Char with properties(self) {
+pub impl Codepoint for Char with fn properties(self) {
   Properties::Properties(self.to_int())
 }
 
 ///|
-pub impl Codepoint for Char with opening_bracket(self) {
+pub impl Codepoint for Char with fn opening_bracket(self) {
   let c = self.to_int().reinterpret_as_uint()
   match text_unicode_bsearch_second(brackets, c) {
     None => None
@@ -228,7 +228,7 @@ pub impl Codepoint for Char with opening_bracket(self) {
 }
 
 ///|
-pub impl Codepoint for Char with closing_bracket(self) {
+pub impl Codepoint for Char with fn closing_bracket(self) {
   let c = self.to_int().reinterpret_as_uint()
   match text_unicode_bsearch_first(brackets, c) {
     None => None
@@ -237,7 +237,7 @@ pub impl Codepoint for Char with closing_bracket(self) {
 }
 
 ///|
-pub impl Codepoint for Char with mirror(self) {
+pub impl Codepoint for Char with fn mirror(self) {
   let c = self.to_int().reinterpret_as_uint()
   match text_unicode_bsearch_first(mirrors, c) {
     None => None
@@ -246,7 +246,7 @@ pub impl Codepoint for Char with mirror(self) {
 }
 
 ///|
-pub impl Codepoint for Char with bracket_type(self) {
+pub impl Codepoint for Char with fn bracket_type(self) {
   match Codepoint::closing_bracket(self) {
     Some(other) => BracketType::Open(other)
     None =>
@@ -258,12 +258,12 @@ pub impl Codepoint for Char with bracket_type(self) {
 }
 
 ///|
-pub impl Codepoint for Char with decompose(self) {
+pub impl Codepoint for Char with fn decompose(self) {
   decompose(self)
 }
 
 ///|
-pub impl Codepoint for Char with decompose_compatible(self) {
+pub impl Codepoint for Char with fn decompose_compatible(self) {
   decompose_compat(self)
 }
 

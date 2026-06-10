@@ -30,7 +30,7 @@ pub(all) enum Direction {
 }
 
 ///|
-pub impl Eq for Direction with equal(self, other) {
+pub impl Eq for Direction with fn equal(self, other) {
   match self {
     Direction::LeftToRight => other is Direction::LeftToRight
     Direction::RightToLeft => other is Direction::RightToLeft

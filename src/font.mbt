@@ -84,11 +84,11 @@ pub struct FontRef {
 /// Source that can provide table data by tag.
 pub(open) trait TableProvider {
   /// Returns the table for the specified tag.
-  table_by_tag(Self, tag : Tag) -> BytesView?
+  fn table_by_tag(Self, tag : Tag) -> BytesView?
 }
 
 ///|
-pub impl TableProvider for FontRef with table_by_tag(self, tag) {
+pub impl TableProvider for FontRef with fn table_by_tag(self, tag) {
   self.table_data(tag)
 }
 
@@ -125,12 +125,12 @@ pub fn FontRef::from_offset(data : Bytes, offset : Int) -> FontRef? {
 }
 
 ///|
-pub impl @internal.RawFont for FontRef with data(self) {
+pub impl @internal.RawFont for FontRef with fn data(self) {
   self.data
 }
 
 ///|
-pub impl @internal.RawFont for FontRef with offset(self) {
+pub impl @internal.RawFont for FontRef with fn offset(self) {
   self.offset
 }
 

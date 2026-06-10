@@ -25,7 +25,7 @@ pub(all) enum EngineMode {
 }
 
 ///|
-pub impl Eq for EngineMode with equal(self, other) {
+pub impl Eq for EngineMode with fn equal(self, other) {
   match self {
     EngineMode::Simple => other is EngineMode::Simple
     EngineMode::Myanmar => other is EngineMode::Myanmar
@@ -41,7 +41,7 @@ pub(all) enum SubMode {
 }
 
 ///|
-pub impl Eq for SubMode with equal(self, other) {
+pub impl Eq for SubMode with fn equal(self, other) {
   match self {
     SubMode::None => other is SubMode::None
     SubMode::Gsub => other is SubMode::Gsub
@@ -58,7 +58,7 @@ pub(all) enum PosMode {
 }
 
 ///|
-pub impl Eq for PosMode with equal(self, other) {
+pub impl Eq for PosMode with fn equal(self, other) {
   match self {
     PosMode::None => other is PosMode::None
     PosMode::Gpos => other is PosMode::Gpos

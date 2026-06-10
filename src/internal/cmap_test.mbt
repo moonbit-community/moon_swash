@@ -19,12 +19,12 @@ struct CmapTestFont {
 }
 
 ///|
-pub impl RawFont for CmapTestFont with data(self) {
+pub impl RawFont for CmapTestFont with fn data(self) {
   self.data
 }
 
 ///|
-pub impl RawFont for CmapTestFont with offset(self) {
+pub impl RawFont for CmapTestFont with fn offset(self) {
   self.offset
 }
 

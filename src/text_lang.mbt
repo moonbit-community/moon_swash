@@ -400,6 +400,6 @@ pub fn Language::to_string(self : Language) -> String {
 }
 
 ///|
-pub impl Show for Language with output(self, logger) {
+pub impl Show for Language with fn output(self, logger) {
   logger.write_string(self.to_string())
 }

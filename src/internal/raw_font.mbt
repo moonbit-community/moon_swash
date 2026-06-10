@@ -25,8 +25,8 @@
 /// Note: this is declared as `pub(open)` so other packages in this module
 /// (e.g. `swash/font.mbt`) can implement it, matching upstream swash.
 pub(open) trait RawFont {
-  data(Self) -> Bytes
-  offset(Self) -> Int
+  fn data(Self) -> Bytes
+  fn offset(Self) -> Int
 }
 
 ///|

@@ -214,12 +214,12 @@ fn Attributes::default() -> Attributes {
 }
 
 ///|
-pub impl Eq for Attributes with equal(self, other) {
+pub impl Eq for Attributes with fn equal(self, other) {
   self.value << 4 == other.value << 4
 }
 
 ///|
-pub impl Show for Attributes with output(self, logger) {
+pub impl Show for Attributes with fn output(self, logger) {
   let (stretch, weight, style) = self.parts()
   if style == Style::Normal &&
     weight == Weight::normal() &&
@@ -310,7 +310,7 @@ pub(all) enum Style {
 }
 
 ///|
-pub impl Eq for Style with equal(self, other) {
+pub impl Eq for Style with fn equal(self, other) {
   match (self, other) {
     (Style::Normal, Style::Normal) => true
     (Style::Italic, Style::Italic) => true
@@ -432,7 +432,7 @@ pub fn Style::to_string(self : Style) -> String {
 }
 
 ///|
-pub impl Show for Style with output(self, logger) {
+pub impl Show for Style with fn output(self, logger) {
   logger.write_string(self.to_string())
 }
 
@@ -529,17 +529,17 @@ pub fn Weight::to_string(self : Weight) -> String {
 }
 
 ///|
-pub impl Show for Weight with output(self, logger) {
+pub impl Show for Weight with fn output(self, logger) {
   logger.write_string(self.to_string())
 }
 
 ///|
-pub impl Eq for Weight with equal(self, other) {
+pub impl Eq for Weight with fn equal(self, other) {
   self.value == other.value
 }
 
 ///|
-pub impl Compare for Weight with compare(self, other) {
+pub impl Compare for Weight with fn compare(self, other) {
   self.value.to_int() - other.value.to_int()
 }
 
@@ -706,17 +706,17 @@ pub fn Stretch::to_string(self : Stretch) -> String {
 }
 
 ///|
-pub impl Show for Stretch with output(self, logger) {
+pub impl Show for Stretch with fn output(self, logger) {
   logger.write_string(self.to_string())
 }
 
 ///|
-pub impl Eq for Stretch with equal(self, other) {
+pub impl Eq for Stretch with fn equal(self, other) {
   self.value == other.value
 }
 
 ///|
-pub impl Compare for Stretch with compare(self, other) {
+pub impl Compare for Stretch with fn compare(self, other) {
   self.value.to_int() - other.value.to_int()
 }
 
@@ -762,7 +762,7 @@ pub fn Synthesis::skew(self : Synthesis) -> Double? {
 }
 
 ///|
-pub impl Eq for Synthesis with equal(self, other) {
+pub impl Eq for Synthesis with fn equal(self, other) {
   if self.embolden != other.embolden || self.skew != other.skew {
     return false
   }

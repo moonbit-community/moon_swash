@@ -379,17 +379,25 @@ fn OutlineWriter::OutlineWriter(outline : Outline) -> OutlineWriter {
 }
 
 ///|
-pub impl @skrifa_outline.OutlinePen for OutlineWriter with move_to(self, x, y) {
+pub impl @skrifa_outline.OutlinePen for OutlineWriter with fn move_to(
+  self,
+  x,
+  y,
+) {
   self.outline.move_to(Vector::Vector(x, y))
 }
 
 ///|
-pub impl @skrifa_outline.OutlinePen for OutlineWriter with line_to(self, x, y) {
+pub impl @skrifa_outline.OutlinePen for OutlineWriter with fn line_to(
+  self,
+  x,
+  y,
+) {
   self.outline.line_to(Vector::Vector(x, y))
 }
 
 ///|
-pub impl @skrifa_outline.OutlinePen for OutlineWriter with quad_to(
+pub impl @skrifa_outline.OutlinePen for OutlineWriter with fn quad_to(
   self,
   cx0,
   cy0,
@@ -400,7 +408,7 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with quad_to(
 }
 
 ///|
-pub impl @skrifa_outline.OutlinePen for OutlineWriter with curve_to(
+pub impl @skrifa_outline.OutlinePen for OutlineWriter with fn curve_to(
   self,
   cx0,
   cy0,
@@ -417,7 +425,7 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with curve_to(
 }
 
 ///|
-pub impl @skrifa_outline.OutlinePen for OutlineWriter with close(self) {
+pub impl @skrifa_outline.OutlinePen for OutlineWriter with fn close(self) {
   self.outline.close()
 }
 

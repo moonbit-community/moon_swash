@@ -19,7 +19,7 @@ struct TestSelector {
 }
 
 ///|
-pub impl Selector for TestSelector with select_font(self, cluster) {
+pub impl Selector for TestSelector with fn select_font(self, cluster) {
   let chars = cluster.chars()
   guard chars.length() != 0 else { None }
   let ch0 = chars[0].ch()
