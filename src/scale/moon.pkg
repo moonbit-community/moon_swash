@@ -7,5 +7,5 @@ import {
   "Milky2018/moon_yazi" @yazi,
   "Milky2018/moon_skrifa/core" @skrifa,
   "Milky2018/moon_skrifa/outline" @skrifa_outline,
-  "Milky2018/moon_swash/internal" @internal,
+  "Milky2018/moon_swash/internal",
 }

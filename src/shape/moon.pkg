@@ -5,5 +5,5 @@ import {
   "moonbitlang/core/option",
   "moonbitlang/core/ref",
   "Milky2018/moon_swash" @swash,
-  "Milky2018/moon_swash/internal" @internal,
+  "Milky2018/moon_swash/internal",
 }
