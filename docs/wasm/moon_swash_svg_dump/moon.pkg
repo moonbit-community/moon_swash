@@ -1,8 +1,5 @@
 import {
-  "peter-jerry-ye/wasi",
-  "peter-jerry-ye/wasi/stdio",
-  "peter-jerry-ye/wasi/fs",
-  "moonbitlang/core/encoding/utf8" @utf8,
+  "moonbit-community/miniio" @miniio,
   "Milky2018/moon_zeno" @zeno,
   "Milky2018/moon_swash" @swash,
   "Milky2018/moon_swash/shape" @shape,

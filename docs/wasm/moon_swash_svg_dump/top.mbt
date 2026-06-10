@@ -92,23 +92,7 @@ fn fmt_num(x : Double) -> String {
 fn parse_text_arg(text_arg : String) -> String? {
   if text_arg.length() >= 6 && text_arg[0:6] == "@file:" {
     let path = text_arg[6:text_arg.length()]
-    let f = Some(@fs.open(path, mode=@fs.Mode::ReadOnly)) catch { _ => None }
-    if f is None {
-      return None
-    }
-    let f = f.unwrap()
-    let n = Some(f.size()) catch { _ => None }
-    if n is None {
-      f.close()
-      return None
-    }
-    let n = n.unwrap().to_int()
-    let bytes = Some(f.read_exactly_sync(n)) catch { _ => None }
-    f.close()
-    match bytes {
-      None => None
-      Some(bs) => Some(@utf8.decode_lossy(bs[:]))
-    }
+    Some(@miniio.read_text_file(path)) catch { _ => None }
   } else {
     Some(text_arg)
   }
@@ -118,12 +102,12 @@ fn parse_text_arg(text_arg : String) -> String? {
 fn write_xml_escaped(s : String) -> Unit {
   for ch in s {
     match ch {
-      '&' => @stdio.stdout.write_sync("&amp;") catch { _ => () }
-      '<' => @stdio.stdout.write_sync("&lt;") catch { _ => () }
-      '>' => @stdio.stdout.write_sync("&gt;") catch { _ => () }
-      '"' => @stdio.stdout.write_sync("&quot;") catch { _ => () }
-      '\'' => @stdio.stdout.write_sync("&apos;") catch { _ => () }
-      _ => @stdio.stdout.write_sync(ch.to_string()) catch { _ => () }
+      '&' => @miniio.stdout.write_text("&amp;") catch { _ => () }
+      '<' => @miniio.stdout.write_text("&lt;") catch { _ => () }
+      '>' => @miniio.stdout.write_text("&gt;") catch { _ => () }
+      '"' => @miniio.stdout.write_text("&quot;") catch { _ => () }
+      '\'' => @miniio.stdout.write_text("&apos;") catch { _ => () }
+      _ => @miniio.stdout.write_text(ch.to_string()) catch { _ => () }
     }
   }
 }
@@ -178,7 +162,7 @@ fn dump_svg(
   direction : @shape.Direction,
   direction_name : String,
 ) -> Bool {
-  let data = Some(@fs.read_file_sync(font_path)) catch { _ => None }
+  let data = Some(@miniio.read_file(font_path)) catch { _ => None }
   if data is None {
     return false
   }
@@ -308,128 +292,128 @@ fn dump_svg(
   let view_w = max_x - min_x + pad * 2.0
   let view_h = max_y - min_y + pad * 2.0
 
-  @stdio.stdout.write_sync("<svg xmlns=\"http://www.w3.org/2000/svg\" ") catch {
+  @miniio.stdout.write_text("<svg xmlns=\"http://www.w3.org/2000/svg\" ") catch {
     _ => ()
   }
-  @stdio.stdout.write_sync("viewBox=\"") catch {
+  @miniio.stdout.write_text("viewBox=\"") catch {
     _ => ()
   }
-  @stdio.stdout.write_sync(fmt_num(view_x)) catch {
+  @miniio.stdout.write_text(fmt_num(view_x)) catch {
     _ => ()
   }
-  @stdio.stdout.write_sync(" ") catch {
+  @miniio.stdout.write_text(" ") catch {
     _ => ()
   }
-  @stdio.stdout.write_sync(fmt_num(view_y)) catch {
+  @miniio.stdout.write_text(fmt_num(view_y)) catch {
     _ => ()
   }
-  @stdio.stdout.write_sync(" ") catch {
+  @miniio.stdout.write_text(" ") catch {
     _ => ()
   }
-  @stdio.stdout.write_sync(fmt_num(view_w)) catch {
+  @miniio.stdout.write_text(fmt_num(view_w)) catch {
     _ => ()
   }
-  @stdio.stdout.write_sync(" ") catch {
+  @miniio.stdout.write_text(" ") catch {
     _ => ()
   }
-  @stdio.stdout.write_sync(fmt_num(view_h)) catch {
+  @miniio.stdout.write_text(fmt_num(view_h)) catch {
     _ => ()
   }
-  @stdio.stdout.write_sync("\">\n") catch {
+  @miniio.stdout.write_text("\">\n") catch {
     _ => ()
   }
 
-  @stdio.stdout.write_sync("  <desc>") catch {
+  @miniio.stdout.write_text("  <desc>") catch {
     _ => ()
   }
-  @stdio.stdout.write_sync("font=") catch {
+  @miniio.stdout.write_text("font=") catch {
     _ => ()
   }
   write_xml_escaped(font_path)
-  @stdio.stdout.write_sync("; text=") catch {
+  @miniio.stdout.write_text("; text=") catch {
     _ => ()
   }
   write_xml_escaped(text)
-  @stdio.stdout.write_sync("; size=") catch {
+  @miniio.stdout.write_text("; size=") catch {
     _ => ()
   }
-  @stdio.stdout.write_sync(fmt_num(size)) catch {
+  @miniio.stdout.write_text(fmt_num(size)) catch {
     _ => ()
   }
-  @stdio.stdout.write_sync("; script=") catch {
+  @miniio.stdout.write_text("; script=") catch {
     _ => ()
   }
-  @stdio.stdout.write_sync(script_name) catch {
+  @miniio.stdout.write_text(script_name) catch {
     _ => ()
   }
-  @stdio.stdout.write_sync("; direction=") catch {
+  @miniio.stdout.write_text("; direction=") catch {
     _ => ()
   }
-  @stdio.stdout.write_sync(direction_name) catch {
+  @miniio.stdout.write_text(direction_name) catch {
     _ => ()
   }
-  @stdio.stdout.write_sync("; shaped_glyphs=") catch {
+  @miniio.stdout.write_text("; shaped_glyphs=") catch {
     _ => ()
   }
-  @stdio.stdout.write_sync(placed.length().to_string()) catch {
+  @miniio.stdout.write_text(placed.length().to_string()) catch {
     _ => ()
   }
-  @stdio.stdout.write_sync("; outlined_paths=") catch {
+  @miniio.stdout.write_text("; outlined_paths=") catch {
     _ => ()
   }
-  @stdio.stdout.write_sync(paths.length().to_string()) catch {
+  @miniio.stdout.write_text(paths.length().to_string()) catch {
     _ => ()
   }
-  @stdio.stdout.write_sync("</desc>\n") catch {
-    _ => ()
-  }
-
-  @stdio.stdout.write_sync("  <rect x=\"") catch {
-    _ => ()
-  }
-  @stdio.stdout.write_sync(fmt_num(view_x)) catch {
-    _ => ()
-  }
-  @stdio.stdout.write_sync("\" y=\"") catch {
-    _ => ()
-  }
-  @stdio.stdout.write_sync(fmt_num(view_y)) catch {
-    _ => ()
-  }
-  @stdio.stdout.write_sync("\" width=\"") catch {
-    _ => ()
-  }
-  @stdio.stdout.write_sync(fmt_num(view_w)) catch {
-    _ => ()
-  }
-  @stdio.stdout.write_sync("\" height=\"") catch {
-    _ => ()
-  }
-  @stdio.stdout.write_sync(fmt_num(view_h)) catch {
-    _ => ()
-  }
-  @stdio.stdout.write_sync("\" fill=\"white\"/>\n") catch {
+  @miniio.stdout.write_text("</desc>\n") catch {
     _ => ()
   }
 
-  @stdio.stdout.write_sync("  <g fill=\"#111\" fill-rule=\"nonzero\">\n") catch {
+  @miniio.stdout.write_text("  <rect x=\"") catch {
+    _ => ()
+  }
+  @miniio.stdout.write_text(fmt_num(view_x)) catch {
+    _ => ()
+  }
+  @miniio.stdout.write_text("\" y=\"") catch {
+    _ => ()
+  }
+  @miniio.stdout.write_text(fmt_num(view_y)) catch {
+    _ => ()
+  }
+  @miniio.stdout.write_text("\" width=\"") catch {
+    _ => ()
+  }
+  @miniio.stdout.write_text(fmt_num(view_w)) catch {
+    _ => ()
+  }
+  @miniio.stdout.write_text("\" height=\"") catch {
+    _ => ()
+  }
+  @miniio.stdout.write_text(fmt_num(view_h)) catch {
+    _ => ()
+  }
+  @miniio.stdout.write_text("\" fill=\"white\"/>\n") catch {
+    _ => ()
+  }
+
+  @miniio.stdout.write_text("  <g fill=\"#111\" fill-rule=\"nonzero\">\n") catch {
     _ => ()
   }
   for p in paths.iter() {
-    @stdio.stdout.write_sync("    <path d=\"") catch {
+    @miniio.stdout.write_text("    <path d=\"") catch {
       _ => ()
     }
-    @stdio.stdout.write_sync(p) catch {
+    @miniio.stdout.write_text(p) catch {
       _ => ()
     }
-    @stdio.stdout.write_sync("\"/>\n") catch {
+    @miniio.stdout.write_text("\"/>\n") catch {
       _ => ()
     }
   }
-  @stdio.stdout.write_sync("  </g>\n") catch {
+  @miniio.stdout.write_text("  </g>\n") catch {
     _ => ()
   }
-  @stdio.stdout.write_sync("</svg>\n") catch {
+  @miniio.stdout.write_text("</svg>\n") catch {
     _ => ()
   }
   true
@@ -437,41 +421,41 @@ fn dump_svg(
 
 ///|
 fn run() -> Unit {
-  let args = Some(@wasi.args_get()) catch { _ => None }
+  let args = Some(@miniio.args_get()) catch { _ => None }
   if args is None {
-    @stdio.stderr.write_sync("error: failed to read args\n") catch {
+    @miniio.stderr.write_text("error: failed to read args\n") catch {
       _ => ()
     }
-    @wasi.proc_exit(1)
+    @miniio.exit(1)
   }
   let args = args.unwrap()
   if args.length() < 3 {
-    @stdio.stderr.write_sync(
+    @miniio.stderr.write_text(
       "usage: moon_swash_svg_dump <font_path> <text> [size] [script] [direction]\n",
     ) catch {
       _ => ()
     }
-    @stdio.stderr.write_sync(
+    @miniio.stderr.write_text(
       "example: moon_swash_svg_dump .private/fonts/SFArabic-37c57b4a237b.ttf \"السَّلَامُ عَلَيْكُمْ\" 18 arabic rtl > out.svg\n",
     ) catch {
       _ => ()
     }
-    @stdio.stderr.write_sync(
+    @miniio.stderr.write_text(
       "text also supports @file:<path>, e.g. @file:input.txt\n",
     ) catch {
       _ => ()
     }
-    @wasi.proc_exit(2)
+    @miniio.exit(2)
   }
 
   let font_path = args[1]
   let text = match parse_text_arg(args[2]) {
     Some(v) => v
     None => {
-      @stdio.stderr.write_sync("error: failed to read text input\n") catch {
+      @miniio.stderr.write_text("error: failed to read text input\n") catch {
         _ => ()
       }
-      @wasi.proc_exit(2)
+      @miniio.exit(2)
       ""
     }
   }
@@ -490,10 +474,10 @@ fn run() -> Unit {
     ) {
     ()
   } else {
-    @stdio.stderr.write_sync("error: failed to produce svg\n") catch {
+    @miniio.stderr.write_text("error: failed to produce svg\n") catch {
       _ => ()
     }
-    @wasi.proc_exit(1)
+    @miniio.exit(1)
   }
 }
 
