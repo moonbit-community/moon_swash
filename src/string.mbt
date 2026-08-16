@@ -368,7 +368,7 @@ pub fn LocalizedString::chars(self : LocalizedString) -> Iter[Char] {
 
 ///|
 pub fn LocalizedString::to_string(self : LocalizedString) -> String {
-  String::from_array(self.chars().to_array().op_as_view())
+  String::from_array(self.chars().to_array()[:])
 }
 
 ///|

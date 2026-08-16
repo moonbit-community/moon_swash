@@ -37,7 +37,7 @@ fn Properties::Properties(cp : Int) -> Properties {
 ///|
 fn Properties::record(self : Properties) -> Record {
   // Index is produced by `get_record_index` and masked to 13 bits.
-  records[(self.bits & RECORD_MASK).reinterpret_as_int()]
+  record_at((self.bits & RECORD_MASK).reinterpret_as_int())
 }
 
 ///|

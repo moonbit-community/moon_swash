@@ -376,14 +376,14 @@ pub fn ShaperBuilder::build(self : ShaperBuilder) -> Shaper {
   let engine = Engine::Engine(
     self.font_entry.val.metadata,
     self.font.data(),
-    cx.val.coords.op_as_view(),
+    cx.val.coords[:],
     self.script,
     self.language,
   )
   let (store, sub_mask, pos_mask) = if engine.use_ot {
     let entry = cx.val.feature_cache.entry(
       (self.id0, self.id1),
-      cx.val.coords.op_as_view(),
+      cx.val.coords[:],
       engine.has_feature_vars(),
       engine.tags(),
     )
@@ -396,7 +396,7 @@ pub fn ShaperBuilder::build(self : ShaperBuilder) -> Shaper {
     }
     let buf = cx.val.state.buffer
     let (sub, pos) = store_ref.val.custom_masks(
-      cx.val.state.features.op_as_view(),
+      cx.val.state.features[:],
       buf.sub_args,
       buf.pos_args,
       self.direction,
@@ -464,7 +464,7 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
       let s = sref.val
       let chars = cluster.mapped_chars()
       reorder_myanmar(chars, self.cx.val.state.order)
-      let range = buf.push_order(cluster, self.cx.val.state.order.op_as_view())
+      let range = buf.push_order(cluster, self.cx.val.state.order[:])
       e.set_classes(buf, Some(range))
       let start = range.start
       e.gsub(s, s.groups.default, buf, Some(range)) |> ignore
@@ -620,8 +620,8 @@ pub fn Shaper::shape_with(self : Shaper, f : (GlyphCluster) -> Unit) -> Unit {
   buf.shaped_glyphs.clear()
   let empty_glyphs : Array[Glyph] = []
   let empty_ranges : Array[SourceRange] = []
-  let empty_glyphs_view = empty_glyphs.op_as_view()
-  let empty_ranges_view = empty_ranges.op_as_view()
+  let empty_glyphs_view = empty_glyphs[:]
+  let empty_ranges_view = empty_ranges[:]
   let sentinel_g = GlyphData::default()
   let sentinel_p = PositionData::default()
   sentinel_g.cluster = buf.ranges.length().reinterpret_as_uint()
@@ -640,7 +640,7 @@ pub fn Shaper::shape_with(self : Shaper, f : (GlyphCluster) -> Unit) -> Unit {
         let cluster = GlyphCluster::{
           source: buf.ranges[index],
           info: info.0,
-          glyphs: buf.shaped_glyphs.op_as_view(),
+          glyphs: buf.shaped_glyphs[:],
           components: empty_ranges_view,
           data: info.2,
         }
@@ -667,7 +667,7 @@ pub fn Shaper::shape_with(self : Shaper, f : (GlyphCluster) -> Unit) -> Unit {
             for j in start..<group_end {
               comps.push(buf.ranges[j])
             }
-            comps.op_as_view()
+            comps[:]
           } else {
             components
           }
@@ -675,7 +675,7 @@ pub fn Shaper::shape_with(self : Shaper, f : (GlyphCluster) -> Unit) -> Unit {
           let cluster = GlyphCluster::{
             source,
             info: info.0,
-            glyphs: buf.shaped_glyphs.op_as_view(),
+            glyphs: buf.shaped_glyphs[:],
             components,
             data: info.2,
           }
@@ -729,10 +729,10 @@ fn Shaper::finish(self : Shaper) -> Unit {
         }
         SubMode::Morx => {
           e.collect_selectors(
-            self.cx.val.state.features.op_as_view(),
+            self.cx.val.state.features[:],
             self.cx.val.state.selectors,
           )
-          e.morx(buf, self.cx.val.state.selectors.op_as_view())
+          e.morx(buf, self.cx.val.state.selectors[:])
         }
         _ => ()
       }

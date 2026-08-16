@@ -60,7 +60,7 @@ fn feature_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
       out.push(b)
     }
   }
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
@@ -111,7 +111,7 @@ fn feature_test_build_gsubgpos(script_tag : UInt, feature_tag : UInt) -> Bytes {
   feature_test_push_u16_be(out, 0) // featureParams
   feature_test_push_u16_be(out, 0) // lookupIndexCount
   // Ensure lengths match expectations (no-op; sizes computed above)
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
@@ -134,7 +134,7 @@ fn feature_test_build_morx(feature : Int, selector : Int) -> Bytes {
   feature_test_push_u16_be(out, selector)
   feature_test_push_u32_be(out, 0U) // enableFlags
   feature_test_push_u32_be(out, 0U) // disableFlags
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|

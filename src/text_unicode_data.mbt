@@ -2950,7 +2950,7 @@ let record_index2 : ReadOnlyArray[UInt] = [
 ]
 
 ///|
-let records : ReadOnlyArray[Record] = [
+let records0 : ReadOnlyArray[Record] = [
   r(
     32,
     C::Control,
@@ -17007,6 +17007,10 @@ let records : ReadOnlyArray[Record] = [
     Uc::O,
     Mc::O,
   ),
+]
+
+///|
+let records1 : ReadOnlyArray[Record] = [
   r(
     64,
     C::OtherPunctuation,
@@ -31442,6 +31446,18 @@ let records : ReadOnlyArray[Record] = [
     Mc::O,
   ),
 ]
+
+///|
+const RECORDS0_LENGTH : Int = 1004
+
+///|
+fn record_at(index : Int) -> Record {
+  if index < RECORDS0_LENGTH {
+    records0[index]
+  } else {
+    records1[index - RECORDS0_LENGTH]
+  }
+}
 
 ///|
 let compose0 : ReadOnlyArray[(UInt, UInt, UInt)] = [

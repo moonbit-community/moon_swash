@@ -214,17 +214,17 @@ pub fn Buffer::len(self : Buffer) -> Int {
 
 ///|
 pub fn Buffer::glyphs(self : Buffer) -> ArrayView[GlyphData] {
-  self.glyphs.op_as_view()
+  self.glyphs[:]
 }
 
 ///|
 pub fn Buffer::positions(self : Buffer) -> ArrayView[PositionData] {
-  self.positions.op_as_view()
+  self.positions[:]
 }
 
 ///|
 pub fn Buffer::ranges(self : Buffer) -> ArrayView[SourceRange] {
-  self.ranges.op_as_view()
+  self.ranges[:]
 }
 
 ///|

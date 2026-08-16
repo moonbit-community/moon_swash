@@ -100,6 +100,11 @@ pub fn Outline::transform(Self, @moon_zeno.Transform) -> Unit
 pub fn Outline::verbs(Self) -> Array[@moon_zeno.Verb]
 
 type OutlineWriter
+pub fn OutlineWriter::close(Self) -> Unit
+pub fn OutlineWriter::curve_to(Self, Double, Double, Double, Double, Double, Double) -> Unit
+pub fn OutlineWriter::line_to(Self, Double, Double) -> Unit
+pub fn OutlineWriter::move_to(Self, Double, Double) -> Unit
+pub fn OutlineWriter::quad_to(Self, Double, Double, Double, Double) -> Unit
 pub impl @outline.OutlinePen for OutlineWriter
 
 pub struct Render {
@@ -121,9 +126,7 @@ pub fn Render::render_into(Self, Scaler, UInt16, Image) -> Bool
 pub fn Render::style(Self, @moon_zeno.Style) -> Self
 pub fn Render::transform(Self, @moon_zeno.Transform?) -> Self
 
-pub struct ScaleContext {
-  // private fields
-}
+type ScaleContext
 pub fn ScaleContext::ScaleContext() -> Self
 pub fn ScaleContext::builder(Self, @moon_swash.FontRef) -> ScalerBuilder
 pub fn ScaleContext::builder_with_id(Self, @moon_swash.FontRef, (UInt64, UInt64)) -> ScalerBuilder
@@ -190,4 +193,3 @@ pub using @moon_zeno {type Vector}
 pub using @moon_zeno {type Verb}
 
 // Traits
-

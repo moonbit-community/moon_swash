@@ -221,7 +221,7 @@ pub fn ScalerBuilder::build(self : ScalerBuilder) -> Scaler {
   let loc = if self.coords.is_empty() {
     @skrifa.LocationRef::default()
   } else {
-    @skrifa.LocationRef::LocationRef(self.coords.op_as_view())
+    @skrifa.LocationRef::LocationRef(self.coords[:])
   }
   let skrifa_font = to_skrifa_font(self.font)
   let outlines = match skrifa_font {
@@ -723,7 +723,7 @@ fn Scaler::scale_bitmap_impl(
       for b in glyph.data() {
         raw.push(b)
       }
-      let raw_bytes = Bytes::from_array(raw.op_as_view())
+      let raw_bytes = Bytes::from_array(raw[:])
       if size != 0.0 && scale != 1.0 {
         // Decode into scratch then resize into image buffer.
         let src_len = (w.reinterpret_as_uint() * h.reinterpret_as_uint() * 4U).reinterpret_as_int()
@@ -852,7 +852,7 @@ fn Scaler::scale_outline_layer_into(
         None => false
         Some(glyph) => {
           outline.begin_layer(color_index)
-          let loc = @skrifa.LocationRef::LocationRef(self.coords.op_as_view())
+          let loc = @skrifa.LocationRef::LocationRef(self.coords[:])
           let settings = match self.hinting_instance {
             None =>
               @skrifa_outline.DrawSettings::unhinted(self.skrifa_size, loc)
