@@ -31,4 +31,3 @@ pub using @moon_swash {type Variations}
 pub using @moon_swash {type WritingSystems}
 
 // Traits
-

@@ -230,6 +230,8 @@ pub struct Fixed {
   value : Int
 }
 pub fn Fixed::abs(Self) -> Self
+pub fn Fixed::add(Self, Self) -> Self
+pub fn Fixed::div(Self, Self) -> Self
 pub fn Fixed::epsilon() -> Self
 pub fn Fixed::floor(Self) -> Self
 pub fn Fixed::fract(Self) -> Self
@@ -241,9 +243,12 @@ pub fn Fixed::max(Self, Self) -> Self
 pub fn Fixed::max_value() -> Self
 pub fn Fixed::min(Self, Self) -> Self
 pub fn Fixed::min_value() -> Self
+pub fn Fixed::mul(Self, Self) -> Self
+pub fn Fixed::neg(Self) -> Self
 pub fn Fixed::one() -> Self
 pub fn Fixed::raw(Self) -> Int
 pub fn Fixed::round(Self) -> Self
+pub fn Fixed::sub(Self, Self) -> Self
 pub fn Fixed::to_f2dot14(Self) -> Int
 pub fn Fixed::to_f32(Self) -> Double
 pub fn Fixed::to_i32(Self) -> Int
@@ -794,4 +799,3 @@ pub(open) trait RawFont {
   fn data(Self) -> Bytes
   fn offset(Self) -> Int
 }
-

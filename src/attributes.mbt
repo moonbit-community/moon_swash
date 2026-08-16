@@ -744,7 +744,7 @@ pub fn Synthesis::any(self : Synthesis) -> Bool {
 
 ///|
 pub fn Synthesis::variations(self : Synthesis) -> ArrayView[VariationSetting] {
-  self.vars.op_as_view()
+  self.vars[:]
 }
 
 ///|

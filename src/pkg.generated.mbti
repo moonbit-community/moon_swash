@@ -57,16 +57,20 @@ pub struct Attributes {
   value : UInt
 }
 pub fn Attributes::Attributes(Stretch, Weight, Style) -> Self
+pub fn Attributes::equal(Self, Self) -> Bool
 pub fn Attributes::from_font(FontRef) -> Self
 pub fn Attributes::has_italic_variation(Self) -> Bool
 pub fn Attributes::has_oblique_variation(Self) -> Bool
 pub fn Attributes::has_stretch_variation(Self) -> Bool
 pub fn Attributes::has_variations(Self) -> Bool
 pub fn Attributes::has_weight_variation(Self) -> Bool
+pub fn Attributes::not_equal(Self, Self) -> Bool
+pub fn Attributes::output(Self, &Logger) -> Unit
 pub fn Attributes::parts(Self) -> (Stretch, Weight, Style)
 pub fn Attributes::stretch(Self) -> Stretch
 pub fn Attributes::style(Self) -> Style
 pub fn Attributes::synthesize(Self, Self) -> Synthesis
+pub fn Attributes::to_string(Self) -> String
 pub fn Attributes::weight(Self) -> Weight
 pub impl Eq for Attributes
 pub impl Show for Attributes
@@ -511,9 +515,7 @@ pub(all) enum Category {
   SpaceSeparator
 }
 
-pub struct CharCluster {
-  // private fields
-}
+type CharCluster
 pub fn CharCluster::CharCluster() -> Self
 pub fn CharCluster::chars(Self) -> ArrayView[ClusterChar]
 pub fn CharCluster::clear(Self) -> Unit
@@ -524,9 +526,7 @@ pub fn CharCluster::mapped_chars(Self) -> ArrayView[ClusterChar]
 pub fn CharCluster::range(Self) -> SourceRange
 pub fn CharCluster::user_data(Self) -> UInt
 
-pub struct CharInfo {
-  // private fields
-}
+type CharInfo
 pub fn CharInfo::CharInfo(Properties, Boundary) -> Self
 pub fn CharInfo::boundary(Self) -> Boundary
 pub fn CharInfo::category(Self) -> Category
@@ -586,9 +586,7 @@ pub(all) enum ClusterBreak {
   ZWJ
 }
 
-pub struct ClusterChar {
-  // private fields
-}
+type ClusterChar
 pub fn ClusterChar::ClusterChar(Char, UInt, ShapeClass, JoiningType, Bool, Bool, UInt16, UInt) -> Self
 pub fn ClusterChar::ch(Self) -> Char
 pub fn ClusterChar::contributes_to_shaping(Self) -> Bool
@@ -764,6 +762,7 @@ pub fn FontRef::metrics(Self, ArrayView[Int]) -> Metrics
 pub fn FontRef::offset(Self) -> Int
 pub fn FontRef::os2(Self) -> @internal.Os2?
 pub fn FontRef::post(Self) -> @internal.Post?
+pub fn FontRef::table_by_tag(Self, UInt) -> BytesView?
 pub fn FontRef::table_data(Self, UInt) -> BytesView?
 pub fn FontRef::table_offset(Self, UInt) -> UInt
 pub fn FontRef::variations(Self) -> Variations
@@ -825,6 +824,7 @@ pub fn Language::cjk(Self) -> Cjk
 pub fn Language::from_opentype(UInt) -> Self?
 pub fn Language::language(Self) -> String
 pub fn Language::name(Self) -> String?
+pub fn Language::output(Self, &Logger) -> Unit
 pub fn Language::parse(String) -> Self?
 pub fn Language::region(Self) -> String?
 pub fn Language::script(Self) -> String?
@@ -967,9 +967,7 @@ pub fn ObliqueAngle::from_radians(Double) -> Self
 pub fn ObliqueAngle::from_turns(Double) -> Self
 pub fn ObliqueAngle::to_degrees(Self) -> Double
 
-pub struct Parser {
-  // private fields
-}
+type Parser
 pub fn Parser::Parser(Script, Iter[Token]) -> Self
 pub fn Parser::next(Self, CharCluster) -> Bool
 
@@ -1198,9 +1196,7 @@ pub(all) enum ShapeClass {
   Other
 }
 
-pub struct SourceRange {
-  // private fields
-}
+type SourceRange
 pub fn SourceRange::SourceRange(UInt, UInt) -> Self
 pub fn SourceRange::end(Self) -> UInt
 pub fn SourceRange::start(Self) -> UInt
@@ -1214,7 +1210,9 @@ pub(all) enum Status {
 pub struct Stretch {
   value : UInt16
 }
+pub fn Stretch::compare(Self, Self) -> Int
 pub fn Stretch::condensed() -> Self
+pub fn Stretch::equal(Self, Self) -> Bool
 pub fn Stretch::expanded() -> Self
 pub fn Stretch::extra_condensed() -> Self
 pub fn Stretch::extra_expanded() -> Self
@@ -1223,6 +1221,12 @@ pub fn Stretch::is_condensed(Self) -> Bool
 pub fn Stretch::is_expanded(Self) -> Bool
 pub fn Stretch::is_normal(Self) -> Bool
 pub fn Stretch::normal() -> Self
+pub fn Stretch::not_equal(Self, Self) -> Bool
+pub fn Stretch::op_ge(Self, Self) -> Bool
+pub fn Stretch::op_gt(Self, Self) -> Bool
+pub fn Stretch::op_le(Self, Self) -> Bool
+pub fn Stretch::op_lt(Self, Self) -> Bool
+pub fn Stretch::output(Self, &Logger) -> Unit
 pub fn Stretch::parse(String) -> Self?
 pub fn Stretch::raw(Self) -> UInt16
 pub fn Stretch::semi_condensed() -> Self
@@ -1271,7 +1275,10 @@ pub(all) enum Style {
   Italic
   Oblique(ObliqueAngle)
 }
+pub fn Style::equal(Self, Self) -> Bool
 pub fn Style::from_degrees(Double) -> Self
+pub fn Style::not_equal(Self, Self) -> Bool
+pub fn Style::output(Self, &Logger) -> Unit
 pub fn Style::parse(String) -> Self?
 pub fn Style::to_degrees(Self) -> Double
 pub fn Style::to_string(Self) -> String
@@ -1285,13 +1292,13 @@ pub struct Synthesis {
 }
 pub fn Synthesis::any(Self) -> Bool
 pub fn Synthesis::embolden(Self) -> Bool
+pub fn Synthesis::equal(Self, Self) -> Bool
+pub fn Synthesis::not_equal(Self, Self) -> Bool
 pub fn Synthesis::skew(Self) -> Double?
 pub fn Synthesis::variations(Self) -> ArrayView[Setting[Double]]
 pub impl Eq for Synthesis
 
-pub struct Token {
-  // private fields
-}
+type Token
 pub fn Token::Token(Char, UInt, UInt, CharInfo, UInt) -> Self
 pub fn Token::ch(Self) -> Char
 pub fn Token::data(Self) -> UInt
@@ -1373,11 +1380,19 @@ pub struct Weight {
 }
 pub fn Weight::black() -> Self
 pub fn Weight::bold() -> Self
+pub fn Weight::compare(Self, Self) -> Int
+pub fn Weight::equal(Self, Self) -> Bool
 pub fn Weight::extra_bold() -> Self
 pub fn Weight::extra_light() -> Self
 pub fn Weight::light() -> Self
 pub fn Weight::medium() -> Self
 pub fn Weight::normal() -> Self
+pub fn Weight::not_equal(Self, Self) -> Bool
+pub fn Weight::op_ge(Self, Self) -> Bool
+pub fn Weight::op_gt(Self, Self) -> Bool
+pub fn Weight::op_le(Self, Self) -> Bool
+pub fn Weight::op_lt(Self, Self) -> Bool
+pub fn Weight::output(Self, &Logger) -> Unit
 pub fn Weight::parse(String) -> Self?
 pub fn Weight::semi_bold() -> Self
 pub fn Weight::thin() -> Self
@@ -1465,4 +1480,3 @@ pub impl Codepoint for Char
 pub(open) trait TableProvider {
   fn table_by_tag(Self, UInt) -> BytesView?
 }
-

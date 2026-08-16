@@ -21,4 +21,3 @@ pub using @moon_swash {type MetricsProxy}
 pub using @moon_swash {type VariationsProxy}
 
 // Traits
-

@@ -700,7 +700,7 @@ pub fn MorxLigature::next(
             None => return None
             Some(v) => v
           }
-          let comps = state.indices.op_as_view(start=pos + 1, end=end_pos)
+          let comps = state.indices[pos + 1:end_pos]
           match f(glyph_index, lig, comps) {
             None => return None
             Some(_) => ()
@@ -855,7 +855,7 @@ pub fn MorxInsertion::next(
     }
     mark_inserted = glyphs.length()
     working_index = working_index + mark_inserted
-    match f(base, glyphs.op_as_view()) {
+    match f(base, glyphs[:]) {
       None => return None
       Some(_) => ()
     }
@@ -873,7 +873,7 @@ pub fn MorxInsertion::next(
       Some(v) => v
     }
     current_inserted = glyphs.length()
-    match f(base, glyphs.op_as_view()) {
+    match f(base, glyphs[:]) {
       None => return None
       Some(_) => ()
     }

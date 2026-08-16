@@ -311,7 +311,7 @@ fn post_ascii_string(bytes : BytesView) -> String? {
       Some(c) => chars.push(c)
     }
   }
-  Some(String::from_array(chars.op_as_view()))
+  Some(String::from_array(chars[:]))
 }
 
 ///|

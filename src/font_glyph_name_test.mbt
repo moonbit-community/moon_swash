@@ -67,14 +67,14 @@ fn build_sfnt_1_table(tag : UInt, data : Bytes) -> Bytes {
   for b in data.iter() {
     out.push(b)
   }
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
 fn make_post_v1() -> Bytes {
   let buf : Array[Byte] = Array::makei(32, _ => b'\x00')
   set_u32_be(buf, 0, 0x00010000)
-  Bytes::from_array(buf.op_as_view())
+  Bytes::from_array(buf[:])
 }
 
 ///|
@@ -87,7 +87,7 @@ fn make_post_v2_foo() -> Bytes {
   buf[37] = b'f'
   buf[38] = b'o'
   buf[39] = b'o'
-  Bytes::from_array(buf.op_as_view())
+  Bytes::from_array(buf[:])
 }
 
 ///|

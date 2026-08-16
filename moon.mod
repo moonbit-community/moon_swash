@@ -18,6 +18,4 @@ keywords = [ ]
 
 description = ""
 
-options(
-  source: "src",
-)
+source = "src"

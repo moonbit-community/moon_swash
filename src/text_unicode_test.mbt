@@ -35,7 +35,7 @@ test "Char::properties provides basic Unicode properties" {
 test "compose_pair + decompose roundtrip for Å (U+00C5)" {
   let d = decompose('Å').to_array()
   inspect(d.length(), content="2")
-  inspect(String::from_array(d.op_as_view()), content="A\u{030A}")
+  inspect(String::from_array(d[:]), content="A\u{030A}")
   inspect(compose_pair('A', d[1]).unwrap(), content="Å")
 }
 

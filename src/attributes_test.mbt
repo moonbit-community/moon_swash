@@ -68,7 +68,7 @@ fn attributes_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
       out.push(b)
     }
   }
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
@@ -86,7 +86,7 @@ fn attributes_test_make_os2(
   attributes_test_set_u16_be(buf, 6, width_class)
   // selection flags
   attributes_test_set_u16_be(buf, 62, selection)
-  Bytes::from_array(buf.op_as_view())
+  Bytes::from_array(buf[:])
 }
 
 ///|

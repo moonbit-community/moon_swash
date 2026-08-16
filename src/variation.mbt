@@ -374,14 +374,14 @@ pub fn Instance::postscript_name(
 
 ///|
 pub fn Instance::values(self : Instance) -> ArrayView[Double] {
-  self.values.op_as_view()
+  self.values[:]
 }
 
 ///|
 pub fn Instance::normalized_coords(
   self : Instance,
 ) -> ArrayView[NormalizedCoord] {
-  self.coords.op_as_view()
+  self.coords[:]
 }
 
 ///|

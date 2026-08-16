@@ -87,6 +87,8 @@ pub(all) enum Direction {
   LeftToRight
   RightToLeft
 }
+pub fn Direction::equal(Self, Self) -> Bool
+pub fn Direction::not_equal(Self, Self) -> Bool
 pub impl Eq for Direction
 
 pub struct Engine {
@@ -137,6 +139,8 @@ pub(all) enum EngineMode {
   Myanmar
   Complex
 }
+pub fn EngineMode::equal(Self, Self) -> Bool
+pub fn EngineMode::not_equal(Self, Self) -> Bool
 pub impl Eq for EngineMode
 
 pub struct FeatureGroups {
@@ -276,6 +280,8 @@ pub(all) enum PosMode {
   Kerx
   Kern
 }
+pub fn PosMode::equal(Self, Self) -> Bool
+pub fn PosMode::not_equal(Self, Self) -> Bool
 pub impl Eq for PosMode
 
 pub struct PositionData {
@@ -365,6 +371,13 @@ pub struct SimpleShapeOptions {
   insert_dotted_circles : Bool
 }
 pub fn SimpleShapeOptions::default() -> Self
+pub fn SimpleShapeOptions::direction(Self) -> Direction
+pub fn SimpleShapeOptions::features(Self) -> Iter[@moon_swash.Setting[UInt16]]
+pub fn SimpleShapeOptions::insert_dotted_circles(Self) -> Bool
+pub fn SimpleShapeOptions::language(Self) -> @moon_swash.Language?
+pub fn SimpleShapeOptions::script(Self) -> @moon_swash.Script
+pub fn SimpleShapeOptions::size(Self) -> Double
+pub fn SimpleShapeOptions::variations(Self) -> Iter[@moon_swash.Setting[Double]]
 pub impl ShapeOptions for SimpleShapeOptions
 
 pub struct SkipState {
@@ -396,6 +409,8 @@ pub(all) enum SubMode {
   Gsub
   Morx
 }
+pub fn SubMode::equal(Self, Self) -> Bool
+pub fn SubMode::not_equal(Self, Self) -> Bool
 pub impl Eq for SubMode
 
 // Type aliases
@@ -435,4 +450,3 @@ pub(open) trait ShapeOptions {
   fn variations(Self) -> Iter[@moon_swash.Setting[Double]]
   fn insert_dotted_circles(Self) -> Bool
 }
-
