@@ -38,7 +38,7 @@ fn palette_test_u32(x : Int) -> UInt {
 fn palette_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
   let num_tables = tables.length()
   let header_len = 12 + num_tables * 16
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   palette_test_push_u32_be(out, palette_test_u32(0x00010000))
   palette_test_push_u16_be(out, num_tables)
   palette_test_push_u16_be(out, 0)
@@ -64,7 +64,7 @@ fn palette_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
 
 ///|
 fn palette_test_make_cpal_v0() -> Bytes {
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   palette_test_push_u16_be(out, 0) // version
   palette_test_push_u16_be(out, 2) // numPaletteEntries
   palette_test_push_u16_be(out, 1) // numPalettes

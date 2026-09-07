@@ -48,7 +48,7 @@ fn set_u32_be(buf : Array[Byte], off : Int, v : UInt) -> Unit {
 
 ///|
 fn build_sfnt_1_table(tag : UInt, data : Bytes) -> Bytes {
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   // sfnt version 1.0
   push_u32_be(out, 0x00010000)
   // numTables

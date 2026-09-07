@@ -38,7 +38,7 @@ fn bitmap_test_u32(x : Int) -> UInt {
 fn bitmap_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
   let num_tables = tables.length()
   let header_len = 12 + num_tables * 16
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   bitmap_test_push_u32_be(out, bitmap_test_u32(0x00010000))
   bitmap_test_push_u16_be(out, num_tables)
   bitmap_test_push_u16_be(out, 0)
@@ -64,7 +64,7 @@ fn bitmap_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
 
 ///|
 fn bitmap_test_build_maxp(num_glyphs : Int) -> Bytes {
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   bitmap_test_push_u32_be(out, bitmap_test_u32(0x00010000))
   bitmap_test_push_u16_be(out, num_glyphs)
   Bytes::from_array(out[:])
@@ -82,7 +82,7 @@ fn bitmap_test_build_sbix_with_glyph(
   let strike_off = 12
   let glyph_data_off = 12
   let glyph_end_off = glyph_data_off + 8 + data_len
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   bitmap_test_push_u16_be(out, 1) // version
   bitmap_test_push_u16_be(out, 0) // flags
   bitmap_test_push_u32_be(out, bitmap_test_u32(1)) // numStrikes
@@ -114,7 +114,7 @@ fn bitmap_test_build_cblc_index1(
   bit_depth : Int,
   major : Int,
 ) -> Bytes {
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   // major/minor
   bitmap_test_push_u16_be(out, major)
   bitmap_test_push_u16_be(out, 0)
@@ -149,7 +149,7 @@ fn bitmap_test_build_cblc_index1(
 
 ///|
 fn bitmap_test_build_ebdt_format1() -> Bytes {
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   // EBDT header: major=2, minor=0
   bitmap_test_push_u16_be(out, 2)
   bitmap_test_push_u16_be(out, 0)

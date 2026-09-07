@@ -39,7 +39,7 @@ fn strike_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
   // Caller must provide tags in sorted order for internal table_range binary search.
   let num_tables = tables.length()
   let header_len = 12 + num_tables * 16
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   strike_test_push_u32_be(out, strike_test_u32(0x00010000))
   strike_test_push_u16_be(out, num_tables)
   strike_test_push_u16_be(out, 0)
@@ -65,7 +65,7 @@ fn strike_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
 
 ///|
 fn strike_test_build_maxp(num_glyphs : Int) -> Bytes {
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   strike_test_push_u32_be(out, strike_test_u32(0x00010000))
   strike_test_push_u16_be(out, num_glyphs)
   Bytes::from_array(out[:])
@@ -73,7 +73,7 @@ fn strike_test_build_maxp(num_glyphs : Int) -> Bytes {
 
 ///|
 fn strike_test_build_sbix_two_strikes() -> Bytes {
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   // sbix header
   strike_test_push_u16_be(out, 1) // version
   strike_test_push_u16_be(out, 0) // flags
@@ -110,7 +110,7 @@ fn strike_test_build_cblc_index1(
   bit_depth : Int,
   major : Int,
 ) -> Bytes {
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   // major/minor
   strike_test_push_u16_be(out, major)
   strike_test_push_u16_be(out, 0)

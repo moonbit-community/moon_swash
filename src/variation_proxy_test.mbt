@@ -62,7 +62,7 @@ fn variation_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
   // Caller must provide tags in sorted order for internal table_range binary search.
   let num_tables = tables.length()
   let header_len = 12 + num_tables * 16
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   variation_test_push_u32_be(out, 0x00010000) // sfnt version
   variation_test_push_u16_be(out, num_tables)
   variation_test_push_u16_be(out, 0)

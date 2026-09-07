@@ -47,7 +47,7 @@ fn attributes_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
   // Caller must provide tags in sorted order for internal table_range binary search.
   let num_tables = tables.length()
   let header_len = 12 + num_tables * 16
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   attributes_test_push_u32_be(out, attributes_test_u32(0x00010000))
   attributes_test_push_u16_be(out, num_tables)
   attributes_test_push_u16_be(out, 0)

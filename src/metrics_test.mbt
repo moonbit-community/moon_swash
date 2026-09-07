@@ -56,7 +56,7 @@ fn metrics_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
   // Caller must provide tags in sorted order for internal table_range binary search.
   let num_tables = tables.length()
   let header_len = 12 + num_tables * 16
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   metrics_test_push_u32_be(out, metrics_test_u32(0x00010000))
   metrics_test_push_u16_be(out, num_tables)
   metrics_test_push_u16_be(out, 0)
@@ -90,7 +90,7 @@ fn metrics_test_make_head(units_per_em : Int, loca_fmt : Int) -> Bytes {
 
 ///|
 fn metrics_test_make_maxp(num_glyphs : Int) -> Bytes {
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   metrics_test_push_u32_be(out, metrics_test_u32(0x00010000))
   metrics_test_push_u16_be(out, num_glyphs)
   Bytes::from_array(out[:])
@@ -126,7 +126,7 @@ fn metrics_test_make_vhea(
 
 ///|
 fn metrics_test_make_hmtx(advance : Int, lsb : Int) -> Bytes {
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   metrics_test_push_u16_be(out, advance)
   metrics_test_push_u16_be(out, lsb)
   Bytes::from_array(out[:])
@@ -184,7 +184,7 @@ fn metrics_test_make_os2_typo(
 ///|
 fn metrics_test_make_hvar_delta_50() -> Bytes {
   // Same minimal HVAR layout as moon_skrifa tests: +50 deltas when coord == 1.0.
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   // version 1.0
   metrics_test_push_u16_be(out, 1)
   metrics_test_push_u16_be(out, 0)
@@ -228,7 +228,7 @@ fn metrics_test_make_hvar_delta_50() -> Bytes {
 ///|
 fn metrics_test_make_mvar_hasc_delta_10() -> Bytes {
   // MVAR header: version(1.0), reserved, valueRecordSize=8, valueRecordCount=1, storeOffset=20
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   metrics_test_push_u32_be(out, metrics_test_u32(0x00010000))
   metrics_test_push_u16_be(out, 0) // reserved
   metrics_test_push_u16_be(out, 8) // valueRecordSize
@@ -263,7 +263,7 @@ fn metrics_test_make_mvar_hasc_delta_10() -> Bytes {
 
 ///|
 fn metrics_test_make_vorg(default_origin : Int, glyph0_origin : Int) -> Bytes {
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   metrics_test_push_u16_be(out, 1) // major
   metrics_test_push_u16_be(out, 0) // minor
   metrics_test_push_u16_be(out, default_origin) // defaultVertOriginY (i16)
