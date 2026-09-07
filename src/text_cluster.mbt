@@ -63,7 +63,7 @@ pub fn CharInfo::CharInfo(
   properties : Properties,
   boundary : Boundary,
 ) -> CharInfo {
-  CharInfo::{ props: properties.with_boundary(boundary_to_raw(boundary)) }
+  CharInfo::{ props: properties.with_boundary(boundary_to_raw(boundary)), }
 }
 
 ///|
@@ -83,7 +83,7 @@ fn CharInfo::boundary_raw(self : CharInfo) -> UInt {
 
 ///|
 fn CharInfo::with_properties(self : CharInfo, props : Properties) -> CharInfo {
-  CharInfo::{ props: props.with_boundary(self.props.boundary()) }
+  CharInfo::{ props: props.with_boundary(self.props.boundary()), }
 }
 
 ///|
@@ -133,7 +133,7 @@ pub fn CharInfo::cluster_class(self : CharInfo) -> (ClusterBreak, Bool) {
 
 ///|
 pub fn CharInfo::from_char(ch : Char) -> CharInfo {
-  CharInfo::{ props: Codepoint::properties(ch) }
+  CharInfo::{ props: Codepoint::properties(ch), }
 }
 
 ///|
@@ -302,7 +302,7 @@ pub fn Token::Token(
   info : CharInfo,
   data : UserData,
 ) -> Token {
-  Token::{ ch, offset, len, info, data }
+  Token::{ ch, offset, len, info, data, }
 }
 
 ///|
@@ -455,7 +455,7 @@ struct SourceRange {
 
 ///|
 pub fn SourceRange::SourceRange(start : UInt, end : UInt) -> SourceRange {
-  SourceRange::{ start, end }
+  SourceRange::{ start, end, }
 }
 
 ///|
@@ -497,7 +497,11 @@ priv struct Form {
 
 ///|
 fn Form::Form() -> Form {
-  Form::{ chars: ([] : Array[ClusterChar]), map_len: 0, state: FormState::None }
+  Form::{
+    chars: ([] : Array[ClusterChar]),
+    map_len: 0,
+    state: FormState::None,
+  }
 }
 
 ///|
@@ -614,7 +618,7 @@ pub fn CharCluster::user_data(self : CharCluster) -> UserData {
 
 ///|
 pub fn CharCluster::range(self : CharCluster) -> SourceRange {
-  SourceRange::{ start: self.start, end: self.end }
+  SourceRange::{ start: self.start, end: self.end, }
 }
 
 ///|
@@ -624,15 +628,15 @@ pub fn CharCluster::is_empty(self : CharCluster) -> Bool {
 
 ///|
 pub fn CharCluster::chars(self : CharCluster) -> ArrayView[ClusterChar] {
-  self.chars.op_as_view()
+  self.chars[:]
 }
 
 ///|
 pub fn CharCluster::mapped_chars(self : CharCluster) -> ArrayView[ClusterChar] {
   match self.form {
-    FormKind::Original => self.chars.op_as_view()
-    FormKind::Nfd => self.decomp.chars.op_as_view()
-    FormKind::Nfc => self.comp.chars.op_as_view()
+    FormKind::Original => self.chars[:]
+    FormKind::Nfd => self.decomp.chars[:]
+    FormKind::Nfc => self.comp.chars[:]
   }
 }
 
@@ -803,7 +807,7 @@ fn CharCluster::note_char(self : CharCluster, input : Token) -> Unit {
 fn CharCluster::decomposed(self : CharCluster) -> ArrayView[ClusterChar]? {
   match self.decomp.state {
     FormState::Invalid => None
-    FormState::Valid => Some(self.decomp.chars.op_as_view())
+    FormState::Valid => Some(self.decomp.chars[:])
     FormState::None => {
       self.decomp.state = FormState::Invalid
       self.decomp.chars.clear()
@@ -830,7 +834,7 @@ fn CharCluster::decomposed(self : CharCluster) -> ArrayView[ClusterChar]? {
       }
       self.decomp.state = FormState::Valid
       self.decomp.setup()
-      Some(self.decomp.chars.op_as_view())
+      Some(self.decomp.chars[:])
     }
   }
 }
@@ -839,7 +843,7 @@ fn CharCluster::decomposed(self : CharCluster) -> ArrayView[ClusterChar]? {
 fn CharCluster::composed(self : CharCluster) -> ArrayView[ClusterChar]? {
   match self.comp.state {
     FormState::Invalid => None
-    FormState::Valid => Some(self.comp.chars.op_as_view())
+    FormState::Valid => Some(self.comp.chars[:])
     FormState::None =>
       match CharCluster::decomposed(self) {
         None => {
@@ -868,7 +872,7 @@ fn CharCluster::composed(self : CharCluster) -> ArrayView[ClusterChar]? {
           self.comp.chars.push(last)
           self.comp.state = FormState::Valid
           self.comp.setup()
-          Some(self.comp.chars.op_as_view())
+          Some(self.comp.chars[:])
         }
       }
   }
@@ -886,7 +890,7 @@ priv struct TokenStream {
 
 ///|
 fn TokenStream::TokenStream(iter : Iter[Token]) -> TokenStream {
-  TokenStream::{ iter, buf: ([] : Array[Token]), buf_offset: 0, done: false }
+  TokenStream::{ iter, buf: ([] : Array[Token]), buf_offset: 0, done: false, }
 }
 
 ///|

@@ -204,7 +204,7 @@ pub fn Os2Flags::oblique(self : Os2Flags) -> Bool {
 
 ///|
 pub fn Os2::selection_flags(self : Os2) -> Os2Flags {
-  Os2Flags::{ value: BeBytes::from_view(self.data).read_u16(62).unwrap_or(0) }
+  Os2Flags::{ value: BeBytes::from_view(self.data).read_u16(62).unwrap_or(0), }
 }
 
 ///|
@@ -311,7 +311,7 @@ fn post_ascii_string(bytes : BytesView) -> String? {
       Some(c) => chars.push(c)
     }
   }
-  Some(String::from_array(chars.op_as_view()))
+  Some(String::from_array(chars[:]))
 }
 
 ///|

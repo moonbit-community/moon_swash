@@ -74,7 +74,7 @@ pub fn ColorProxy::layers(
             .reinterpret_as_int()
           let offset = layer_records_off + first * 4
           let len = b.read_u16(rec + 4).unwrap_or(0).to_uint16()
-          return Some(ColrLayers::{ data: b, offset, len })
+          return Some(ColrLayers::{ data: b, offset, len, })
         }
       }
     }
@@ -114,7 +114,7 @@ pub fn ColrLayers::get(self : ColrLayers, index : UInt16) -> ColrLayer? {
   } else {
     Some(color_u.to_uint16())
   }
-  Some(ColrLayer::{ glyph_id, color_index })
+  Some(ColrLayer::{ glyph_id, color_index, })
 }
 
 ///|

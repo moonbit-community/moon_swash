@@ -34,7 +34,7 @@ pub struct SelectedFont {
 ///|
 /// Creates a selected font wrapper.
 pub fn SelectedFont::SelectedFont(font : @swash.FontRef) -> SelectedFont {
-  SelectedFont::{ font, id_override: None, synthesis: None }
+  SelectedFont::{ font, id_override: None, synthesis: None, }
 }
 
 ///|
@@ -269,4 +269,15 @@ fn[S : Selector, O : ShapeOptions] shape_clusters(
       }
     }
   }
+}
+
+///|
+pub extend SimpleShapeOptions with ShapeOptions::{
+  insert_dotted_circles,
+  features,
+  direction,
+  size,
+  variations,
+  script,
+  language,
 }

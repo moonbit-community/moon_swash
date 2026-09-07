@@ -39,7 +39,7 @@ fn strike_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
   // Caller must provide tags in sorted order for internal table_range binary search.
   let num_tables = tables.length()
   let header_len = 12 + num_tables * 16
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   strike_test_push_u32_be(out, strike_test_u32(0x00010000))
   strike_test_push_u16_be(out, num_tables)
   strike_test_push_u16_be(out, 0)
@@ -60,20 +60,20 @@ fn strike_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
       out.push(b)
     }
   }
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
 fn strike_test_build_maxp(num_glyphs : Int) -> Bytes {
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   strike_test_push_u32_be(out, strike_test_u32(0x00010000))
   strike_test_push_u16_be(out, num_glyphs)
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
 fn strike_test_build_sbix_two_strikes() -> Bytes {
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   // sbix header
   strike_test_push_u16_be(out, 1) // version
   strike_test_push_u16_be(out, 0) // flags
@@ -99,7 +99,7 @@ fn strike_test_build_sbix_two_strikes() -> Bytes {
   strike_test_push_u16_be(out, 3)
   strike_test_push_u16_be(out, 4)
   strike_test_push_u32_be(out, 0x706E6720) // "png "
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
@@ -110,7 +110,7 @@ fn strike_test_build_cblc_index1(
   bit_depth : Int,
   major : Int,
 ) -> Bytes {
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   // major/minor
   strike_test_push_u16_be(out, major)
   strike_test_push_u16_be(out, 0)
@@ -140,12 +140,12 @@ fn strike_test_build_cblc_index1(
   strike_test_push_u32_be(out, strike_test_u32(4))
   strike_test_push_u32_be(out, strike_test_u32(0))
   strike_test_push_u32_be(out, strike_test_u32(0))
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
 fn strike_test_dummy_table(len : Int) -> Bytes {
-  Bytes::from_array(Array::makei(len, _ => b'\x00').op_as_view())
+  Bytes::from_array(Array::makei(len, _ => b'\x00')[:])
 }
 
 ///|

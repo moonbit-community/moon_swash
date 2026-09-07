@@ -27,7 +27,7 @@ pub struct SeenFeatures {
 
 ///|
 pub fn SeenFeatures::SeenFeatures() -> SeenFeatures {
-  SeenFeatures::{ bits: Array::makei(6, _ => 0U) }
+  SeenFeatures::{ bits: Array::makei(6, _ => 0U), }
 }
 
 ///|

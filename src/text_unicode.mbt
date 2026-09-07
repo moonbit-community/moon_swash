@@ -31,7 +31,7 @@ pub struct Properties {
 
 ///|
 fn Properties::Properties(cp : Int) -> Properties {
-  Properties::{ bits: get_record_index(cp).reinterpret_as_uint() }
+  Properties::{ bits: get_record_index(cp).reinterpret_as_uint(), }
 }
 
 ///|

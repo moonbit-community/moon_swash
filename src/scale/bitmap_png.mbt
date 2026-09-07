@@ -495,7 +495,7 @@ fn decode_png(
   }
 
   // Inflate concatenated IDAT zlib.
-  let idat = Bytes::from_array(scratch.op_as_view())
+  let idat = Bytes::from_array(scratch[:])
   let decomp_opt = Some(inflate_zlib(idat)) catch { _ => None }
   let decomp = match decomp_opt {
     None => return None

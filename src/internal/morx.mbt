@@ -34,7 +34,7 @@ pub fn morx_chains(data : Bytes, offset : UInt) -> MorxChains {
   }
   let b = BeBytes::from_view(view)
   let len = b.read_u32(4).unwrap_or(0)
-  MorxChains::{ b, offset: 8, len, cur: 0U }
+  MorxChains::{ b, offset: 8, len, cur: 0U, }
 }
 
 ///|
@@ -147,7 +147,7 @@ pub struct MorxSubtables {
 ///|
 pub fn MorxChain::subtables(self : MorxChain) -> MorxSubtables {
   let offset = self.offset + 16 + 12 * self.feature_count.reinterpret_as_int()
-  MorxSubtables::{ b: self.b, offset, len: self.subtable_count, cur: 0U }
+  MorxSubtables::{ b: self.b, offset, len: self.subtable_count, cur: 0U, }
 }
 
 ///|
@@ -185,7 +185,7 @@ pub fn MorxSubtables::iter(self : MorxSubtables) -> Iter[MorxSubtable] {
       None => return None
       Some(v) => v
     }
-    Some(MorxSubtable::{ b, offset: base, kind, coverage, flags })
+    Some(MorxSubtable::{ b, offset: base, kind, coverage, flags, })
   })
 }
 
@@ -280,7 +280,7 @@ pub struct MorxRearrangementState {
 
 ///|
 pub fn MorxRearrangementState::MorxRearrangementState() -> MorxRearrangementState {
-  MorxRearrangementState::{ state: 0, first: 0, last: 0, cycles: 0 }
+  MorxRearrangementState::{ state: 0, first: 0, last: 0, cycles: 0, }
 }
 
 ///|
@@ -397,7 +397,7 @@ pub fn MorxRearrangement::next(
     }
     let reverse_l = m >> 4 == 3
     let reverse_r = (m & 0x0F) == 3
-    match f(MorxRearrange::{ l, r, reverse_l, reverse_r, start, end }) {
+    match f(MorxRearrange::{ l, r, reverse_l, reverse_r, start, end, }) {
       None => return None
       Some(_) => ()
     }
@@ -432,7 +432,7 @@ fn read_morx_contextual_data(b : BeBytes, offset : Int) -> MorxContextualData? {
     None => return None
     Some(v) => v.to_uint16()
   }
-  Some(MorxContextualData::{ mark_index, current_index })
+  Some(MorxContextualData::{ mark_index, current_index, })
 }
 
 ///|
@@ -453,7 +453,7 @@ fn MorxContextual::parse(data : BytesView) -> MorxContextual? {
     None => return None
     Some(v) => v
   }
-  Some(MorxContextual::{ b, state_table, table })
+  Some(MorxContextual::{ b, state_table, table, })
 }
 
 ///|
@@ -595,7 +595,7 @@ fn MorxLigature::parse(data : BytesView) -> MorxLigature? {
     None => return None
     Some(v) => v.reinterpret_as_int()
   }
-  Some(MorxLigature::{ b, state_table, action, component, ligature })
+  Some(MorxLigature::{ b, state_table, action, component, ligature, })
 }
 
 ///|
@@ -700,7 +700,7 @@ pub fn MorxLigature::next(
             None => return None
             Some(v) => v
           }
-          let comps = state.indices.op_as_view(start=pos + 1, end=end_pos)
+          let comps = state.indices[pos + 1:end_pos]
           match f(glyph_index, lig, comps) {
             None => return None
             Some(_) => ()
@@ -753,7 +753,7 @@ pub struct MorxNonContextual {
 
 ///|
 fn MorxNonContextual::MorxNonContextual(data : BytesView) -> MorxNonContextual {
-  MorxNonContextual::{ b: BeBytes::from_view(data) }
+  MorxNonContextual::{ b: BeBytes::from_view(data), }
 }
 
 ///|
@@ -782,7 +782,7 @@ fn read_morx_insertion_data(b : BeBytes, offset : Int) -> MorxInsertionData? {
     None => return None
     Some(v) => v.to_uint16()
   }
-  Some(MorxInsertionData::{ current_index, mark_index })
+  Some(MorxInsertionData::{ current_index, mark_index, })
 }
 
 ///|
@@ -803,7 +803,7 @@ fn MorxInsertion::parse(data : BytesView) -> MorxInsertion? {
     None => return None
     Some(v) => v.reinterpret_as_int()
   }
-  Some(MorxInsertion::{ b, state_table, action })
+  Some(MorxInsertion::{ b, state_table, action, })
 }
 
 ///|
@@ -817,7 +817,7 @@ pub struct MorxInsertionState {
 
 ///|
 pub fn MorxInsertionState::MorxInsertionState() -> MorxInsertionState {
-  MorxInsertionState::{ state: 0, mark: 0, cycles: 0 }
+  MorxInsertionState::{ state: 0, mark: 0, cycles: 0, }
 }
 
 ///|
@@ -855,7 +855,7 @@ pub fn MorxInsertion::next(
     }
     mark_inserted = glyphs.length()
     working_index = working_index + mark_inserted
-    match f(base, glyphs.op_as_view()) {
+    match f(base, glyphs[:]) {
       None => return None
       Some(_) => ()
     }
@@ -873,7 +873,7 @@ pub fn MorxInsertion::next(
       Some(v) => v
     }
     current_inserted = glyphs.length()
-    match f(base, glyphs.op_as_view()) {
+    match f(base, glyphs[:]) {
       None => return None
       Some(_) => ()
     }

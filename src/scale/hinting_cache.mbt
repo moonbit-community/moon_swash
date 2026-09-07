@@ -80,7 +80,7 @@ priv struct HintingCache {
 
 ///|
 fn HintingCache::HintingCache() -> HintingCache {
-  HintingCache::{ glyf_entries: [], cff_entries: [], serial: 0 }
+  HintingCache::{ glyf_entries: [], cff_entries: [], serial: 0, }
 }
 
 ///|
@@ -98,7 +98,7 @@ fn find_hinting_entry(
     if e.id0 == id0 &&
       e.id1 == id1 &&
       size_eq(e.size, size) &&
-      coords_eq(e.coords.op_as_view(), coords) {
+      coords_eq(e.coords[:], coords) {
       return Some((i, true))
     }
     if e.serial < found_serial {
@@ -131,7 +131,7 @@ fn HintingCache::get(
     _ => self.cff_entries
   }
   let coords = effective_coords(loc)
-  match find_hinting_entry(entries, id0, id1, size, coords.op_as_view()) {
+  match find_hinting_entry(entries, id0, id1, size, coords[:]) {
     None => None
     Some((ix, is_current)) => {
       self.serial = self.serial + 1

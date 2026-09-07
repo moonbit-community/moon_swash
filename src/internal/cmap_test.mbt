@@ -154,7 +154,7 @@ fn mk_font_with_cmap_format4() -> Bytes {
 ///|
 test "cmap.subtable finds format 4 unicode encoding" {
   let data = mk_font_with_cmap_format4()
-  let font = CmapTestFont::{ data, offset: 0 }
+  let font = CmapTestFont::{ data, offset: 0, }
   debug_inspect(subtable(font), content="Some((44, 4, false))")
 }
 

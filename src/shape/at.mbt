@@ -29,7 +29,7 @@ pub struct FeatureMask {
 
 ///|
 pub fn FeatureMask::default() -> FeatureMask {
-  FeatureMask::{ b0: 0, b1: 0, b2: 0, b3: 0 }
+  FeatureMask::{ b0: 0, b1: 0, b2: 0, b3: 0, }
 }
 
 ///|
@@ -158,7 +158,7 @@ pub struct StageOffsets {
 
 ///|
 pub fn StageOffsets::default() -> StageOffsets {
-  StageOffsets::{ base: 0U, lang: 0U, vars: 0U }
+  StageOffsets::{ base: 0U, lang: 0U, vars: 0U, }
 }
 
 ///|
@@ -172,7 +172,7 @@ pub fn StageOffsets::from_layout(
     None => None
     Some((lang, tags)) => {
       let vars = feature_var_offset(data, base)
-      Some((StageOffsets::{ base, lang, vars }, tags))
+      Some((StageOffsets::{ base, lang, vars, }, tags))
     }
   }
 }
@@ -268,7 +268,7 @@ priv struct BitSet {
 
 ///|
 fn BitSet::default() -> BitSet {
-  BitSet::{ list: ([] : Array[UInt16]), bits: ([] : Array[UInt64]) }
+  BitSet::{ list: ([] : Array[UInt16]), bits: ([] : Array[UInt64]), }
 }
 
 ///|
@@ -678,7 +678,7 @@ struct LookupState {
 
 ///|
 fn LookupState::default() -> LookupState {
-  LookupState::{ skip_state: SkipState::default(), cur: 0, end: 0 }
+  LookupState::{ skip_state: SkipState::default(), cur: 0, end: 0, }
 }
 
 ///|
@@ -692,7 +692,7 @@ priv struct Pos4 {
 
 ///|
 fn Pos4::default() -> Pos4 {
-  Pos4::{ x: 0.0, y: 0.0, xadvance: 0.0, yadvance: 0.0 }
+  Pos4::{ x: 0.0, y: 0.0, xadvance: 0.0, yadvance: 0.0, }
 }
 
 ///|
@@ -1005,7 +1005,7 @@ fn ApplyContext::collect_sequence(self : ApplyContext, len : Int) -> Bool {
 }
 
 ///|
-fn ApplyContext::extend(self : ApplyContext, count : Int) -> Unit {
+fn ApplyContext::extend_range(self : ApplyContext, count : Int) -> Unit {
   self.end = self.end + count
   self.s.end = self.s.end + count
   self.s.cur = self.s.cur + count
@@ -1206,7 +1206,7 @@ fn ApplyContext::apply_subtable(
       }
       self.buf.substitute_multiple(cur, self.storage.ids[0:seqlen])
       self.update_glyphs(cur, cur + seqlen)
-      self.extend(seqlen - 1)
+      self.extend_range(seqlen - 1)
       Some(true)
     }
     @internal.SubtableKind::AltSub1 => {

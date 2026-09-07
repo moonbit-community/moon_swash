@@ -53,7 +53,7 @@ pub fn Image::Image() -> Image {
   Image::{
     source: Source::default(),
     content: Content::default(),
-    placement: Placement::{ left: 0, top: 0, width: 0U, height: 0U },
+    placement: Placement::{ left: 0, top: 0, width: 0U, height: 0U, },
     data: [],
   }
 }
@@ -62,7 +62,7 @@ pub fn Image::Image() -> Image {
 pub fn Image::clear(self : Image) -> Unit {
   self.source = Source::default()
   self.content = Content::default()
-  self.placement = Placement::{ left: 0, top: 0, width: 0U, height: 0U }
+  self.placement = Placement::{ left: 0, top: 0, width: 0U, height: 0U, }
   self.data.clear()
 }
 
@@ -262,7 +262,7 @@ test "Image::data_view is zero-copy length view" {
 ///|
 test "Image::to_rgba8 converts Mask to premultiplied RGBA8" {
   let img = Image::Image()
-  img.placement = Placement::{ left: 0, top: 0, width: 2U, height: 1U }
+  img.placement = Placement::{ left: 0, top: 0, width: 2U, height: 1U, }
   img.content = Content::Mask
   img.data = [b'\x00', b'\xFF']
   let ok = img.to_rgba8([
@@ -296,7 +296,7 @@ test "Image::to_rgba8 converts Mask to premultiplied RGBA8" {
 ///|
 test "Image::to_rgba8 converts SubpixelMask using per-channel coverage" {
   let img = Image::Image()
-  img.placement = Placement::{ left: 0, top: 0, width: 1U, height: 1U }
+  img.placement = Placement::{ left: 0, top: 0, width: 1U, height: 1U, }
   img.content = Content::SubpixelMask
   // Coverage only on the red subpixel.
   img.data = [(255).to_byte(), (0).to_byte(), (0).to_byte(), (0).to_byte()]

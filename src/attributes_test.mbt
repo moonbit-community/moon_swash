@@ -47,7 +47,7 @@ fn attributes_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
   // Caller must provide tags in sorted order for internal table_range binary search.
   let num_tables = tables.length()
   let header_len = 12 + num_tables * 16
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   attributes_test_push_u32_be(out, attributes_test_u32(0x00010000))
   attributes_test_push_u16_be(out, num_tables)
   attributes_test_push_u16_be(out, 0)
@@ -68,7 +68,7 @@ fn attributes_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
       out.push(b)
     }
   }
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
@@ -86,7 +86,7 @@ fn attributes_test_make_os2(
   attributes_test_set_u16_be(buf, 6, width_class)
   // selection flags
   attributes_test_set_u16_be(buf, 62, selection)
-  Bytes::from_array(buf.op_as_view())
+  Bytes::from_array(buf[:])
 }
 
 ///|

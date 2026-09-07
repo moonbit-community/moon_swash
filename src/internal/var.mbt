@@ -182,7 +182,7 @@ pub fn Fvar::get_axis(self : Fvar, index : UInt) -> VarAxis? {
     None => return None
     Some(v) => v
   }
-  Some(VarAxis::{ index, tag, name_id, flags, min, default, max })
+  Some(VarAxis::{ index, tag, name_id, flags, min, default, max, })
 }
 
 ///|
@@ -231,7 +231,7 @@ pub fn Fvar::get_instance(self : Fvar, index : UInt) -> VarInstance? {
   } else {
     None
   }
-  Some(VarInstance::{ index, name_id, postscript_name_id, values })
+  Some(VarInstance::{ index, name_id, postscript_name_id, values, })
 }
 
 ///|

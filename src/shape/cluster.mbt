@@ -27,7 +27,7 @@ pub struct GlyphInfo {
 
 ///|
 pub fn GlyphInfo::default() -> GlyphInfo {
-  GlyphInfo::{ bits: 0 }
+  GlyphInfo::{ bits: 0, }
 }
 
 ///|

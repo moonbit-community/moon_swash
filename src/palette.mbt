@@ -38,7 +38,7 @@ pub fn ColorPalettes::from_font(font : FontRef) -> ColorPalettes {
   let data = font.table_data(CPAL).unwrap_or(empty_bytes_view())
   let b = @internal.BeBytes::from_view(data)
   let len = b.read_u16(4).unwrap_or(0).reinterpret_as_int()
-  ColorPalettes::{ font, b, len }
+  ColorPalettes::{ font, b, len, }
 }
 
 ///|

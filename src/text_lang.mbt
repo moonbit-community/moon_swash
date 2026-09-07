@@ -150,7 +150,7 @@ fn text_lang_bytes_prefix_to_string(bytes : Array[Byte], len : Int) -> String {
     len
   }
   let chars = Array::makei(len, i => bytes[i].to_int().unsafe_to_char())
-  String::from_array(chars.op_as_view())
+  String::from_array(chars[:])
 }
 
 ///|
@@ -403,3 +403,6 @@ pub fn Language::to_string(self : Language) -> String {
 pub impl Show for Language with fn output(self, logger) {
   logger.write_string(self.to_string())
 }
+
+///|
+pub extend Language with Show::{output}

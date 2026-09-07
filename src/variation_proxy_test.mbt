@@ -62,7 +62,7 @@ fn variation_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
   // Caller must provide tags in sorted order for internal table_range binary search.
   let num_tables = tables.length()
   let header_len = 12 + num_tables * 16
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   variation_test_push_u32_be(out, 0x00010000) // sfnt version
   variation_test_push_u16_be(out, num_tables)
   variation_test_push_u16_be(out, 0)
@@ -83,7 +83,7 @@ fn variation_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
       out.push(b)
     }
   }
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
@@ -114,7 +114,7 @@ fn variation_test_make_fvar_one_axis_wght() -> Bytes {
   variation_test_set_u32_be(buf, 40, variation_test_fixed_16_16(650))
   // optional postScriptNameID (not relied upon in tests)
   variation_test_set_u16_be(buf, 44, 301)
-  Bytes::from_array(buf.op_as_view())
+  Bytes::from_array(buf[:])
 }
 
 ///|
@@ -141,7 +141,7 @@ fn variation_test_make_avar_remap_half_to_quarter() -> Bytes {
   // (1 -> 1)
   variation_test_set_i16_be(buf, 20, 16384)
   variation_test_set_i16_be(buf, 22, 16384)
-  Bytes::from_array(buf.op_as_view())
+  Bytes::from_array(buf[:])
 }
 
 ///|

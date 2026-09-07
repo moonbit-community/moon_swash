@@ -86,7 +86,7 @@ struct CharStream {
 
 ///|
 fn CharStream::CharStream(iter : Iter[Char]) -> CharStream {
-  CharStream::{ iter, buf: ([] : Array[Char]), buf_offset: 0, done: false }
+  CharStream::{ iter, buf: ([] : Array[Char]), buf_offset: 0, done: false, }
 }
 
 ///|

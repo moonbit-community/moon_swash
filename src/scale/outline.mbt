@@ -77,7 +77,7 @@ pub fn Layer::color_index(self : Layer) -> UInt16? {
 
 ///|
 pub fn Outline::Outline() -> Outline {
-  Outline::{ layers: [], points: [], verbs: [], is_color: false }
+  Outline::{ layers: [], points: [], verbs: [], is_color: false, }
 }
 
 ///|
@@ -129,7 +129,7 @@ pub fn Outline::get(self : Outline, index : Int) -> Layer? {
       for i in vs..<ve {
         verbs.push(self.verbs[i])
       }
-      Some(Layer::{ points, verbs, color_index: layer.color_index })
+      Some(Layer::{ points, verbs, color_index: layer.color_index, })
     }
   }
 }

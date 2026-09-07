@@ -26,7 +26,7 @@ pub struct BeBytes {
 
 ///|
 pub fn BeBytes::BeBytes(data : Bytes) -> BeBytes {
-  BeBytes::{ data: data[:] }
+  BeBytes::{ data: data[:], }
 }
 
 ///|
@@ -197,12 +197,12 @@ pub struct Stream {
 
 ///|
 pub fn Stream::Stream(data : Bytes) -> Stream {
-  Stream::{ data: data[:], offset: 0 }
+  Stream::{ data: data[:], offset: 0, }
 }
 
 ///|
 pub fn Stream::from_view(data : BytesView) -> Stream {
-  Stream::{ data, offset: 0 }
+  Stream::{ data, offset: 0, }
 }
 
 ///|
@@ -211,7 +211,7 @@ pub fn Stream::with_offset(data : Bytes, offset : Int) -> Stream? {
     return None
   }
   let slice = data[offset:]
-  Some(Stream::{ data: slice, offset: 0 })
+  Some(Stream::{ data: slice, offset: 0, })
 }
 
 ///|

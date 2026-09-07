@@ -36,7 +36,7 @@ pub fn VariationsProxy::from_font(font : FontRef) -> VariationsProxy {
   }
   let avar = font.table_offset(@internal.AVAR)
   let len = table.axis_count().reinterpret_as_int()
-  VariationsProxy::{ fvar, avar, len }
+  VariationsProxy::{ fvar, avar, len, }
 }
 
 ///|
@@ -81,7 +81,7 @@ fn Variations::from_font(font : FontRef) -> Variations {
   }
   let avar = font.table_offset(@internal.AVAR)
   let len = fvar.axis_count().reinterpret_as_int()
-  Variations::{ font, fvar, avar, len, pos: 0 }
+  Variations::{ font, fvar, avar, len, pos: 0, }
 }
 
 ///|
@@ -91,7 +91,7 @@ fn Variations::get(self : Variations, index : Int) -> Variation? {
   }
   match self.fvar.get_axis(index.reinterpret_as_uint()) {
     None => None
-    Some(axis) => Some(Variation::{ font: self.font, axis, avar: self.avar })
+    Some(axis) => Some(Variation::{ font: self.font, axis, avar: self.avar, })
   }
 }
 
@@ -240,7 +240,7 @@ fn Instances::from_font(font : FontRef) -> Instances {
   }
   let avar = font.table_offset(@internal.AVAR)
   let len = fvar.instance_count().reinterpret_as_int()
-  Instances::{ font, fvar, avar, len, pos: 0 }
+  Instances::{ font, fvar, avar, len, pos: 0, }
 }
 
 ///|
@@ -273,7 +273,7 @@ fn Instances::get(self : Instances, index : Int) -> Instance? {
         }
         coords.push(axis.normalized_coord(value, avar))
       }
-      Some(Instance::{ parent: self, inner, values, coords })
+      Some(Instance::{ parent: self, inner, values, coords, })
     }
   }
 }
@@ -374,14 +374,14 @@ pub fn Instance::postscript_name(
 
 ///|
 pub fn Instance::values(self : Instance) -> ArrayView[Double] {
-  self.values.op_as_view()
+  self.values[:]
 }
 
 ///|
 pub fn Instance::normalized_coords(
   self : Instance,
 ) -> ArrayView[NormalizedCoord] {
-  self.coords.op_as_view()
+  self.coords[:]
 }
 
 ///|

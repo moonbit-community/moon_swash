@@ -221,7 +221,7 @@ pub fn ScalerBuilder::build(self : ScalerBuilder) -> Scaler {
   let loc = if self.coords.is_empty() {
     @skrifa.LocationRef::default()
   } else {
-    @skrifa.LocationRef::LocationRef(self.coords.op_as_view())
+    @skrifa.LocationRef::LocationRef(self.coords[:])
   }
   let skrifa_font = to_skrifa_font(self.font)
   let outlines = match skrifa_font {
@@ -693,7 +693,7 @@ fn Scaler::scale_bitmap_impl(
     Some(h) => h
   }
   if w <= 0 || h <= 0 {
-    image.placement = Placement::{ left: 0, top: 0, width: 0U, height: 0U }
+    image.placement = Placement::{ left: 0, top: 0, width: 0U, height: 0U, }
     image.source = if color {
       Source::ColorBitmap(strike)
     } else {
@@ -723,7 +723,7 @@ fn Scaler::scale_bitmap_impl(
       for b in glyph.data() {
         raw.push(b)
       }
-      let raw_bytes = Bytes::from_array(raw.op_as_view())
+      let raw_bytes = Bytes::from_array(raw[:])
       if size != 0.0 && scale != 1.0 {
         // Decode into scratch then resize into image buffer.
         let src_len = (w.reinterpret_as_uint() * h.reinterpret_as_uint() * 4U).reinterpret_as_int()
@@ -852,7 +852,7 @@ fn Scaler::scale_outline_layer_into(
         None => false
         Some(glyph) => {
           outline.begin_layer(color_index)
-          let loc = @skrifa.LocationRef::LocationRef(self.coords.op_as_view())
+          let loc = @skrifa.LocationRef::LocationRef(self.coords[:])
           let settings = match self.hinting_instance {
             None =>
               @skrifa_outline.DrawSettings::unhinted(self.skrifa_size, loc)
@@ -882,4 +882,13 @@ test "ScaleContext builder scaffolding" {
   let scaler = cx.builder(font).size(14.0).hint(true).build()
   inspect(scaler.size().to_int(), content="14")
   inspect(scaler.hint(), content="true")
+}
+
+///|
+pub extend OutlineWriter with @Milky2018/moon_skrifa/outline.OutlinePen::{
+  close,
+  curve_to,
+  line_to,
+  quad_to,
+  move_to,
 }

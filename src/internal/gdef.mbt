@@ -48,7 +48,7 @@ pub fn Gdef::from_base(data : Bytes, base : Int) -> Gdef? {
   } else {
     0U
   }
-  Some(Gdef::{ data, base, classes, mark_classes, mark_sets, var_store })
+  Some(Gdef::{ data, base, classes, mark_classes, mark_sets, var_store, })
 }
 
 ///|

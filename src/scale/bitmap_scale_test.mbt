@@ -38,7 +38,7 @@ fn bitmap_test_u32(x : Int) -> UInt {
 fn bitmap_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
   let num_tables = tables.length()
   let header_len = 12 + num_tables * 16
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   bitmap_test_push_u32_be(out, bitmap_test_u32(0x00010000))
   bitmap_test_push_u16_be(out, num_tables)
   bitmap_test_push_u16_be(out, 0)
@@ -59,15 +59,15 @@ fn bitmap_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
       out.push(b)
     }
   }
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
 fn bitmap_test_build_maxp(num_glyphs : Int) -> Bytes {
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   bitmap_test_push_u32_be(out, bitmap_test_u32(0x00010000))
   bitmap_test_push_u16_be(out, num_glyphs)
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
@@ -82,7 +82,7 @@ fn bitmap_test_build_sbix_with_glyph(
   let strike_off = 12
   let glyph_data_off = 12
   let glyph_end_off = glyph_data_off + 8 + data_len
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   bitmap_test_push_u16_be(out, 1) // version
   bitmap_test_push_u16_be(out, 0) // flags
   bitmap_test_push_u32_be(out, bitmap_test_u32(1)) // numStrikes
@@ -100,7 +100,7 @@ fn bitmap_test_build_sbix_with_glyph(
   for b in payload.iter() {
     out.push(b)
   }
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
@@ -114,7 +114,7 @@ fn bitmap_test_build_cblc_index1(
   bit_depth : Int,
   major : Int,
 ) -> Bytes {
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   // major/minor
   bitmap_test_push_u16_be(out, major)
   bitmap_test_push_u16_be(out, 0)
@@ -144,12 +144,12 @@ fn bitmap_test_build_cblc_index1(
   bitmap_test_push_u32_be(out, bitmap_test_u32(image_data_offset))
   bitmap_test_push_u32_be(out, bitmap_test_u32(0))
   bitmap_test_push_u32_be(out, bitmap_test_u32(glyph_data_len))
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
 fn bitmap_test_build_ebdt_format1() -> Bytes {
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   // EBDT header: major=2, minor=0
   bitmap_test_push_u16_be(out, 2)
   bitmap_test_push_u16_be(out, 0)
@@ -161,7 +161,7 @@ fn bitmap_test_build_ebdt_format1() -> Bytes {
   out.push((0).to_byte())
   // 1 byte bitmap data: 0b10101010
   out.push((0xAA).to_byte())
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
@@ -238,7 +238,7 @@ test "Scaler.scale_color_bitmap decodes sbix PNG glyph into RGBA" {
       66 |> Int::to_byte,
       96 |> Int::to_byte,
       130 |> Int::to_byte,
-    ]).op_as_view(),
+    ])[:],
   )
   let maxp = bitmap_test_build_maxp(1)
   let sbix = bitmap_test_build_sbix_with_glyph(16, 1, 2, 0x706E6720, png) // "png "

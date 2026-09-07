@@ -373,3 +373,12 @@ pub fn Engine::kern(self : Engine, buffer : Buffer) -> Unit {
     apply_kern(self.data, self.kern, buffer)
   }
 }
+
+///|
+pub extend EngineMode with Eq::{not_equal, equal}
+
+///|
+pub extend PosMode with Eq::{not_equal, equal}
+
+///|
+pub extend SubMode with Eq::{not_equal, equal}

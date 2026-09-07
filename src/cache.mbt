@@ -33,7 +33,7 @@ pub fn CacheKey::CacheKey() -> CacheKey {
   // swash uses AtomicUsize; we only target single-thread for now.
   let v = key_counter.val
   key_counter.val = v + 1
-  CacheKey::{ value: v }
+  CacheKey::{ value: v, }
 }
 
 ///|
@@ -64,7 +64,7 @@ struct Entry[T] {
 ///|
 pub fn[T] FontCache::FontCache(max_entries : Int) -> FontCache[T] {
   let max_entries = if max_entries < 1 { 1 } else { max_entries }
-  FontCache::{ entries: [], max_entries, epoch: 0 }
+  FontCache::{ entries: [], max_entries, epoch: 0, }
 }
 
 ///|
@@ -113,7 +113,7 @@ pub fn[T] FontCache::get(
     self.epoch = self.epoch + 1
     let data = Ref(f(font))
     if index == self.entries.length() {
-      self.entries.push(Entry::{ epoch: self.epoch, id0, id1, data })
+      self.entries.push(Entry::{ epoch: self.epoch, id0, id1, data, })
       ((id0, id1), self.entries.at(index).data)
     } else {
       let e = self.entries.at(index)

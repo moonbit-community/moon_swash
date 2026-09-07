@@ -39,7 +39,7 @@ fn feature_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
   // Caller must provide tags in sorted order for internal table_range binary search.
   let num_tables = tables.length()
   let header_len = 12 + num_tables * 16
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   feature_test_push_u32_be(out, feature_test_u32(0x00010000))
   feature_test_push_u16_be(out, num_tables)
   feature_test_push_u16_be(out, 0)
@@ -60,7 +60,7 @@ fn feature_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
       out.push(b)
     }
   }
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
@@ -77,7 +77,7 @@ fn feature_test_build_gsubgpos(script_tag : UInt, feature_tag : UInt) -> Bytes {
   let script_table_len = 26
   let script_list_len = 2 + 6 + script_table_len
   let feature_list_offset = script_list_offset + script_list_len
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   // Header
   feature_test_push_u16_be(out, 1) // major
   feature_test_push_u16_be(out, 0) // minor
@@ -111,7 +111,7 @@ fn feature_test_build_gsubgpos(script_tag : UInt, feature_tag : UInt) -> Bytes {
   feature_test_push_u16_be(out, 0) // featureParams
   feature_test_push_u16_be(out, 0) // lookupIndexCount
   // Ensure lengths match expectations (no-op; sizes computed above)
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|
@@ -119,7 +119,7 @@ fn feature_test_build_morx(feature : Int, selector : Int) -> Bytes {
   // Minimal morx table containing:
   // - chainCount = 1
   // - one chain with one feature record (feature + selector)
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   // Header (version + reserved)
   feature_test_push_u16_be(out, 2)
   feature_test_push_u16_be(out, 0)
@@ -134,7 +134,7 @@ fn feature_test_build_morx(feature : Int, selector : Int) -> Bytes {
   feature_test_push_u16_be(out, selector)
   feature_test_push_u32_be(out, 0U) // enableFlags
   feature_test_push_u32_be(out, 0U) // disableFlags
-  Bytes::from_array(out.op_as_view())
+  Bytes::from_array(out[:])
 }
 
 ///|

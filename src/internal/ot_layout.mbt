@@ -218,7 +218,7 @@ pub fn FeatureSubsts::from_data(
         None => return None
         Some(v) => v
       }
-      return Some(FeatureSubsts::{ offset: offset + subst })
+      return Some(FeatureSubsts::{ offset: offset + subst, })
     }
   }
   None
@@ -402,7 +402,7 @@ pub fn subtable_data(
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c })
+        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
       }
     }
     LookupKind::MultiSub => {
@@ -412,7 +412,7 @@ pub fn subtable_data(
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c })
+        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
       }
     }
     LookupKind::AltSub => {
@@ -422,7 +422,7 @@ pub fn subtable_data(
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c })
+        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
       }
     }
     LookupKind::LigSub => {
@@ -432,7 +432,7 @@ pub fn subtable_data(
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c })
+        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
       }
     }
     LookupKind::SingleAdj => {
@@ -443,7 +443,7 @@ pub fn subtable_data(
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c })
+        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
       }
     }
     LookupKind::PairAdj => {
@@ -454,7 +454,7 @@ pub fn subtable_data(
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c })
+        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
       }
     }
     LookupKind::Cursive => {
@@ -464,7 +464,7 @@ pub fn subtable_data(
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c })
+        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
       }
     }
     LookupKind::MarkToBase => {
@@ -474,7 +474,7 @@ pub fn subtable_data(
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c })
+        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
       }
     }
     LookupKind::MarkToLig => {
@@ -484,7 +484,7 @@ pub fn subtable_data(
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c })
+        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
       }
     }
     LookupKind::MarkToMark => {
@@ -494,7 +494,7 @@ pub fn subtable_data(
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c })
+        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
       }
     }
     LookupKind::Context =>
@@ -506,7 +506,7 @@ pub fn subtable_data(
         }
         match cov(data, b, base, 2) {
           None => None
-          Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c })
+          Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
         }
       } else if fmt == 3 {
         match cov(data, b, base, 6) {
@@ -530,7 +530,7 @@ pub fn subtable_data(
         }
         match cov(data, b, base, 2) {
           None => None
-          Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c })
+          Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
         }
       } else if fmt == 3 {
         let backtrack_len = match b.read_u16(base + 2) {
@@ -563,7 +563,7 @@ pub fn subtable_data(
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c })
+        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
       }
     }
   }

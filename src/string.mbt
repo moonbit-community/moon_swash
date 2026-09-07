@@ -167,7 +167,7 @@ fn LocalizedStrings::LocalizedStrings(data : BytesView) -> LocalizedStrings {
   let b = @internal.BeBytes::from_view(data)
   let len = b.read_u16(2).unwrap_or(0).reinterpret_as_int()
   let storage = b.read_u16(4).unwrap_or(0).reinterpret_as_int()
-  LocalizedStrings::{ b, len, storage }
+  LocalizedStrings::{ b, len, storage, }
 }
 
 ///|
@@ -195,7 +195,7 @@ fn LocalizedStrings::get(
   if !self.b.ensure_range(off, 12) {
     return None
   }
-  Some(LocalizedString::{ b: self.b, storage: self.storage, offset: off })
+  Some(LocalizedString::{ b: self.b, storage: self.storage, offset: off, })
 }
 
 ///|
@@ -368,7 +368,7 @@ pub fn LocalizedString::chars(self : LocalizedString) -> Iter[Char] {
 
 ///|
 pub fn LocalizedString::to_string(self : LocalizedString) -> String {
-  String::from_array(self.chars().to_array().op_as_view())
+  String::from_array(self.chars().to_array()[:])
 }
 
 ///|

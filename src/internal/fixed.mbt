@@ -35,59 +35,59 @@ pub fn Fixed::from_raw(value : Int) -> Fixed {
 
 ///|
 pub fn Fixed::min_value() -> Fixed {
-  Fixed::{ value: (0x80000000 : UInt).reinterpret_as_int() }
+  Fixed::{ value: (0x80000000 : UInt).reinterpret_as_int(), }
 }
 
 ///|
 pub fn Fixed::max_value() -> Fixed {
-  Fixed::{ value: 0x7FFFFFFF }
+  Fixed::{ value: 0x7FFFFFFF, }
 }
 
 ///|
 pub fn Fixed::epsilon() -> Fixed {
-  Fixed::{ value: 1 }
+  Fixed::{ value: 1, }
 }
 
 ///|
 pub fn Fixed::zero() -> Fixed {
-  Fixed::{ value: 0 }
+  Fixed::{ value: 0, }
 }
 
 ///|
 pub fn Fixed::one() -> Fixed {
-  Fixed::{ value: 0x10000 }
+  Fixed::{ value: 0x10000, }
 }
 
 ///|
 pub fn Fixed::from_i32(x : Int) -> Fixed {
-  Fixed::{ value: (x.reinterpret_as_uint() << 16).reinterpret_as_int() }
+  Fixed::{ value: (x.reinterpret_as_uint() << 16).reinterpret_as_int(), }
 }
 
 ///|
 pub fn Fixed::from_f32(x : Double) -> Fixed {
-  Fixed::{ value: (x * 65536.0 + 0.5).to_int() }
+  Fixed::{ value: (x * 65536.0 + 0.5).to_int(), }
 }
 
 ///|
 pub fn Fixed::from_f2dot14(x : Int) -> Fixed {
-  Fixed::{ value: x * 4 }
+  Fixed::{ value: x * 4, }
 }
 
 ///|
 pub fn Fixed::round(self : Fixed) -> Fixed {
   let v = (self.value.reinterpret_as_uint() + 0x8000) & 0xFFFF0000
-  Fixed::{ value: v.reinterpret_as_int() }
+  Fixed::{ value: v.reinterpret_as_int(), }
 }
 
 ///|
 pub fn Fixed::floor(self : Fixed) -> Fixed {
   let v = self.value.reinterpret_as_uint() & 0xFFFF0000
-  Fixed::{ value: v.reinterpret_as_int() }
+  Fixed::{ value: v.reinterpret_as_int(), }
 }
 
 ///|
 pub fn Fixed::abs(self : Fixed) -> Fixed {
-  Fixed::{ value: self.value.abs() }
+  Fixed::{ value: self.value.abs(), }
 }
 
 ///|
@@ -110,7 +110,7 @@ pub fn Fixed::max(self : Fixed, rhs : Fixed) -> Fixed {
 
 ///|
 pub fn Fixed::fract(self : Fixed) -> Fixed {
-  Fixed::{ value: self.value - self.floor().value }
+  Fixed::{ value: self.value - self.floor().value, }
 }
 
 ///|
@@ -144,17 +144,17 @@ pub impl Sub for Fixed with fn sub(self, rhs) {
 
 ///|
 pub impl Mul for Fixed with fn mul(self, rhs) {
-  Fixed::{ value: mul(self.value, rhs.value) }
+  Fixed::{ value: mul(self.value, rhs.value), }
 }
 
 ///|
 pub impl Div for Fixed with fn div(self, rhs) {
-  Fixed::{ value: div(self.value, rhs.value) }
+  Fixed::{ value: div(self.value, rhs.value), }
 }
 
 ///|
 pub impl Neg for Fixed with fn neg(self) {
-  Fixed::{ value: -self.value }
+  Fixed::{ value: -self.value, }
 }
 
 ///|
@@ -252,3 +252,18 @@ test "Fixed 16.16 conversions and ops" {
   inspect((Fixed::from_i32(3) - Fixed::from_i32(1)).to_i32(), content="2")
   inspect((Fixed::from_i32(2) * Fixed::from_i32(3)).to_i32(), content="6")
 }
+
+///|
+pub extend Fixed with Add::{add}
+
+///|
+pub extend Fixed with Div::{div}
+
+///|
+pub extend Fixed with Mul::{mul}
+
+///|
+pub extend Fixed with Neg::{neg}
+
+///|
+pub extend Fixed with Sub::{sub}

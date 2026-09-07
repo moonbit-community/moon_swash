@@ -49,7 +49,7 @@ priv struct AtScripts {
 
 ///|
 fn AtScripts::AtScripts(data : Bytes, gsub : UInt, gpos : UInt) -> AtScripts {
-  AtScripts::{ data, gsub, gpos }
+  AtScripts::{ data, gsub, gpos, }
 }
 
 ///|
@@ -144,7 +144,7 @@ fn AtLanguages::AtLanguages(
   gsub_script : UInt,
   gpos_script : UInt,
 ) -> AtLanguages {
-  AtLanguages::{ data, gsub, gpos, gsub_script, gpos_script }
+  AtLanguages::{ data, gsub, gpos, gsub_script, gpos_script, }
 }
 
 ///|
@@ -275,7 +275,7 @@ fn AtWritingSystems::iter(self : AtWritingSystems) -> Iter[AtWritingSystem] {
       }
       match langs.next() {
         None => has_langs = false
-        Some(lang) => return Some(AtWritingSystem::{ lang, script_tag })
+        Some(lang) => return Some(AtWritingSystem::{ lang, script_tag, })
       }
     }
     None
@@ -327,7 +327,7 @@ fn AtFeatures::iter(self : AtFeatures) -> Iter[AtFeature] {
             match @internal.feature_at(data, table, feature_index) {
               None => ()
               Some((tag, _)) =>
-                return Some(AtFeature::{ stage: stage.to_byte(), tag })
+                return Some(AtFeature::{ stage: stage.to_byte(), tag, })
             }
         }
       } else if stage == 0 {

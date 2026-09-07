@@ -101,7 +101,7 @@ pub fn BitmapStrikesProxy::from_font(font : FontRef) -> BitmapStrikesProxy {
       }
     }
   }
-  BitmapStrikesProxy::{ bitmaps, color_bitmaps, upem, is_apple }
+  BitmapStrikesProxy::{ bitmaps, color_bitmaps, upem, is_apple, }
 }
 
 ///|
@@ -196,7 +196,7 @@ fn BitmapStrikes::BitmapStrikes(
 ) -> BitmapStrikes {
   let b = @internal.BeBytes::from_view(data)
   let len = b.read_u32(4).unwrap_or(0).reinterpret_as_int()
-  BitmapStrikes::{ b, bitmap_data, is_sbix, is_apple, upem, len }
+  BitmapStrikes::{ b, bitmap_data, is_sbix, is_apple, upem, len, }
 }
 
 ///|

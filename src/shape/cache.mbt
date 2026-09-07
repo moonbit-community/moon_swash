@@ -67,7 +67,7 @@ priv enum FeatureCacheEntry {
 ///|
 fn FeatureCache::FeatureCache(max_entries : Int) -> FeatureCache {
   let max_entries = if max_entries < 1 { 1 } else { max_entries }
-  FeatureCache::{ entries: [], epoch: 0, max_entries }
+  FeatureCache::{ entries: [], epoch: 0, max_entries, }
 }
 
 ///|

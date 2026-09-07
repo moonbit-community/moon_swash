@@ -104,7 +104,7 @@ pub struct PositionData {
 
 ///|
 pub fn PositionData::default() -> PositionData {
-  PositionData::{ base: (0).to_byte(), flags: 0, x: 0.0, y: 0.0, advance: 0.0 }
+  PositionData::{ base: (0).to_byte(), flags: 0, x: 0.0, y: 0.0, advance: 0.0, }
 }
 
 ///|
@@ -129,7 +129,7 @@ pub struct IndexRange {
 
 ///|
 pub fn IndexRange::IndexRange(start : Int, end : Int) -> IndexRange {
-  IndexRange::{ start, end }
+  IndexRange::{ start, end, }
 }
 
 ///|
@@ -214,17 +214,17 @@ pub fn Buffer::len(self : Buffer) -> Int {
 
 ///|
 pub fn Buffer::glyphs(self : Buffer) -> ArrayView[GlyphData] {
-  self.glyphs.op_as_view()
+  self.glyphs[:]
 }
 
 ///|
 pub fn Buffer::positions(self : Buffer) -> ArrayView[PositionData] {
-  self.positions.op_as_view()
+  self.positions[:]
 }
 
 ///|
 pub fn Buffer::ranges(self : Buffer) -> ArrayView[SourceRange] {
-  self.ranges.op_as_view()
+  self.ranges[:]
 }
 
 ///|

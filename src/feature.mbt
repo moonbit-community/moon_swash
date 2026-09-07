@@ -77,7 +77,7 @@ fn Feature::from_tag(tag : Tag, action : Action) -> Feature {
     Option::None => Option::None
     Option::Some((_, desc)) => Option::Some(desc)
   }
-  Feature::{ tag, name, action }
+  Feature::{ tag, name, action, }
 }
 
 ///|
@@ -209,7 +209,7 @@ pub fn Features::from_font(font : FontRef) -> Features {
           AatFeatures::AatFeatures(font.data(), morx, kern),
         ),
       }
-    Kind::Empty => Features::{ kind: FeaturesKind::Empty }
+    Kind::Empty => Features::{ kind: FeaturesKind::Empty, }
   }
 }
 
@@ -289,7 +289,7 @@ fn AatWritingSystems::iter(self : AatWritingSystems) -> Iter[AatWritingSystem] {
       None
     } else {
       done = true
-      Some(AatWritingSystem::{ data, morx, kern })
+      Some(AatWritingSystem::{ data, morx, kern, })
     }
   })
 }
@@ -319,7 +319,7 @@ pub fn WritingSystems::from_font(font : FontRef) -> WritingSystems {
           kern,
         }),
       }
-    Kind::Empty => WritingSystems::{ kind: WritingSystemsKind::Empty }
+    Kind::Empty => WritingSystems::{ kind: WritingSystemsKind::Empty, }
   }
 }
 

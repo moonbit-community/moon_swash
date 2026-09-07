@@ -42,7 +42,7 @@ pub fn kerx_subtables(data : Bytes, kerx : UInt, ankr : UInt) -> KerxSubtables {
   }
   let version = b.read_u16(0).unwrap_or(0).to_uint16()
   let len = b.read_u32(4).unwrap_or(0)
-  KerxSubtables::{ b, version, offset: 8, len, cur: 0U, ankr: ankr_view }
+  KerxSubtables::{ b, version, offset: 8, len, cur: 0U, ankr: ankr_view, }
 }
 
 ///|
@@ -88,7 +88,7 @@ pub fn KerxSubtables::iter(self : KerxSubtables) -> Iter[KerxSubtable] {
       0U
     }
     offset = offset + size.reinterpret_as_int()
-    Some(KerxSubtable::{ b: sub, version, size, coverage, tuple_count, ankr })
+    Some(KerxSubtable::{ b: sub, version, size, coverage, tuple_count, ankr, })
   })
 }
 
@@ -151,7 +151,7 @@ fn KerxFormat0::parse(b : BeBytes) -> KerxFormat0? {
     None => return None
     Some(v) => v.reinterpret_as_int()
   }
-  Some(KerxFormat0::{ b, count })
+  Some(KerxFormat0::{ b, count, })
 }
 
 ///|
@@ -197,7 +197,12 @@ pub struct KerxContextualState {
 
 ///|
 pub fn KerxContextualState::KerxContextualState() -> KerxContextualState {
-  KerxContextualState::{ state: 0, stack: Array::make(8, 0), pos: 0, cycles: 0 }
+  KerxContextualState::{
+    state: 0,
+    stack: Array::make(8, 0),
+    pos: 0,
+    cycles: 0,
+  }
 }
 
 ///|
@@ -227,7 +232,7 @@ fn KerxFormat1::parse(b0 : BeBytes, tuple_count : UInt) -> KerxFormat1? {
   } else {
     tuple_count.reinterpret_as_int() * 2
   }
-  Some(KerxFormat1::{ b, state_table, value, tuple_count, tuple_size })
+  Some(KerxFormat1::{ b, state_table, value, tuple_count, tuple_size, })
 }
 
 ///|
@@ -313,7 +318,7 @@ fn KerxFormat2::parse(b : BeBytes) -> KerxFormat2? {
     None => return None
     Some(v) => v.reinterpret_as_int()
   }
-  Some(KerxFormat2::{ b, l_table, r_table, array })
+  Some(KerxFormat2::{ b, l_table, r_table, array, })
 }
 
 ///|
@@ -347,7 +352,7 @@ pub struct KerxFormat4State {
 
 ///|
 pub fn KerxFormat4State::KerxFormat4State() -> KerxFormat4State {
-  KerxFormat4State::{ state: 0, mark: 0, mark_id: (0).to_uint16(), cycles: 0 }
+  KerxFormat4State::{ state: 0, mark: 0, mark_id: (0).to_uint16(), cycles: 0, }
 }
 
 ///|
@@ -373,7 +378,7 @@ fn KerxFormat4::parse(b0 : BeBytes, ankr : BytesView) -> KerxFormat4? {
   }
   let action_type = (flags & 0xC0000000U) >> 30
   let control_table = (flags & 0x00FFFFFFU).reinterpret_as_int()
-  Some(KerxFormat4::{ b, state_table, action_type, control_table, ankr })
+  Some(KerxFormat4::{ b, state_table, action_type, control_table, ankr, })
 }
 
 ///|
@@ -500,7 +505,7 @@ pub fn kerx_anchor_points(
     None => return None
     Some(v) => v
   }
-  Some(KerxAnchorPoints::{ b, offset, len })
+  Some(KerxAnchorPoints::{ b, offset, len, })
 }
 
 ///|

@@ -49,7 +49,7 @@ pub fn Attributes::Attributes(
   let stretch_u = stretch.value.to_int().reinterpret_as_uint() & 0x1FF
   let weight_u = weight.value.to_int().reinterpret_as_uint() & 0x3FF
   let style_u = style.pack()
-  Attributes::{ value: style_u | (weight_u << 9) | (stretch_u << 19) }
+  Attributes::{ value: style_u | (weight_u << 9) | (stretch_u << 19), }
 }
 
 ///|
@@ -66,7 +66,7 @@ pub fn Attributes::from_font(font : FontRef) -> Attributes {
       _ => ()
     }
   }
-  Attributes::{ value: attrs.value | (var_bits << 28) }
+  Attributes::{ value: attrs.value | (var_bits << 28), }
 }
 
 ///|
@@ -82,7 +82,7 @@ fn Attributes::from_os2(os2 : @internal.Os2?) -> Attributes {
       } else {
         Style::Normal
       }
-      let weight = Weight::{ value: os2.weight_class().to_uint16() }
+      let weight = Weight::{ value: os2.weight_class().to_uint16(), }
       let stretch = Stretch::from_raw(os2.width_class().to_uint16())
       Attributes::Attributes(stretch, weight, style)
     }
@@ -91,12 +91,12 @@ fn Attributes::from_os2(os2 : @internal.Os2?) -> Attributes {
 
 ///|
 pub fn Attributes::stretch(self : Attributes) -> Stretch {
-  Stretch::{ value: ((self.value >> 19) & 0x1FF).to_uint16() }
+  Stretch::{ value: ((self.value >> 19) & 0x1FF).to_uint16(), }
 }
 
 ///|
 pub fn Attributes::weight(self : Attributes) -> Weight {
-  Weight::{ value: ((self.value >> 9) & 0x3FF).to_uint16() }
+  Weight::{ value: ((self.value >> 9) & 0x3FF).to_uint16(), }
 }
 
 ///|
@@ -205,7 +205,7 @@ pub fn Attributes::synthesize(
         }
     }
   }
-  Synthesis::{ vars, embolden, skew }
+  Synthesis::{ vars, embolden, skew, }
 }
 
 ///|
@@ -273,7 +273,7 @@ fn slice_from_or_none(s : StringView, start : Int) -> StringView? {
 ///|
 pub fn ObliqueAngle::from_degrees(degrees : Double) -> ObliqueAngle {
   let clamped = clamp_double(degrees, -90.0, 90.0) + 90.0
-  ObliqueAngle::{ value: clamped.to_int().to_uint16() }
+  ObliqueAngle::{ value: clamped.to_int().to_uint16(), }
 }
 
 ///|
@@ -398,7 +398,7 @@ pub fn Style::to_degrees(self : Style) -> Double {
 ///|
 fn Style::unpack(bits : UInt) -> Style {
   if (bits & 1) != 0 {
-    Style::Oblique(ObliqueAngle::{ value: (bits >> 1).to_uint16() })
+    Style::Oblique(ObliqueAngle::{ value: (bits >> 1).to_uint16(), })
   } else if bits == 0b110 {
     Style::Italic
   } else {
@@ -444,47 +444,47 @@ pub struct Weight {
 
 ///|
 pub fn Weight::thin() -> Weight {
-  Weight::{ value: (100).to_uint16() }
+  Weight::{ value: (100).to_uint16(), }
 }
 
 ///|
 pub fn Weight::extra_light() -> Weight {
-  Weight::{ value: (200).to_uint16() }
+  Weight::{ value: (200).to_uint16(), }
 }
 
 ///|
 pub fn Weight::light() -> Weight {
-  Weight::{ value: (300).to_uint16() }
+  Weight::{ value: (300).to_uint16(), }
 }
 
 ///|
 pub fn Weight::normal() -> Weight {
-  Weight::{ value: (400).to_uint16() }
+  Weight::{ value: (400).to_uint16(), }
 }
 
 ///|
 pub fn Weight::medium() -> Weight {
-  Weight::{ value: (500).to_uint16() }
+  Weight::{ value: (500).to_uint16(), }
 }
 
 ///|
 pub fn Weight::semi_bold() -> Weight {
-  Weight::{ value: (600).to_uint16() }
+  Weight::{ value: (600).to_uint16(), }
 }
 
 ///|
 pub fn Weight::bold() -> Weight {
-  Weight::{ value: (700).to_uint16() }
+  Weight::{ value: (700).to_uint16(), }
 }
 
 ///|
 pub fn Weight::extra_bold() -> Weight {
-  Weight::{ value: (800).to_uint16() }
+  Weight::{ value: (800).to_uint16(), }
 }
 
 ///|
 pub fn Weight::black() -> Weight {
-  Weight::{ value: (900).to_uint16() }
+  Weight::{ value: (900).to_uint16(), }
 }
 
 ///|
@@ -498,7 +498,7 @@ pub fn Weight::parse(s0 : String) -> Weight? {
     try @string.parse_int(s, base=10) catch {
       _ => None
     } noraise {
-      v => Some(Weight::{ value: v.max(1).min(1000).to_uint16() })
+      v => Some(Weight::{ value: v.max(1).min(1000).to_uint16(), })
     }
   }
 }
@@ -553,47 +553,47 @@ pub struct Stretch {
 
 ///|
 pub fn Stretch::ultra_condensed() -> Stretch {
-  Stretch::{ value: (0).to_uint16() }
+  Stretch::{ value: (0).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::extra_condensed() -> Stretch {
-  Stretch::{ value: (25).to_uint16() }
+  Stretch::{ value: (25).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::condensed() -> Stretch {
-  Stretch::{ value: (50).to_uint16() }
+  Stretch::{ value: (50).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::semi_condensed() -> Stretch {
-  Stretch::{ value: (75).to_uint16() }
+  Stretch::{ value: (75).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::normal() -> Stretch {
-  Stretch::{ value: (100).to_uint16() }
+  Stretch::{ value: (100).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::semi_expanded() -> Stretch {
-  Stretch::{ value: (125).to_uint16() }
+  Stretch::{ value: (125).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::expanded() -> Stretch {
-  Stretch::{ value: (150).to_uint16() }
+  Stretch::{ value: (150).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::extra_expanded() -> Stretch {
-  Stretch::{ value: (200).to_uint16() }
+  Stretch::{ value: (200).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::ultra_expanded() -> Stretch {
-  Stretch::{ value: (300).to_uint16() }
+  Stretch::{ value: (300).to_uint16(), }
 }
 
 ///|
@@ -734,7 +734,7 @@ pub struct Synthesis {
 
 ///|
 fn Synthesis::default() -> Synthesis {
-  Synthesis::{ vars: [], embolden: false, skew: 0 }
+  Synthesis::{ vars: [], embolden: false, skew: 0, }
 }
 
 ///|
@@ -744,7 +744,7 @@ pub fn Synthesis::any(self : Synthesis) -> Bool {
 
 ///|
 pub fn Synthesis::variations(self : Synthesis) -> ArrayView[VariationSetting] {
-  self.vars.op_as_view()
+  self.vars[:]
 }
 
 ///|
@@ -783,3 +783,36 @@ pub impl Eq for Synthesis with fn equal(self, other) {
 pub fn FontRef::attributes(self : FontRef) -> Attributes {
   Attributes::from_font(self)
 }
+
+///|
+pub extend Attributes with Eq::{not_equal, equal}
+
+///|
+pub extend Attributes with Show::{to_string, output}
+
+///|
+pub extend Stretch with Compare::{op_lt, op_le, op_ge, compare, op_gt}
+
+///|
+pub extend Stretch with Eq::{not_equal, equal}
+
+///|
+pub extend Stretch with Show::{output}
+
+///|
+pub extend Style with Eq::{not_equal, equal}
+
+///|
+pub extend Style with Show::{output}
+
+///|
+pub extend Synthesis with Eq::{not_equal, equal}
+
+///|
+pub extend Weight with Compare::{op_lt, op_le, op_ge, compare, op_gt}
+
+///|
+pub extend Weight with Eq::{not_equal, equal}
+
+///|
+pub extend Weight with Show::{output}

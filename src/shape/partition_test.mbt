@@ -43,7 +43,7 @@ test "shape.partition selects and partitions fonts by cluster" {
   let data = Bytes::makei(4, i => if i == 1 { b'\x01' } else { b'\x00' })
   let font_a = @swash.FontRef::from_offset(data, 0).unwrap()
   let font_b = @swash.FontRef::from_offset(data, 0).unwrap()
-  let selector = TestSelector::{ font_a, font_b }
+  let selector = TestSelector::{ font_a, font_b, }
   let opts = SimpleShapeOptions::default()
   let tokens : Array[@swash.Token] = [
     @swash.Token::Token('a', 0U, 1U, @swash.CharInfo::default(), 0U),
