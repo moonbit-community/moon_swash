@@ -29,7 +29,7 @@ pub struct FeatureMask {
 
 ///|
 pub fn FeatureMask::default() -> FeatureMask {
-  FeatureMask::{ b0: 0, b1: 0, b2: 0, b3: 0, }
+  { b0: 0, b1: 0, b2: 0, b3: 0, }
 }
 
 ///|
@@ -90,7 +90,7 @@ pub fn FeatureMask::has(self : FeatureMask, bit : FeatureBit) -> Bool {
 ///|
 /// Returns the union of two masks.
 pub fn FeatureMask::or(self : FeatureMask, other : FeatureMask) -> FeatureMask {
-  FeatureMask::{
+  {
     b0: self.b0 | other.b0,
     b1: self.b1 | other.b1,
     b2: self.b2 | other.b2,
@@ -123,7 +123,7 @@ pub struct FeatureGroups {
 
 ///|
 pub fn FeatureGroups::default() -> FeatureGroups {
-  FeatureGroups::{
+  {
     default: FeatureMask::default(),
     reph: None,
     pref: None,
@@ -158,7 +158,7 @@ pub struct StageOffsets {
 
 ///|
 pub fn StageOffsets::default() -> StageOffsets {
-  StageOffsets::{ base: 0U, lang: 0U, vars: 0U, }
+  { base: 0U, lang: 0U, vars: 0U, }
 }
 
 ///|
@@ -172,7 +172,7 @@ pub fn StageOffsets::from_layout(
     None => None
     Some((lang, tags)) => {
       let vars = feature_var_offset(data, base)
-      Some((StageOffsets::{ base, lang, vars, }, tags))
+      Some(({ base, lang, vars, }, tags))
     }
   }
 }
@@ -268,7 +268,7 @@ priv struct BitSet {
 
 ///|
 fn BitSet::default() -> BitSet {
-  BitSet::{ list: ([] : Array[UInt16]), bits: ([] : Array[UInt64]), }
+  { list: ([] : Array[UInt16]), bits: ([] : Array[UInt64]), }
 }
 
 ///|
@@ -315,11 +315,7 @@ struct CoverageBuilder {
 
 ///|
 fn CoverageBuilder::default() -> CoverageBuilder {
-  CoverageBuilder::{
-    coverage: BitSet::default(),
-    min: 0xFFFFU.to_uint16(),
-    max: 0,
-  }
+  { coverage: BitSet::default(), min: 0xFFFFU.to_uint16(), max: 0, }
 }
 
 ///|
@@ -419,11 +415,7 @@ pub struct FeatureStoreBuilder {
 
 ///|
 pub fn FeatureStoreBuilder::default() -> FeatureStoreBuilder {
-  FeatureStoreBuilder::{
-    indices: [],
-    coverage: CoverageBuilder::default(),
-    next_bit: 0,
-  }
+  { indices: [], coverage: CoverageBuilder::default(), next_bit: 0, }
 }
 
 ///|
@@ -661,7 +653,7 @@ pub struct Storage {
 
 ///|
 pub fn Storage::default() -> Storage {
-  Storage::{
+  {
     stack: Array::makei(MAX_NESTED_LOOKUPS, _ => LookupState::default()),
     ids: Array::makei(MAX_SEQUENCE, _ => (0).to_uint16()),
     indices: Array::makei(MAX_SEQUENCE, _ => 0),
@@ -678,7 +670,7 @@ struct LookupState {
 
 ///|
 fn LookupState::default() -> LookupState {
-  LookupState::{ skip_state: SkipState::default(), cur: 0, end: 0, }
+  { skip_state: SkipState::default(), cur: 0, end: 0, }
 }
 
 ///|
@@ -692,7 +684,7 @@ priv struct Pos4 {
 
 ///|
 fn Pos4::default() -> Pos4 {
-  Pos4::{ x: 0.0, y: 0.0, xadvance: 0.0, yadvance: 0.0, }
+  { x: 0.0, y: 0.0, xadvance: 0.0, yadvance: 0.0, }
 }
 
 ///|
@@ -740,7 +732,7 @@ fn ApplyContext::ApplyContext(
   buffer : Buffer,
   range : IndexRange,
 ) -> ApplyContext {
-  ApplyContext::{
+  {
     stage,
     data,
     gsubgpos,
@@ -847,7 +839,7 @@ fn ApplyContext::update_glyphs(
       self.buf.glyphs.set(i, g)
     }
   }
-  self.update_glyphs_skip(Some(IndexRange::IndexRange(start, end)))
+  self.update_glyphs_skip(Some(IndexRange(start, end)))
 }
 
 ///|
@@ -1077,7 +1069,7 @@ fn ApplyContext::apply(
   } else {
     self.buf.pos_args[feature_index]
   }
-  self.s.skip_state = SkipState::{
+  self.s.skip_state = {
     flags: lookup.ignored,
     mask: lookup.mask,
     mark_check: lookup.mark_check,
@@ -1089,7 +1081,7 @@ fn ApplyContext::apply(
   self.apply_skip_state()
   let mut applied = false
   let (sub_start, sub_end) = subtables
-  if lookup.kind is @internal.LookupKind::RevChainContext {
+  if lookup.kind is RevChainContext {
     if !self.move_last() {
       return Some(false)
     }
@@ -1164,7 +1156,7 @@ fn ApplyContext::apply_subtable(
   let kind = subtable.kind
   let base = subtable.offset.reinterpret_as_int()
   match kind {
-    @internal.SubtableKind::SingleSub1 => {
+    SingleSub1 => {
       let delta = match b.read_i16(base + 4) {
         None => return None
         Some(v) => v
@@ -1174,7 +1166,7 @@ fn ApplyContext::apply_subtable(
       self.update_glyph(cur)
       Some(true)
     }
-    @internal.SubtableKind::SingleSub2 => {
+    SingleSub2 => {
       let arr = base + 6
       let subst = match b.read_u16(arr + index * 2) {
         None => return None
@@ -1184,7 +1176,7 @@ fn ApplyContext::apply_subtable(
       self.update_glyph(cur)
       Some(true)
     }
-    @internal.SubtableKind::MultiSub1 => {
+    MultiSub1 => {
       let seqbase = match b.read_u16(base + 6 + index * 2) {
         None => return None
         Some(v) => base + v.reinterpret_as_int()
@@ -1209,7 +1201,7 @@ fn ApplyContext::apply_subtable(
       self.extend_range(seqlen - 1)
       Some(true)
     }
-    @internal.SubtableKind::AltSub1 => {
+    AltSub1 => {
       let offset = match b.read_u16(base + 6 + index * 2) {
         None => return None
         Some(v) => v.reinterpret_as_int()
@@ -1234,7 +1226,7 @@ fn ApplyContext::apply_subtable(
       self.update_glyph(cur)
       Some(true)
     }
-    @internal.SubtableKind::LigSub1 => {
+    LigSub1 => {
       let setbase = match b.read_u16(base + 6 + index * 2) {
         None => return None
         Some(v) => base + v.reinterpret_as_int()
@@ -1295,7 +1287,7 @@ fn ApplyContext::apply_subtable(
       }
       None
     }
-    @internal.SubtableKind::SingleAdj1 => {
+    SingleAdj1 => {
       let pos = Pos4::default()
       let format = match b.read_u16(base + 4) {
         None => return None
@@ -1308,7 +1300,7 @@ fn ApplyContext::apply_subtable(
       self.buf.position(cur, pos.x, pos.y, pos.xadvance, pos.yadvance)
       Some(true)
     }
-    @internal.SubtableKind::SingleAdj2 => {
+    SingleAdj2 => {
       let vf = match b.read_u16(base + 4) {
         None => return None
         Some(v) => v.to_uint16()
@@ -1322,7 +1314,7 @@ fn ApplyContext::apply_subtable(
       self.buf.position(cur, pos.x, pos.y, pos.xadvance, pos.yadvance)
       Some(true)
     }
-    @internal.SubtableKind::PairAdj1 => {
+    PairAdj1 => {
       let next = match self.next(cur) {
         None => return None
         Some(v) => v
@@ -1382,7 +1374,7 @@ fn ApplyContext::apply_subtable(
       }
       None
     }
-    @internal.SubtableKind::PairAdj2 => {
+    PairAdj2 => {
       let next = match self.next(cur) {
         None => return None
         Some(v) => v
@@ -1429,7 +1421,7 @@ fn ApplyContext::apply_subtable(
       }
       Some(true)
     }
-    @internal.SubtableKind::Cursive1 => {
+    Cursive1 => {
       let next = match self.next(cur) {
         None => return None
         Some(v) => v
@@ -1467,8 +1459,8 @@ fn ApplyContext::apply_subtable(
       self.buf.position_cursive(cur, next, entry.0 - exit.0, entry.1 - exit.1)
       Some(true)
     }
-    @internal.SubtableKind::MarkToBase1 | @internal.SubtableKind::MarkToMark1 => {
-      let prev = if kind is @internal.SubtableKind::MarkToBase1 {
+    MarkToBase1 | MarkToMark1 => {
+      let prev = if kind is MarkToBase1 {
         match self.previous_base(cur) {
           None => return None
           Some(v) => v
@@ -1538,7 +1530,7 @@ fn ApplyContext::apply_subtable(
       )
       Some(true)
     }
-    @internal.SubtableKind::MarkToLig1 => {
+    MarkToLig1 => {
       let comp_index = self.buf.glyphs[cur].component.to_int()
       if comp_index == 0xFF {
         return None
@@ -1631,7 +1623,7 @@ fn ApplyContext::apply_subtable(
       )
       Some(true)
     }
-    @internal.SubtableKind::Context1 => {
+    Context1 => {
       let set_index = index
       let mut off = base + 4
       let set_count = match b.read_u16(off) {
@@ -1693,7 +1685,7 @@ fn ApplyContext::apply_subtable(
       }
       None
     }
-    @internal.SubtableKind::Context2 => {
+    Context2 => {
       let mut off = base + 4
       let mut input_classdef = match b.read_u16(off) {
         None => return None
@@ -1767,7 +1759,7 @@ fn ApplyContext::apply_subtable(
       }
       None
     }
-    @internal.SubtableKind::Context3 => {
+    Context3 => {
       let mut c = base + 2
       let mut input_count = match b.read_u16(c) {
         None => return None
@@ -1799,7 +1791,7 @@ fn ApplyContext::apply_subtable(
       self.apply_contextual(b, c, subst_count, input_end) |> ignore
       Some(true)
     }
-    @internal.SubtableKind::ChainContext1 => {
+    ChainContext1 => {
       let set_index = index
       let mut off = base + 4
       let set_count = match b.read_u16(off) {
@@ -1892,7 +1884,7 @@ fn ApplyContext::apply_subtable(
       }
       None
     }
-    @internal.SubtableKind::ChainContext2 => {
+    ChainContext2 => {
       let mut c = base + 4
       let backtrack_classdef_rel = match b.read_u16(c) {
         None => return None
@@ -2010,7 +2002,7 @@ fn ApplyContext::apply_subtable(
       }
       None
     }
-    @internal.SubtableKind::ChainContext3 => {
+    ChainContext3 => {
       let mut c = base + 2
       let backtrack_count = match b.read_u16(c) {
         None => return None
@@ -2097,7 +2089,7 @@ fn ApplyContext::apply_subtable(
       self.apply_contextual(b, c, count, input_end) |> ignore
       Some(true)
     }
-    @internal.SubtableKind::RevChainContext1 => {
+    RevChainContext1 => {
       let mut c = base + 4
       let backtrack_count = match b.read_u16(c) {
         None => return None
@@ -2224,7 +2216,7 @@ fn ApplyContext::apply_uncached(
   let count = lookup.count.to_int()
   let ext = lookup.is_ext
   let kind = lookup.kind
-  let reverse = lookup.kind is @internal.LookupKind::RevChainContext
+  let reverse = lookup.kind is RevChainContext
   if reverse {
     if !self.move_last() {
       return Some(false)
@@ -2617,7 +2609,7 @@ pub fn apply(
 
 ///|
 pub fn FeatureStore::default() -> FeatureStore {
-  FeatureStore::{
+  {
     sub_features: [],
     pos_features: [],
     lookups: [],
@@ -2716,7 +2708,7 @@ pub fn FeatureStore::custom_masks(
     self.groups.position,
     pos_args,
   )
-  if dir == Direction::RightToLeft {
+  if dir == RightToLeft {
     sub.or_assign(self.groups.rtl)
   }
   (sub, pos)
@@ -2771,7 +2763,7 @@ pub fn FeatureStore::groups(
     feature_masks(self, Some(g.vert), Some(g.position), [VERT])
   }
   if script.is_complex() {
-    if script is @swash.Script::Myanmar {
+    if script is Myanmar {
       feature_masks(self, Some(g.default), Some(g.position), [
         CALT,
         CCMP,
@@ -2846,7 +2838,7 @@ pub fn FeatureStore::groups(
         MKMK,
       ])
     }
-  } else if script is @swash.Script::Hangul {
+  } else if script is Hangul {
     feature_masks(self, Some(g.basic), Some(g.position), [
       CCMP,
       LJMO,

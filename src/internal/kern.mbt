@@ -37,10 +37,10 @@ pub fn kern_subtables(data : Bytes, kern : UInt) -> KernSubtables {
   let version = b.read_u16(0).unwrap_or(0).to_uint16()
   if version == 0 {
     let len = b.read_u16(2).unwrap_or(0)
-    KernSubtables::{ b, offset: 4, len, cur: 0U, is_aat: false, }
+    { b, offset: 4, len, cur: 0U, is_aat: false, }
   } else {
     let len = b.read_u32(4).unwrap_or(0)
-    KernSubtables::{ b, offset: 8, len, cur: 0U, is_aat: true, }
+    { b, offset: 8, len, cur: 0U, is_aat: true, }
   }
 }
 
@@ -101,7 +101,7 @@ pub fn KernSubtables::iter(self : KernSubtables) -> Iter[KernSubtable] {
       (is_horizontal, cross_stream, format)
     }
     offset = offset + size.reinterpret_as_int()
-    Some(KernSubtable::{
+    Some({
       b: sub,
       offset: sub_offset,
       size,
@@ -132,13 +132,10 @@ pub(all) enum KernSubtableKind {
 ///|
 pub fn KernSubtable::kind(self : KernSubtable) -> KernSubtableKind? {
   match self.format.to_int() {
-    0 =>
-      KernFormat0::parse(self.b, self.offset).map(x => {
-        KernSubtableKind::Format0(x)
-      })
+    0 => KernFormat0::parse(self.b, self.offset).map(x => Format0(x))
     1 =>
       KernFormat1::parse(self.b, self.offset, self.cross_stream).map(x => {
-        KernSubtableKind::Format1(x)
+        Format1(x)
       })
     _ => None
   }
@@ -159,7 +156,7 @@ fn KernFormat0::parse(b : BeBytes, offset : Int) -> KernFormat0? {
     None => return None
     Some(v) => v.reinterpret_as_int()
   }
-  Some(KernFormat0::{ b, base: offset + 8, count, })
+  Some({ b, base: offset + 8, count, })
 }
 
 ///|
@@ -204,7 +201,7 @@ pub struct KernFormat1State {
 
 ///|
 pub fn KernFormat1State::KernFormat1State() -> KernFormat1State {
-  KernFormat1State::{ state: 0, stack: Array::make(8, 0), pos: 0, cycles: 0, }
+  { state: 0, stack: Array::make(8, 0), pos: 0, cycles: 0, }
 }
 
 ///|
@@ -226,7 +223,7 @@ fn KernFormat1::parse(
     None => return None
     Some(v) => v
   }
-  Some(KernFormat1::{ b, state_table, cross_stream, })
+  Some({ b, state_table, cross_stream, })
 }
 
 ///|

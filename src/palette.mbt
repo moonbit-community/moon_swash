@@ -38,7 +38,7 @@ pub fn ColorPalettes::from_font(font : FontRef) -> ColorPalettes {
   let data = font.table_data(CPAL).unwrap_or(empty_bytes_view())
   let b = @internal.BeBytes::from_view(data)
   let len = b.read_u16(4).unwrap_or(0).reinterpret_as_int()
-  ColorPalettes::{ font, b, len, }
+  { font, b, len, }
 }
 
 ///|
@@ -83,7 +83,7 @@ fn ColorPalettes::get(self : ColorPalettes, index : Int) -> ColorPalette? {
     Some(v) => v.reinterpret_as_int()
   }
   let offset = offset + first * 4
-  Some(ColorPalette::{
+  Some({
     font: self.font,
     b,
     version,
@@ -131,7 +131,7 @@ pub fn ColorPalette::name_id(self : ColorPalette) -> StringId? {
     None => return None
     Some(v) => v.to_uint16()
   }
-  Some(StringId::Other(id))
+  Some(Other(id))
 }
 
 ///|
@@ -152,9 +152,9 @@ pub fn ColorPalette::usability(self : ColorPalette) -> Usability? {
     Some(v) => v
   }
   match flags & 0b11 {
-    0b01 => Some(Usability::Light)
-    0b10 => Some(Usability::Dark)
-    0b11 => Some(Usability::Both)
+    0b01 => Some(Light)
+    0b10 => Some(Dark)
+    0b11 => Some(Both)
     _ => None
   }
 }

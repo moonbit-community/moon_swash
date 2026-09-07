@@ -57,11 +57,11 @@ pub struct GlyphData {
 
 ///|
 pub fn GlyphData::default() -> GlyphData {
-  GlyphData::{
+  {
     id: (0).to_uint16(),
     flags: 0,
     class: (0).to_byte(),
-    char_class: ShapeClass::Base,
+    char_class: Base,
     mark_type: (0).to_byte(),
     joining_type: (0).to_byte(),
     mask: (0).to_byte(),
@@ -104,14 +104,14 @@ pub struct PositionData {
 
 ///|
 pub fn PositionData::default() -> PositionData {
-  PositionData::{ base: (0).to_byte(), flags: 0, x: 0.0, y: 0.0, advance: 0.0, }
+  { base: (0).to_byte(), flags: 0, x: 0.0, y: 0.0, advance: 0.0, }
 }
 
 ///|
 fn Glyph::Glyph(g : GlyphData, p : PositionData) -> Glyph {
-  Glyph::{
+  {
     id: g.id,
-    info: GlyphInfo::GlyphInfo(p.flags),
+    info: GlyphInfo(p.flags),
     x: p.x,
     y: p.y,
     advance: p.advance,
@@ -129,7 +129,7 @@ pub struct IndexRange {
 
 ///|
 pub fn IndexRange::IndexRange(start : Int, end : Int) -> IndexRange {
-  IndexRange::{ start, end, }
+  { start, end, }
 }
 
 ///|
@@ -173,7 +173,7 @@ pub struct SkipState {
 
 ///|
 pub fn SkipState::default() -> SkipState {
-  SkipState::{
+  {
     flags: (0).to_byte(),
     mask: (0).to_byte(),
     mark_check: (0).to_byte(),
@@ -184,7 +184,7 @@ pub fn SkipState::default() -> SkipState {
 
 ///|
 pub fn Buffer::default() -> Buffer {
-  Buffer::{
+  {
     glyphs: ([] : Array[GlyphData]),
     positions: ([] : Array[PositionData]),
     infos: ([] : Array[(ClusterInfo, Bool, UserData)]),
@@ -252,7 +252,7 @@ fn Buffer::push_cluster(self : Buffer, cluster : CharCluster) -> Unit {
 fn Buffer::push_char(self : Buffer, ch : ClusterChar) -> Unit {
   let cluster = self.next_cluster
   let flags : UInt16 = if ch.is_ignorable() { IGNORABLE } else { 0 }
-  self.glyphs.push(GlyphData::{
+  self.glyphs.push({
     id: ch.glyph_id(),
     flags,
     class: (0).to_byte(),
@@ -281,7 +281,7 @@ fn Buffer::_push_hangul_char(self : Buffer, ch : ClusterChar) -> Unit {
     LJMO_MASK | VJMO_MASK | TJMO_MASK
   }
   let flags : UInt16 = if ch.is_ignorable() { IGNORABLE } else { 0 }
-  self.glyphs.push(GlyphData::{
+  self.glyphs.push({
     id: ch.glyph_id(),
     flags,
     class: (0).to_byte(),
@@ -306,11 +306,11 @@ pub fn Buffer::push(self : Buffer, cluster : CharCluster) -> IndexRange {
       Some(id) => {
         let first = chars[0]
         self.push_char(
-          ClusterChar::ClusterChar(
+          ClusterChar(
             '\u{25CC}',
             first.offset(),
-            ShapeClass::Base,
-            JoiningType::U,
+            Base,
+            U,
             false,
             true,
             id,
@@ -325,7 +325,7 @@ pub fn Buffer::push(self : Buffer, cluster : CharCluster) -> IndexRange {
   }
   self.next_cluster = self.next_cluster + 1U
   self.push_cluster(cluster)
-  IndexRange::IndexRange(start, self.glyphs.length())
+  IndexRange(start, self.glyphs.length())
 }
 
 ///|
@@ -342,11 +342,11 @@ pub fn Buffer::push_order(
       Some(id) => {
         let first = chars[order[0]]
         self.push_char(
-          ClusterChar::ClusterChar(
+          ClusterChar(
             '\u{25CC}',
             first.offset(),
-            ShapeClass::Base,
-            JoiningType::U,
+            Base,
+            U,
             false,
             true,
             id,
@@ -363,7 +363,7 @@ pub fn Buffer::push_order(
   }
   self.next_cluster = self.next_cluster + 1U
   self.push_cluster(cluster)
-  IndexRange::IndexRange(start, self.glyphs.length())
+  IndexRange(start, self.glyphs.length())
 }
 
 ///|
@@ -376,11 +376,11 @@ pub fn Buffer::_push_hangul(self : Buffer, cluster : CharCluster) -> IndexRange 
       Some(id) => {
         let first = chars[0]
         self.push_char(
-          ClusterChar::ClusterChar(
+          ClusterChar(
             '\u{25CC}',
             first.offset(),
-            ShapeClass::Base,
-            JoiningType::U,
+            Base,
+            U,
             false,
             true,
             id,
@@ -395,7 +395,7 @@ pub fn Buffer::_push_hangul(self : Buffer, cluster : CharCluster) -> IndexRange 
   }
   self.next_cluster = self.next_cluster + 1U
   self.push_cluster(cluster)
-  IndexRange::IndexRange(start, self.glyphs.length())
+  IndexRange(start, self.glyphs.length())
 }
 
 ///|
@@ -538,7 +538,7 @@ pub fn Buffer::substitute_multiple(
   for i in 0..<len {
     if i == index {
       for j in 0..<count {
-        out.push(GlyphData::{
+        out.push({
           id: ids[j],
           flags: SUBSTITUTED,
           class: g.class,
@@ -685,13 +685,13 @@ fn reverse_position_data(arr : Array[PositionData]) -> Unit {
 ///|
 fn joining_type_index(t : JoiningType) -> Int {
   match t {
-    JoiningType::U => 0
-    JoiningType::L => 1
-    JoiningType::R => 2
-    JoiningType::D => 3
-    JoiningType::Alaph => 4
-    JoiningType::DalathRish => 5
-    JoiningType::T => 6
+    U => 0
+    L => 1
+    R => 2
+    D => 3
+    Alaph => 4
+    DalathRish => 5
+    T => 6
   }
 }
 
@@ -717,8 +717,8 @@ pub fn reorder_myanmar(
     order.push(0)
   }
   match chars[0].shape_class() {
-    ShapeClass::Kinzi => {
-      kinzi = Some(IndexRange::IndexRange(0, 3))
+    Kinzi => {
+      kinzi = Some(IndexRange(0, 3))
       ignored[0] = true
       ignored[1] = true
       ignored[2] = true
@@ -731,11 +731,10 @@ pub fn reorder_myanmar(
     let k = ch.shape_class()
     if last_vblw {
       match k {
-        ShapeClass::Anusvara => {
+        Anusvara => {
           anus = match anus {
-            Some(r) =>
-              Some(IndexRange::IndexRange(r.start(), i - r.start() + 1))
-            None => Some(IndexRange::IndexRange(i, i + 1))
+            Some(r) => Some(IndexRange(r.start(), i - r.start() + 1))
+            None => Some(IndexRange(i, i + 1))
           }
           ignored[i] = true
           i = i + 1
@@ -746,7 +745,7 @@ pub fn reorder_myanmar(
     }
     last_vblw = false
     match k {
-      ShapeClass::VBlw => {
+      VBlw => {
         if vblw is None {
           vblw = Some(i)
         }
@@ -757,19 +756,18 @@ pub fn reorder_myanmar(
     match base {
       None =>
         match k {
-          ShapeClass::Base => {
+          Base => {
             base = Some(i)
             ignored[i] = true
           }
-          ShapeClass::MedialRa => {
+          MedialRa => {
             medial_ra = Some(i)
             ignored[i] = true
           }
-          ShapeClass::VPre => {
+          VPre => {
             vpre = match vpre {
-              Some(r) =>
-                Some(IndexRange::IndexRange(r.start(), i - r.start() + 1))
-              None => Some(IndexRange::IndexRange(i, i + 1))
+              Some(r) => Some(IndexRange(r.start(), i - r.start() + 1))
+              None => Some(IndexRange(i, i + 1))
             }
             ignored[i] = true
           }
@@ -777,15 +775,14 @@ pub fn reorder_myanmar(
         }
       Some(_) =>
         match k {
-          ShapeClass::MedialRa => {
+          MedialRa => {
             medial_ra = Some(i)
             ignored[i] = true
           }
-          ShapeClass::VPre => {
+          VPre => {
             vpre = match vpre {
-              Some(r) =>
-                Some(IndexRange::IndexRange(r.start(), i - r.start() + 1))
-              None => Some(IndexRange::IndexRange(i, i + 1))
+              Some(r) => Some(IndexRange(r.start(), i - r.start() + 1))
+              None => Some(IndexRange(i, i + 1))
             }
             ignored[i] = true
           }
@@ -879,7 +876,7 @@ pub fn reorder_complex(
       continue
     }
     match g.char_class {
-      ShapeClass::Base => {
+      Base => {
         match first_base {
           None => {
             first_base = Some(i)
@@ -892,8 +889,8 @@ pub fn reorder_complex(
           Some(_) => ()
         }
       }
-      ShapeClass::Halant => last_halant = Some(i)
-      ShapeClass::Reph =>
+      Halant => last_halant = Some(i)
+      Reph =>
         match reph {
           None => {
             reph = Some(i)
@@ -901,7 +898,7 @@ pub fn reorder_complex(
           }
           Some(_) => ()
         }
-      ShapeClass::Pref =>
+      Pref =>
         match pref {
           None => {
             pref = Some(i)
@@ -909,17 +906,17 @@ pub fn reorder_complex(
           }
           Some(_) => ()
         }
-      ShapeClass::VPre => {
+      VPre => {
         vpre = match vpre {
-          Some(r) => Some(IndexRange::IndexRange(r.start(), i - r.start() + 1))
-          None => Some(IndexRange::IndexRange(i, i + 1))
+          Some(r) => Some(IndexRange(r.start(), i - r.start() + 1))
+          None => Some(IndexRange(i, i + 1))
         }
         ignored[i] = true
       }
-      ShapeClass::VMPre => {
+      VMPre => {
         vmpre = match vmpre {
-          Some(r) => Some(IndexRange::IndexRange(r.start(), i - r.start() + 1))
-          None => Some(IndexRange::IndexRange(i, i + 1))
+          Some(r) => Some(IndexRange(r.start(), i - r.start() + 1))
+          None => Some(IndexRange(i, i + 1))
         }
         ignored[i] = true
       }

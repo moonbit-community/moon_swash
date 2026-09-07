@@ -146,7 +146,7 @@ pub fn MetricsProxy::materialize_metrics(
       }
     }
   }
-  Metrics::{
+  {
     units_per_em: self.units_per_em,
     glyph_count: self.glyph_count,
     is_monospace: self.is_monospace,
@@ -192,7 +192,7 @@ pub fn MetricsProxy::materialize_glyph_metrics(
       }
     }
   }
-  GlyphMetrics::{
+  {
     data: font.data(),
     coords,
     units_per_em: self.units_per_em,
@@ -386,7 +386,7 @@ pub fn Metrics::scale(self : Metrics, ppem : Double) -> Metrics {
 ///|
 /// Creates a new set of metrics scaled by the specified factor.
 pub fn Metrics::linear_scale(self : Metrics, s : Double) -> Metrics {
-  Metrics::{
+  {
     units_per_em: self.units_per_em,
     glyph_count: self.glyph_count,
     is_monospace: self.is_monospace,

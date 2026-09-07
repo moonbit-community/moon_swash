@@ -44,7 +44,7 @@ fn[T] aat_read_entry(
     None => return None
     Some(v) => v
   }
-  Some(AatEntry::{ new_state, flags, data, })
+  Some({ new_state, flags, data, })
 }
 
 ///|
@@ -85,13 +85,7 @@ pub fn ExtendedStateTable::from_view(view : BytesView) -> ExtendedStateTable? {
     None => return None
     Some(v) => v.reinterpret_as_int()
   }
-  Some(ExtendedStateTable::{
-    b,
-    classes,
-    class_table,
-    state_array,
-    entry_table,
-  })
+  Some({ b, classes, class_table, state_array, entry_table, })
 }
 
 ///|
@@ -179,7 +173,7 @@ pub fn StateTable::from_view(view : BytesView) -> StateTable? {
     return None
   }
   let states = view[state_array:]
-  Some(StateTable::{
+  Some({
     b,
     class_count,
     state_array,

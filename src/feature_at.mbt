@@ -29,7 +29,7 @@ priv struct AtScript {
 
 ///|
 fn AtScript::languages(self : AtScript) -> AtLanguages {
-  AtLanguages::AtLanguages(
+  AtLanguages(
     self.data,
     self.gsub,
     self.gpos,
@@ -49,7 +49,7 @@ priv struct AtScripts {
 
 ///|
 fn AtScripts::AtScripts(data : Bytes, gsub : UInt, gpos : UInt) -> AtScripts {
-  AtScripts::{ data, gsub, gpos, }
+  { data, gsub, gpos, }
 }
 
 ///|
@@ -73,7 +73,7 @@ fn AtScripts::iter(self : AtScripts) -> Iter[AtScript] {
               let gpos_offset = @internal.script_by_tag(data, gpos, tag).unwrap_or(
                 0U,
               )
-              return Some(AtScript::{
+              return Some({
                 data,
                 gsub,
                 gpos,
@@ -97,7 +97,7 @@ fn AtScripts::iter(self : AtScripts) -> Iter[AtScript] {
             if @internal.script_by_tag(data, gsub, tag) is Some(_) {
               ()
             } else {
-              return Some(AtScript::{
+              return Some({
                 data,
                 gsub,
                 gpos,
@@ -144,7 +144,7 @@ fn AtLanguages::AtLanguages(
   gsub_script : UInt,
   gpos_script : UInt,
 ) -> AtLanguages {
-  AtLanguages::{ data, gsub, gpos, gsub_script, gpos_script, }
+  { data, gsub, gpos, gsub_script, gpos_script, }
 }
 
 ///|
@@ -179,7 +179,7 @@ fn AtLanguages::iter(self : AtLanguages) -> Iter[AtLangSys] {
                   Some((o, _)) => o
                 }
               }
-              return Some(AtLangSys::{
+              return Some({
                 data,
                 gsub,
                 gpos,
@@ -204,7 +204,7 @@ fn AtLanguages::iter(self : AtLanguages) -> Iter[AtLangSys] {
               is Some(_) {
               ()
             } else {
-              return Some(AtLangSys::{
+              return Some({
                 data,
                 gsub,
                 gpos,
@@ -240,7 +240,7 @@ fn AtWritingSystem::language_tag(self : AtWritingSystem) -> Tag {
 
 ///|
 fn AtWritingSystem::features(self : AtWritingSystem) -> AtFeatures {
-  AtFeatures::AtFeatures(self.lang)
+  AtFeatures(self.lang)
 }
 
 ///|
@@ -252,7 +252,7 @@ priv struct AtWritingSystems {
 
 ///|
 fn AtWritingSystems::AtWritingSystems(scripts : AtScripts) -> AtWritingSystems {
-  AtWritingSystems::{ scripts, }
+  { scripts, }
 }
 
 ///|
@@ -275,7 +275,7 @@ fn AtWritingSystems::iter(self : AtWritingSystems) -> Iter[AtWritingSystem] {
       }
       match langs.next() {
         None => has_langs = false
-        Some(lang) => return Some(AtWritingSystem::{ lang, script_tag, })
+        Some(lang) => return Some({ lang, script_tag, })
       }
     }
     None
@@ -297,7 +297,7 @@ priv struct AtFeatures {
 
 ///|
 fn AtFeatures::AtFeatures(lang : AtLangSys) -> AtFeatures {
-  AtFeatures::{ lang, }
+  { lang, }
 }
 
 ///|
@@ -326,8 +326,7 @@ fn AtFeatures::iter(self : AtFeatures) -> Iter[AtFeature] {
           Some(feature_index) =>
             match @internal.feature_at(data, table, feature_index) {
               None => ()
-              Some((tag, _)) =>
-                return Some(AtFeature::{ stage: stage.to_byte(), tag, })
+              Some((tag, _)) => return Some({ stage: stage.to_byte(), tag, })
             }
         }
       } else if stage == 0 {
@@ -361,9 +360,9 @@ fn AtAllFeatures::AtAllFeatures(
   gsub : UInt,
   gpos : UInt,
 ) -> AtAllFeatures {
-  AtAllFeatures::{
+  {
     data,
-    seen: SeenFeatures::SeenFeatures(),
+    seen: SeenFeatures(),
     table: gsub,
     next_table: gpos,
     stage: 0,

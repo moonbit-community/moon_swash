@@ -46,9 +46,9 @@ test "shape.partition selects and partitions fonts by cluster" {
   let selector = TestSelector::{ font_a, font_b, }
   let opts = SimpleShapeOptions::default()
   let tokens : Array[@swash.Token] = [
-    @swash.Token::Token('a', 0U, 1U, @swash.CharInfo::default(), 0U),
-    @swash.Token::Token('B', 1U, 1U, @swash.CharInfo::default(), 0U),
-    @swash.Token::Token('c', 2U, 1U, @swash.CharInfo::default(), 0U),
+    Token('a', 0U, 1U, @swash.CharInfo::default(), 0U),
+    Token('B', 1U, 1U, @swash.CharInfo::default(), 0U),
+    Token('c', 2U, 1U, @swash.CharInfo::default(), 0U),
   ]
   let ids : Array[UInt64] = []
   let cx = ShapeContext::ShapeContext()

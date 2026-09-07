@@ -49,7 +49,7 @@ pub fn Attributes::Attributes(
   let stretch_u = stretch.value.to_int().reinterpret_as_uint() & 0x1FF
   let weight_u = weight.value.to_int().reinterpret_as_uint() & 0x3FF
   let style_u = style.pack()
-  Attributes::{ value: style_u | (weight_u << 9) | (stretch_u << 19), }
+  { value: style_u | (weight_u << 9) | (stretch_u << 19), }
 }
 
 ///|
@@ -66,7 +66,7 @@ pub fn Attributes::from_font(font : FontRef) -> Attributes {
       _ => ()
     }
   }
-  Attributes::{ value: attrs.value | (var_bits << 28), }
+  { value: attrs.value | (var_bits << 28), }
 }
 
 ///|
@@ -78,25 +78,25 @@ fn Attributes::from_os2(os2 : @internal.Os2?) -> Attributes {
       let style = if flags.italic() {
         Style::Italic
       } else if flags.oblique() {
-        Style::Oblique(ObliqueAngle::default())
+        Oblique(ObliqueAngle::default())
       } else {
-        Style::Normal
+        Normal
       }
       let weight = Weight::{ value: os2.weight_class().to_uint16(), }
       let stretch = Stretch::from_raw(os2.width_class().to_uint16())
-      Attributes::Attributes(stretch, weight, style)
+      Attributes(stretch, weight, style)
     }
   }
 }
 
 ///|
 pub fn Attributes::stretch(self : Attributes) -> Stretch {
-  Stretch::{ value: ((self.value >> 19) & 0x1FF).to_uint16(), }
+  { value: ((self.value >> 19) & 0x1FF).to_uint16(), }
 }
 
 ///|
 pub fn Attributes::weight(self : Attributes) -> Weight {
-  Weight::{ value: ((self.value >> 9) & 0x3FF).to_uint16(), }
+  { value: ((self.value >> 9) & 0x3FF).to_uint16(), }
 }
 
 ///|
@@ -153,7 +153,7 @@ pub fn Attributes::synthesize(
     let stretch = self.stretch()
     let req_stretch = requested.stretch()
     if stretch != req_stretch {
-      vars.push(Setting::Setting(WDTH, req_stretch.to_percentage()))
+      vars.push(Setting(WDTH, req_stretch.to_percentage()))
     }
   }
   let weight = self.weight()
@@ -162,7 +162,7 @@ pub fn Attributes::synthesize(
   if weight != req_weight {
     if self.has_weight_variation() {
       if vars.length() < 4 {
-        vars.push(Setting::Setting(WGHT, req_weight.value.to_int().to_double()))
+        vars.push(Setting(WGHT, req_weight.value.to_int().to_double()))
       }
     } else if req_weight > weight {
       embolden = true
@@ -173,31 +173,31 @@ pub fn Attributes::synthesize(
   let mut skew : Int = 0
   if style != req_style {
     match req_style {
-      Style::Normal => ()
-      Style::Italic =>
-        if style == Style::Normal {
+      Normal => ()
+      Italic =>
+        if style == Normal {
           if self.has_italic_variation() {
             if vars.length() < 4 {
-              vars.push(Setting::Setting(ITAL, 1.0))
+              vars.push(Setting(ITAL, 1.0))
             }
           } else if self.has_oblique_variation() {
             if vars.length() < 4 {
-              vars.push(Setting::Setting(SLNT, 14.0))
+              vars.push(Setting(SLNT, 14.0))
             }
           } else {
             skew = 14
           }
         }
-      Style::Oblique(angle) =>
-        if style == Style::Normal {
+      Oblique(angle) =>
+        if style == Normal {
           let degrees = angle.to_degrees()
           if self.has_oblique_variation() {
             if vars.length() < 4 {
-              vars.push(Setting::Setting(SLNT, degrees))
+              vars.push(Setting(SLNT, degrees))
             }
           } else if self.has_italic_variation() && degrees > 0.0 {
             if vars.length() < 4 {
-              vars.push(Setting::Setting(ITAL, 1.0))
+              vars.push(Setting(ITAL, 1.0))
             }
           } else {
             skew = degrees.to_int()
@@ -205,12 +205,12 @@ pub fn Attributes::synthesize(
         }
     }
   }
-  Synthesis::{ vars, embolden, skew, }
+  { vars, embolden, skew, }
 }
 
 ///|
 fn Attributes::default() -> Attributes {
-  Attributes::Attributes(Stretch::normal(), Weight::normal(), Style::Normal)
+  Attributes(Stretch::normal(), Weight::normal(), Normal)
 }
 
 ///|
@@ -221,7 +221,7 @@ pub impl Eq for Attributes with fn equal(self, other) {
 ///|
 pub impl Show for Attributes with fn output(self, logger) {
   let (stretch, weight, style) = self.parts()
-  if style == Style::Normal &&
+  if style == Normal &&
     weight == Weight::normal() &&
     stretch == Stretch::normal() {
     logger.write_string("regular")
@@ -232,7 +232,7 @@ pub impl Show for Attributes with fn output(self, logger) {
     logger.write_string(stretch.to_string())
     space = " "
   }
-  if style != Style::Normal {
+  if style != Normal {
     logger.write_string(space)
     logger.write_string(style.to_string())
     space = " "
@@ -273,7 +273,7 @@ fn slice_from_or_none(s : StringView, start : Int) -> StringView? {
 ///|
 pub fn ObliqueAngle::from_degrees(degrees : Double) -> ObliqueAngle {
   let clamped = clamp_double(degrees, -90.0, 90.0) + 90.0
-  ObliqueAngle::{ value: clamped.to_int().to_uint16(), }
+  { value: clamped.to_int().to_uint16(), }
 }
 
 ///|
@@ -312,9 +312,9 @@ pub(all) enum Style {
 ///|
 pub impl Eq for Style with fn equal(self, other) {
   match (self, other) {
-    (Style::Normal, Style::Normal) => true
-    (Style::Italic, Style::Italic) => true
-    (Style::Oblique(a), Style::Oblique(b)) => a.value == b.value
+    (Normal, Normal) => true
+    (Italic, Italic) => true
+    (Oblique(a), Oblique(b)) => a.value == b.value
     _ => false
   }
 }
@@ -323,58 +323,58 @@ pub impl Eq for Style with fn equal(self, other) {
 pub fn Style::parse(s0 : String) -> Style? {
   let s = s0.trim()
   if s == "normal" {
-    Some(Style::Normal)
+    Some(Normal)
   } else if s == "italic" {
-    Some(Style::Italic)
+    Some(Italic)
   } else if s == "oblique" {
-    Some(Style::Oblique(ObliqueAngle::from_degrees(14.0)))
+    Some(Oblique(ObliqueAngle::from_degrees(14.0)))
   } else if s.has_prefix("oblique ") {
     let rest = match slice_from_or_none(s, 8) {
-      None => return Some(Style::Oblique(ObliqueAngle::default()))
+      None => return Some(Oblique(ObliqueAngle::default()))
       Some(v) => v
     }
     if rest.has_suffix("deg") {
       let a_sv = match slice_or_none(rest, 0, rest.length() - 3) {
-        None => return Some(Style::Oblique(ObliqueAngle::default()))
+        None => return Some(Oblique(ObliqueAngle::default()))
         Some(v) => v
       }
       try @string.parse_double(a_sv.trim()) catch {
-        _ => Some(Style::Oblique(ObliqueAngle::default()))
+        _ => Some(Oblique(ObliqueAngle::default()))
       } noraise {
-        a => Some(Style::Oblique(ObliqueAngle::from_degrees(a)))
+        a => Some(Oblique(ObliqueAngle::from_degrees(a)))
       }
     } else if rest.has_suffix("grad") {
       let a_sv = match slice_or_none(rest, 0, rest.length() - 4) {
-        None => return Some(Style::Oblique(ObliqueAngle::default()))
+        None => return Some(Oblique(ObliqueAngle::default()))
         Some(v) => v
       }
       try @string.parse_double(a_sv.trim()) catch {
-        _ => Some(Style::Oblique(ObliqueAngle::default()))
+        _ => Some(Oblique(ObliqueAngle::default()))
       } noraise {
-        a => Some(Style::Oblique(ObliqueAngle::from_gradians(a)))
+        a => Some(Oblique(ObliqueAngle::from_gradians(a)))
       }
     } else if rest.has_suffix("rad") {
       let a_sv = match slice_or_none(rest, 0, rest.length() - 3) {
-        None => return Some(Style::Oblique(ObliqueAngle::default()))
+        None => return Some(Oblique(ObliqueAngle::default()))
         Some(v) => v
       }
       try @string.parse_double(a_sv.trim()) catch {
-        _ => Some(Style::Oblique(ObliqueAngle::default()))
+        _ => Some(Oblique(ObliqueAngle::default()))
       } noraise {
-        a => Some(Style::Oblique(ObliqueAngle::from_radians(a)))
+        a => Some(Oblique(ObliqueAngle::from_radians(a)))
       }
     } else if rest.has_suffix("turn") {
       let a_sv = match slice_or_none(rest, 0, rest.length() - 4) {
-        None => return Some(Style::Oblique(ObliqueAngle::default()))
+        None => return Some(Oblique(ObliqueAngle::default()))
         Some(v) => v
       }
       try @string.parse_double(a_sv.trim()) catch {
-        _ => Some(Style::Oblique(ObliqueAngle::default()))
+        _ => Some(Oblique(ObliqueAngle::default()))
       } noraise {
-        a => Some(Style::Oblique(ObliqueAngle::from_turns(a)))
+        a => Some(Oblique(ObliqueAngle::from_turns(a)))
       }
     } else {
-      Some(Style::Oblique(ObliqueAngle::default()))
+      Some(Oblique(ObliqueAngle::default()))
     }
   } else {
     None
@@ -383,14 +383,14 @@ pub fn Style::parse(s0 : String) -> Style? {
 
 ///|
 pub fn Style::from_degrees(degrees : Double) -> Style {
-  Style::Oblique(ObliqueAngle::from_degrees(degrees))
+  Oblique(ObliqueAngle::from_degrees(degrees))
 }
 
 ///|
 pub fn Style::to_degrees(self : Style) -> Double {
   match self {
-    Style::Italic => 14.0
-    Style::Oblique(a) => a.to_degrees()
+    Italic => 14.0
+    Oblique(a) => a.to_degrees()
     _ => 0.0
   }
 }
@@ -398,29 +398,29 @@ pub fn Style::to_degrees(self : Style) -> Double {
 ///|
 fn Style::unpack(bits : UInt) -> Style {
   if (bits & 1) != 0 {
-    Style::Oblique(ObliqueAngle::{ value: (bits >> 1).to_uint16(), })
+    Oblique({ value: (bits >> 1).to_uint16(), })
   } else if bits == 0b110 {
-    Style::Italic
+    Italic
   } else {
-    Style::Normal
+    Normal
   }
 }
 
 ///|
 fn Style::pack(self : Style) -> UInt {
   match self {
-    Style::Normal => 0b10
-    Style::Italic => 0b110
-    Style::Oblique(a) => 1 | (a.value.to_int().reinterpret_as_uint() << 1)
+    Normal => 0b10
+    Italic => 0b110
+    Oblique(a) => 1 | (a.value.to_int().reinterpret_as_uint() << 1)
   }
 }
 
 ///|
 pub fn Style::to_string(self : Style) -> String {
   match self {
-    Style::Normal => "normal"
-    Style::Italic => "italic"
-    Style::Oblique(a) => {
+    Normal => "normal"
+    Italic => "italic"
+    Oblique(a) => {
       let degrees = a.to_degrees()
       if degrees == 14.0 {
         "oblique"
@@ -444,47 +444,47 @@ pub struct Weight {
 
 ///|
 pub fn Weight::thin() -> Weight {
-  Weight::{ value: (100).to_uint16(), }
+  { value: (100).to_uint16(), }
 }
 
 ///|
 pub fn Weight::extra_light() -> Weight {
-  Weight::{ value: (200).to_uint16(), }
+  { value: (200).to_uint16(), }
 }
 
 ///|
 pub fn Weight::light() -> Weight {
-  Weight::{ value: (300).to_uint16(), }
+  { value: (300).to_uint16(), }
 }
 
 ///|
 pub fn Weight::normal() -> Weight {
-  Weight::{ value: (400).to_uint16(), }
+  { value: (400).to_uint16(), }
 }
 
 ///|
 pub fn Weight::medium() -> Weight {
-  Weight::{ value: (500).to_uint16(), }
+  { value: (500).to_uint16(), }
 }
 
 ///|
 pub fn Weight::semi_bold() -> Weight {
-  Weight::{ value: (600).to_uint16(), }
+  { value: (600).to_uint16(), }
 }
 
 ///|
 pub fn Weight::bold() -> Weight {
-  Weight::{ value: (700).to_uint16(), }
+  { value: (700).to_uint16(), }
 }
 
 ///|
 pub fn Weight::extra_bold() -> Weight {
-  Weight::{ value: (800).to_uint16(), }
+  { value: (800).to_uint16(), }
 }
 
 ///|
 pub fn Weight::black() -> Weight {
-  Weight::{ value: (900).to_uint16(), }
+  { value: (900).to_uint16(), }
 }
 
 ///|
@@ -498,7 +498,7 @@ pub fn Weight::parse(s0 : String) -> Weight? {
     try @string.parse_int(s, base=10) catch {
       _ => None
     } noraise {
-      v => Some(Weight::{ value: v.max(1).min(1000).to_uint16(), })
+      v => Some({ value: v.max(1).min(1000).to_uint16(), })
     }
   }
 }
@@ -553,54 +553,54 @@ pub struct Stretch {
 
 ///|
 pub fn Stretch::ultra_condensed() -> Stretch {
-  Stretch::{ value: (0).to_uint16(), }
+  { value: (0).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::extra_condensed() -> Stretch {
-  Stretch::{ value: (25).to_uint16(), }
+  { value: (25).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::condensed() -> Stretch {
-  Stretch::{ value: (50).to_uint16(), }
+  { value: (50).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::semi_condensed() -> Stretch {
-  Stretch::{ value: (75).to_uint16(), }
+  { value: (75).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::normal() -> Stretch {
-  Stretch::{ value: (100).to_uint16(), }
+  { value: (100).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::semi_expanded() -> Stretch {
-  Stretch::{ value: (125).to_uint16(), }
+  { value: (125).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::expanded() -> Stretch {
-  Stretch::{ value: (150).to_uint16(), }
+  { value: (150).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::extra_expanded() -> Stretch {
-  Stretch::{ value: (200).to_uint16(), }
+  { value: (200).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::ultra_expanded() -> Stretch {
-  Stretch::{ value: (300).to_uint16(), }
+  { value: (300).to_uint16(), }
 }
 
 ///|
 pub fn Stretch::from_percentage(percentage : Double) -> Stretch {
   let p = clamp_double(percentage, 50.0, 200.0)
   let value = ((p - 50.0) * 2.0).to_int().to_uint16()
-  Stretch::{ value, }
+  { value, }
 }
 
 ///|
@@ -734,7 +734,7 @@ pub struct Synthesis {
 
 ///|
 fn Synthesis::default() -> Synthesis {
-  Synthesis::{ vars: [], embolden: false, skew: 0, }
+  { vars: [], embolden: false, skew: 0, }
 }
 
 ///|

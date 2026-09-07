@@ -31,7 +31,7 @@ pub struct Properties {
 
 ///|
 fn Properties::Properties(cp : Int) -> Properties {
-  Properties::{ bits: get_record_index(cp).reinterpret_as_uint(), }
+  { bits: get_record_index(cp).reinterpret_as_uint(), }
 }
 
 ///|
@@ -125,9 +125,7 @@ pub fn Properties::with_boundary(
   self : Properties,
   boundary : UInt,
 ) -> Properties {
-  Properties::{
-    bits: (self.bits & RECORD_MASK) | ((boundary & 0b11U) << BOUNDARY_SHIFT),
-  }
+  { bits: (self.bits & RECORD_MASK) | ((boundary & 0b11U) << BOUNDARY_SHIFT), }
 }
 
 ///|
@@ -215,7 +213,7 @@ pub(open) trait Codepoint {
 
 ///|
 pub impl Codepoint for Char with fn properties(self) {
-  Properties::Properties(self.to_int())
+  Properties(self.to_int())
 }
 
 ///|
@@ -248,11 +246,11 @@ pub impl Codepoint for Char with fn mirror(self) {
 ///|
 pub impl Codepoint for Char with fn bracket_type(self) {
   match Codepoint::closing_bracket(self) {
-    Some(other) => BracketType::Open(other)
+    Some(other) => Open(other)
     None =>
       match Codepoint::opening_bracket(self) {
-        Some(other) => BracketType::Close(other)
-        None => BracketType::None
+        Some(other) => Close(other)
+        None => None
       }
   }
 }

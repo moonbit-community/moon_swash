@@ -30,7 +30,7 @@ pub(all) enum Content {
 
 ///|
 pub fn Content::default() -> Content {
-  Content::Mask
+  Mask
 }
 
 ///|
@@ -50,10 +50,10 @@ pub struct Image {
 
 ///|
 pub fn Image::Image() -> Image {
-  Image::{
+  {
     source: Source::default(),
     content: Content::default(),
-    placement: Placement::{ left: 0, top: 0, width: 0U, height: 0U, },
+    placement: { left: 0, top: 0, width: 0U, height: 0U, },
     data: [],
   }
 }
@@ -62,7 +62,7 @@ pub fn Image::Image() -> Image {
 pub fn Image::clear(self : Image) -> Unit {
   self.source = Source::default()
   self.content = Content::default()
-  self.placement = Placement::{ left: 0, top: 0, width: 0U, height: 0U, }
+  self.placement = { left: 0, top: 0, width: 0U, height: 0U, }
   self.data.clear()
 }
 
@@ -120,7 +120,7 @@ pub fn Image::to_rgba8(self : Image, base_color : Array[Byte]) -> Bool {
   if pixels <= 0 {
     // Empty image; normalize to RGBA8 for convenience.
     self.data.clear()
-    self.content = Content::Color
+    self.content = Color
     return true
   }
   let br = base_color[0].to_int().reinterpret_as_uint()
@@ -128,8 +128,8 @@ pub fn Image::to_rgba8(self : Image, base_color : Array[Byte]) -> Bool {
   let bb = base_color[2].to_int().reinterpret_as_uint()
   let ba = base_color[3].to_int().reinterpret_as_uint()
   match self.content {
-    Content::Color => true
-    Content::Mask => {
+    Color => true
+    Mask => {
       if self.data.length() < pixels {
         return false
       }
@@ -173,10 +173,10 @@ pub fn Image::to_rgba8(self : Image, base_color : Array[Byte]) -> Bool {
           i = i - 1
         }
       }
-      self.content = Content::Color
+      self.content = Color
       true
     }
-    Content::SubpixelMask => {
+    SubpixelMask => {
       if self.data.length() < pixels * 4 {
         return false
       }
@@ -205,7 +205,7 @@ pub fn Image::to_rgba8(self : Image, base_color : Array[Byte]) -> Bool {
         self.data[o + 2] = (bb * ab / 255U).reinterpret_as_int().to_byte()
         self.data[o + 3] = a.reinterpret_as_int().to_byte()
       }
-      self.content = Content::Color
+      self.content = Color
       true
     }
   }
@@ -262,8 +262,8 @@ test "Image::data_view is zero-copy length view" {
 ///|
 test "Image::to_rgba8 converts Mask to premultiplied RGBA8" {
   let img = Image::Image()
-  img.placement = Placement::{ left: 0, top: 0, width: 2U, height: 1U, }
-  img.content = Content::Mask
+  img.placement = { left: 0, top: 0, width: 2U, height: 1U, }
+  img.content = Mask
   img.data = [b'\x00', b'\xFF']
   let ok = img.to_rgba8([
     (10).to_byte(),
@@ -296,8 +296,8 @@ test "Image::to_rgba8 converts Mask to premultiplied RGBA8" {
 ///|
 test "Image::to_rgba8 converts SubpixelMask using per-channel coverage" {
   let img = Image::Image()
-  img.placement = Placement::{ left: 0, top: 0, width: 1U, height: 1U, }
-  img.content = Content::SubpixelMask
+  img.placement = { left: 0, top: 0, width: 1U, height: 1U, }
+  img.content = SubpixelMask
   // Coverage only on the red subpixel.
   img.data = [(255).to_byte(), (0).to_byte(), (0).to_byte(), (0).to_byte()]
   let ok = img.to_rgba8([

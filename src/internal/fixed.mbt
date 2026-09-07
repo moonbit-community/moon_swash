@@ -30,64 +30,64 @@ pub fn Fixed::raw(self : Fixed) -> Int {
 
 ///|
 pub fn Fixed::from_raw(value : Int) -> Fixed {
-  Fixed::{ value, }
+  { value, }
 }
 
 ///|
 pub fn Fixed::min_value() -> Fixed {
-  Fixed::{ value: (0x80000000 : UInt).reinterpret_as_int(), }
+  { value: (0x80000000 : UInt).reinterpret_as_int(), }
 }
 
 ///|
 pub fn Fixed::max_value() -> Fixed {
-  Fixed::{ value: 0x7FFFFFFF, }
+  { value: 0x7FFFFFFF, }
 }
 
 ///|
 pub fn Fixed::epsilon() -> Fixed {
-  Fixed::{ value: 1, }
+  { value: 1, }
 }
 
 ///|
 pub fn Fixed::zero() -> Fixed {
-  Fixed::{ value: 0, }
+  { value: 0, }
 }
 
 ///|
 pub fn Fixed::one() -> Fixed {
-  Fixed::{ value: 0x10000, }
+  { value: 0x10000, }
 }
 
 ///|
 pub fn Fixed::from_i32(x : Int) -> Fixed {
-  Fixed::{ value: (x.reinterpret_as_uint() << 16).reinterpret_as_int(), }
+  { value: (x.reinterpret_as_uint() << 16).reinterpret_as_int(), }
 }
 
 ///|
 pub fn Fixed::from_f32(x : Double) -> Fixed {
-  Fixed::{ value: (x * 65536.0 + 0.5).to_int(), }
+  { value: (x * 65536.0 + 0.5).to_int(), }
 }
 
 ///|
 pub fn Fixed::from_f2dot14(x : Int) -> Fixed {
-  Fixed::{ value: x * 4, }
+  { value: x * 4, }
 }
 
 ///|
 pub fn Fixed::round(self : Fixed) -> Fixed {
   let v = (self.value.reinterpret_as_uint() + 0x8000) & 0xFFFF0000
-  Fixed::{ value: v.reinterpret_as_int(), }
+  { value: v.reinterpret_as_int(), }
 }
 
 ///|
 pub fn Fixed::floor(self : Fixed) -> Fixed {
   let v = self.value.reinterpret_as_uint() & 0xFFFF0000
-  Fixed::{ value: v.reinterpret_as_int(), }
+  { value: v.reinterpret_as_int(), }
 }
 
 ///|
 pub fn Fixed::abs(self : Fixed) -> Fixed {
-  Fixed::{ value: self.value.abs(), }
+  { value: self.value.abs(), }
 }
 
 ///|
@@ -110,7 +110,7 @@ pub fn Fixed::max(self : Fixed, rhs : Fixed) -> Fixed {
 
 ///|
 pub fn Fixed::fract(self : Fixed) -> Fixed {
-  Fixed::{ value: self.value - self.floor().value, }
+  { value: self.value - self.floor().value, }
 }
 
 ///|
@@ -130,31 +130,31 @@ pub fn Fixed::to_f2dot14(self : Fixed) -> Int {
 
 ///|
 pub impl Add for Fixed with fn add(self, rhs) {
-  Fixed::{
+  {
     value: (self.value.reinterpret_as_uint() + rhs.value.reinterpret_as_uint()).reinterpret_as_int(),
   }
 }
 
 ///|
 pub impl Sub for Fixed with fn sub(self, rhs) {
-  Fixed::{
+  {
     value: (self.value.reinterpret_as_uint() - rhs.value.reinterpret_as_uint()).reinterpret_as_int(),
   }
 }
 
 ///|
 pub impl Mul for Fixed with fn mul(self, rhs) {
-  Fixed::{ value: mul(self.value, rhs.value), }
+  { value: mul(self.value, rhs.value), }
 }
 
 ///|
 pub impl Div for Fixed with fn div(self, rhs) {
-  Fixed::{ value: div(self.value, rhs.value), }
+  { value: div(self.value, rhs.value), }
 }
 
 ///|
 pub impl Neg for Fixed with fn neg(self) {
-  Fixed::{ value: -self.value, }
+  { value: -self.value, }
 }
 
 ///|

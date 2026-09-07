@@ -100,7 +100,7 @@ test "FontRef::attributes from OS/2 italic/oblique flags" {
   let a0 = f0.attributes()
   inspect(a0.weight() == Weight::bold(), content="true")
   inspect(a0.stretch() == Stretch::normal(), content="true")
-  inspect(a0.style() == Style::Italic, content="true")
+  inspect(a0.style() == Italic, content="true")
   let sfnt_oblique = attributes_test_build_sfnt(
     Array::from_fixed_array([
       (@internal.OS_2, attributes_test_make_os2(400, 5, 0x0200)),
@@ -108,20 +108,16 @@ test "FontRef::attributes from OS/2 italic/oblique flags" {
   )
   let f1 = FontRef::from_offset(sfnt_oblique, 0).unwrap()
   let a1 = f1.attributes()
-  inspect(a1.style() is Style::Oblique(_), content="true")
+  inspect(a1.style() is Oblique(_), content="true")
 }
 
 ///|
 test "Attributes::synthesize embolden and skew fallbacks" {
-  let base = Attributes::Attributes(
-    Stretch::normal(),
-    Weight::normal(),
-    Style::Normal,
-  )
+  let base = Attributes::Attributes(Stretch::normal(), Weight::normal(), Normal)
   let req_bold = Attributes::Attributes(
     Stretch::normal(),
     Weight::bold(),
-    Style::Normal,
+    Normal,
   )
   let s0 = base.synthesize(req_bold)
   inspect(s0.embolden(), content="true")
@@ -129,7 +125,7 @@ test "Attributes::synthesize embolden and skew fallbacks" {
   let req_italic = Attributes::Attributes(
     Stretch::normal(),
     Weight::normal(),
-    Style::Italic,
+    Italic,
   )
   let s1 = base.synthesize(req_italic)
   inspect(s1.embolden(), content="false")

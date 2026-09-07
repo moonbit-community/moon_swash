@@ -218,7 +218,7 @@ pub fn FeatureSubsts::from_data(
         None => return None
         Some(v) => v
       }
-      return Some(FeatureSubsts::{ offset: offset + subst, })
+      return Some({ offset: offset + subst, })
     }
   }
   None
@@ -331,29 +331,29 @@ pub fn lookup_data(
   let kind = if stage == 0 {
     match kind {
       1 => LookupKind::SingleSub
-      2 => LookupKind::MultiSub
-      3 => LookupKind::AltSub
-      4 => LookupKind::LigSub
-      5 => LookupKind::Context
-      6 => LookupKind::ChainContext
-      8 => LookupKind::RevChainContext
+      2 => MultiSub
+      3 => AltSub
+      4 => LigSub
+      5 => Context
+      6 => ChainContext
+      8 => RevChainContext
       _ => return None
     }
   } else {
     match kind {
-      1 => LookupKind::SingleAdj
-      2 => LookupKind::PairAdj
-      3 => LookupKind::Cursive
-      4 => LookupKind::MarkToBase
-      5 => LookupKind::MarkToLig
-      6 => LookupKind::MarkToMark
-      7 => LookupKind::Context
-      8 => LookupKind::ChainContext
+      1 => SingleAdj
+      2 => PairAdj
+      3 => Cursive
+      4 => MarkToBase
+      5 => MarkToLig
+      6 => MarkToMark
+      7 => Context
+      8 => ChainContext
       _ => return None
     }
   }
   let ignored = (f & 0b1110) | ((1).to_byte() << 5)
-  Some(LookupData::{
+  Some({
     index,
     stage,
     kind,
@@ -394,143 +394,134 @@ pub fn subtable_data(
   }
 
   match kind {
-    LookupKind::SingleSub => {
+    SingleSub => {
       let k = match fmt {
         1 => SubtableKind::SingleSub1
-        2 => SubtableKind::SingleSub2
+        2 => SingleSub2
         _ => return None
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
+        Some(c) => Some({ offset, kind: k, coverage: c, })
       }
     }
-    LookupKind::MultiSub => {
+    MultiSub => {
       let k = match fmt {
         1 => SubtableKind::MultiSub1
         _ => return None
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
+        Some(c) => Some({ offset, kind: k, coverage: c, })
       }
     }
-    LookupKind::AltSub => {
+    AltSub => {
       let k = match fmt {
         1 => SubtableKind::AltSub1
         _ => return None
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
+        Some(c) => Some({ offset, kind: k, coverage: c, })
       }
     }
-    LookupKind::LigSub => {
+    LigSub => {
       let k = match fmt {
         1 => SubtableKind::LigSub1
         _ => return None
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
+        Some(c) => Some({ offset, kind: k, coverage: c, })
       }
     }
-    LookupKind::SingleAdj => {
+    SingleAdj => {
       let k = match fmt {
         1 => SubtableKind::SingleAdj1
-        2 => SubtableKind::SingleAdj2
+        2 => SingleAdj2
         _ => return None
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
+        Some(c) => Some({ offset, kind: k, coverage: c, })
       }
     }
-    LookupKind::PairAdj => {
+    PairAdj => {
       let k = match fmt {
         1 => SubtableKind::PairAdj1
-        2 => SubtableKind::PairAdj2
+        2 => PairAdj2
         _ => return None
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
+        Some(c) => Some({ offset, kind: k, coverage: c, })
       }
     }
-    LookupKind::Cursive => {
+    Cursive => {
       let k = match fmt {
         1 => SubtableKind::Cursive1
         _ => return None
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
+        Some(c) => Some({ offset, kind: k, coverage: c, })
       }
     }
-    LookupKind::MarkToBase => {
+    MarkToBase => {
       let k = match fmt {
         1 => SubtableKind::MarkToBase1
         _ => return None
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
+        Some(c) => Some({ offset, kind: k, coverage: c, })
       }
     }
-    LookupKind::MarkToLig => {
+    MarkToLig => {
       let k = match fmt {
         1 => SubtableKind::MarkToLig1
         _ => return None
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
+        Some(c) => Some({ offset, kind: k, coverage: c, })
       }
     }
-    LookupKind::MarkToMark => {
+    MarkToMark => {
       let k = match fmt {
         1 => SubtableKind::MarkToMark1
         _ => return None
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
+        Some(c) => Some({ offset, kind: k, coverage: c, })
       }
     }
-    LookupKind::Context =>
+    Context =>
       if fmt == 1 || fmt == 2 {
-        let k = if fmt == 1 {
-          SubtableKind::Context1
-        } else {
-          SubtableKind::Context2
-        }
+        let k = if fmt == 1 { SubtableKind::Context1 } else { Context2 }
         match cov(data, b, base, 2) {
           None => None
-          Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
+          Some(c) => Some({ offset, kind: k, coverage: c, })
         }
       } else if fmt == 3 {
         match cov(data, b, base, 6) {
           None => None
-          Some(c) =>
-            Some(SubtableData::{
-              offset,
-              kind: SubtableKind::Context3,
-              coverage: c,
-            })
+          Some(c) => Some({ offset, kind: Context3, coverage: c, })
         }
       } else {
         None
       }
-    LookupKind::ChainContext =>
+    ChainContext =>
       if fmt == 1 || fmt == 2 {
         let k = if fmt == 1 {
           SubtableKind::ChainContext1
         } else {
-          SubtableKind::ChainContext2
+          ChainContext2
         }
         match cov(data, b, base, 2) {
           None => None
-          Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
+          Some(c) => Some({ offset, kind: k, coverage: c, })
         }
       } else if fmt == 3 {
         let backtrack_len = match b.read_u16(base + 2) {
@@ -546,24 +537,19 @@ pub fn subtable_data(
         }
         match cov(data, b, base, backtrack_len + 6) {
           None => None
-          Some(c) =>
-            Some(SubtableData::{
-              offset,
-              kind: SubtableKind::ChainContext3,
-              coverage: c,
-            })
+          Some(c) => Some({ offset, kind: ChainContext3, coverage: c, })
         }
       } else {
         None
       }
-    LookupKind::RevChainContext => {
+    RevChainContext => {
       let k = match fmt {
         1 => SubtableKind::RevChainContext1
         _ => return None
       }
       match cov(data, b, base, 2) {
         None => None
-        Some(c) => Some(SubtableData::{ offset, kind: k, coverage: c, })
+        Some(c) => Some({ offset, kind: k, coverage: c, })
       }
     }
   }

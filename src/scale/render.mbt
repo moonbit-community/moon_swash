@@ -54,10 +54,10 @@ fn ensure_zeroed(buf : Array[Byte], len : Int) -> Array[Byte] {
 
 ///|
 pub fn Render::Render(sources : Array[Source]) -> Render {
-  Render::{
+  {
     sources,
-    format: @zeno.Format::Alpha,
-    offset: @zeno.Vector::Vector(0.0, 0.0),
+    format: Alpha,
+    offset: Vector(0.0, 0.0),
     transform: None,
     embolden: 0.0,
     foreground: [b'\x80', b'\x80', b'\x80', b'\xFF'],
@@ -67,7 +67,7 @@ pub fn Render::Render(sources : Array[Source]) -> Render {
 
 ///|
 pub fn Render::format(self : Render, format : @zeno.Format) -> Render {
-  Render::{
+  {
     sources: self.sources,
     format,
     offset: self.offset,
@@ -80,7 +80,7 @@ pub fn Render::format(self : Render, format : @zeno.Format) -> Render {
 
 ///|
 pub fn Render::style(self : Render, style : @zeno.Style) -> Render {
-  Render::{
+  {
     sources: self.sources,
     format: self.format,
     offset: self.offset,
@@ -93,7 +93,7 @@ pub fn Render::style(self : Render, style : @zeno.Style) -> Render {
 
 ///|
 pub fn Render::offset(self : Render, offset : @zeno.Vector) -> Render {
-  Render::{
+  {
     sources: self.sources,
     format: self.format,
     offset,
@@ -106,7 +106,7 @@ pub fn Render::offset(self : Render, offset : @zeno.Vector) -> Render {
 
 ///|
 pub fn Render::transform(self : Render, transform : @zeno.Transform?) -> Render {
-  Render::{
+  {
     sources: self.sources,
     format: self.format,
     offset: self.offset,
@@ -119,7 +119,7 @@ pub fn Render::transform(self : Render, transform : @zeno.Transform?) -> Render 
 
 ///|
 pub fn Render::embolden(self : Render, strength : Double) -> Render {
-  Render::{
+  {
     sources: self.sources,
     format: self.format,
     offset: self.offset,
@@ -132,7 +132,7 @@ pub fn Render::embolden(self : Render, strength : Double) -> Render {
 
 ///|
 pub fn Render::default_color(self : Render, color : Array[Byte]) -> Render {
-  Render::{
+  {
     sources: self.sources,
     format: self.format,
     offset: self.offset,
@@ -152,7 +152,7 @@ pub fn Render::render_into(
 ) -> Bool {
   for source in self.sources {
     match source {
-      Source::Outline => {
+      Outline => {
         let outline = scaler.state.val.outline
         outline.clear()
         if !scaler.scale_outline_into(glyph_id, outline) {
@@ -169,7 +169,7 @@ pub fn Render::render_into(
             scaler.state.val.rcx,
           )
           .format(self.format)
-          .origin(@zeno.Origin::BottomLeft)
+          .origin(BottomLeft)
           .style(self.style)
           .offset(self.offset)
           .render_offset(self.offset)
@@ -180,13 +180,13 @@ pub fn Render::render_into(
           .render_into(image.data)
         image.placement = placement
         image.content = match self.format {
-          @zeno.Format::Alpha => Content::Mask
-          _ => Content::SubpixelMask
+          Alpha => Mask
+          _ => SubpixelMask
         }
-        image.source = Source::Outline
+        image.source = Outline
         return true
       }
-      Source::ColorOutline(palette_index) => {
+      ColorOutline(palette_index) => {
         let outline = scaler.state.val.outline
         outline.clear()
         if !scaler.scale_color_outline_into(glyph_id, outline) {
@@ -207,7 +207,7 @@ pub fn Render::render_into(
         let base_h = total_bounds.height().ceil().to_int().reinterpret_as_uint()
         let base_size = (base_w * base_h * 4U).reinterpret_as_int()
         image.data = ensure_zeroed(image.data, base_size)
-        image.placement = Placement::{
+        image.placement = {
           left: base_x,
           top: base_h.reinterpret_as_int() + base_y,
           width: base_w,
@@ -226,8 +226,8 @@ pub fn Render::render_into(
                   layer.path(),
                   scaler.state.val.rcx,
                 )
-                .format(@zeno.Format::Alpha)
-                .origin(@zeno.Origin::BottomLeft)
+                .format(Alpha)
+                .origin(BottomLeft)
                 .style(self.style)
                 .offset(self.offset)
                 .render_offset(self.offset)
@@ -266,12 +266,12 @@ pub fn Render::render_into(
           }
         }
         if ok {
-          image.source = Source::ColorOutline(palette_index)
-          image.content = Content::Color
+          image.source = ColorOutline(palette_index)
+          image.content = Color
           return true
         }
       }
-      Source::Bitmap(mode) => {
+      Bitmap(mode) => {
         if !scaler.has_bitmaps() {
           continue
         }
@@ -279,7 +279,7 @@ pub fn Render::render_into(
           return true
         }
       }
-      Source::ColorBitmap(mode) => {
+      ColorBitmap(mode) => {
         if !scaler.has_color_bitmaps() {
           continue
         }
@@ -308,8 +308,6 @@ pub fn Render::render(
 
 ///|
 test "Render builder scaffolding" {
-  let r = Render::Render([Source::Outline])
-    .format(@zeno.Format::Subpixel)
-    .offset(@zeno.Vector::Vector(0.25, 0.75))
+  let r = Render::Render([Outline]).format(Subpixel).offset(Vector(0.25, 0.75))
   inspect(r.sources.length(), content="1")
 }

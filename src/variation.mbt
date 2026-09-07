@@ -36,7 +36,7 @@ pub fn VariationsProxy::from_font(font : FontRef) -> VariationsProxy {
   }
   let avar = font.table_offset(@internal.AVAR)
   let len = table.axis_count().reinterpret_as_int()
-  VariationsProxy::{ fvar, avar, len, }
+  { fvar, avar, len, }
 }
 
 ///|
@@ -55,13 +55,7 @@ pub fn VariationsProxy::materialize(
   } else {
     b""[:]
   }
-  Variations::{
-    font,
-    fvar: @internal.Fvar::Fvar(view),
-    avar: self.avar,
-    len: self.len,
-    pos: 0,
-  }
+  { font, fvar: Fvar(view), avar: self.avar, len: self.len, pos: 0, }
 }
 
 ///|
@@ -81,7 +75,7 @@ fn Variations::from_font(font : FontRef) -> Variations {
   }
   let avar = font.table_offset(@internal.AVAR)
   let len = fvar.axis_count().reinterpret_as_int()
-  Variations::{ font, fvar, avar, len, pos: 0, }
+  { font, fvar, avar, len, pos: 0, }
 }
 
 ///|
@@ -91,7 +85,7 @@ fn Variations::get(self : Variations, index : Int) -> Variation? {
   }
   match self.fvar.get_axis(index.reinterpret_as_uint()) {
     None => None
-    Some(axis) => Some(Variation::{ font: self.font, axis, avar: self.avar, })
+    Some(axis) => Some({ font: self.font, axis, avar: self.avar, })
   }
 }
 
@@ -179,7 +173,7 @@ pub fn Variation::tag(self : Variation) -> Tag {
 
 ///|
 pub fn Variation::name_id(self : Variation) -> StringId {
-  StringId::Other(self.axis.name_id.to_uint16())
+  Other(self.axis.name_id.to_uint16())
 }
 
 ///|
@@ -240,7 +234,7 @@ fn Instances::from_font(font : FontRef) -> Instances {
   }
   let avar = font.table_offset(@internal.AVAR)
   let len = fvar.instance_count().reinterpret_as_int()
-  Instances::{ font, fvar, avar, len, pos: 0, }
+  { font, fvar, avar, len, pos: 0, }
 }
 
 ///|
@@ -273,7 +267,7 @@ fn Instances::get(self : Instances, index : Int) -> Instance? {
         }
         coords.push(axis.normalized_coord(value, avar))
       }
-      Some(Instance::{ parent: self, inner, values, coords, })
+      Some({ parent: self, inner, values, coords, })
     }
   }
 }
@@ -345,7 +339,7 @@ pub fn Instance::index(self : Instance) -> Int {
 
 ///|
 pub fn Instance::name_id(self : Instance) -> StringId {
-  StringId::Other(self.inner.name_id.to_uint16())
+  Other(self.inner.name_id.to_uint16())
 }
 
 ///|
@@ -357,7 +351,7 @@ pub fn Instance::name(self : Instance, language : String?) -> LocalizedString? {
 pub fn Instance::postscript_name_id(self : Instance) -> StringId? {
   match self.inner.postscript_name_id {
     None => None
-    Some(id) => Some(StringId::Other(id.to_uint16()))
+    Some(id) => Some(Other(id.to_uint16()))
   }
 }
 

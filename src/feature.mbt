@@ -41,15 +41,15 @@ fn Kind::from_font(font : FontRef) -> Kind {
   let gsub = font.table_offset(@internal.GSUB)
   let gpos = font.table_offset(@internal.GPOS)
   if gsub != 0U || gpos != 0U {
-    return Kind::At(gsub, gpos)
+    return At(gsub, gpos)
   }
   let morx = font.table_offset(0x6D6F7278) // "morx"
   if morx != 0U {
     let kern = font.table_offset(0x6B65726E) != 0U || // "kern"
       font.table_offset(0x6B657278) != 0U // "kerx"
-    return Kind::Aat(morx, kern)
+    return Aat(morx, kern)
   }
-  Kind::Empty
+  Empty
 }
 
 ///|
@@ -74,10 +74,10 @@ struct Feature {
 ///|
 fn Feature::from_tag(tag : Tag, action : Action) -> Feature {
   let name = match desc_from_at(tag) {
-    Option::None => Option::None
-    Option::Some((_, desc)) => Option::Some(desc)
+    None => Option::None
+    Some((_, desc)) => Some(desc)
   }
-  Feature::{ tag, name, action, }
+  { tag, name, action, }
 }
 
 ///|
@@ -113,7 +113,7 @@ priv struct AatWritingSystem {
 
 ///|
 fn AatWritingSystem::features(self : AatWritingSystem) -> AatFeatures {
-  AatFeatures::AatFeatures(self.data, self.morx, self.kern)
+  AatFeatures(self.data, self.morx, self.kern)
 }
 
 ///|
@@ -152,10 +152,10 @@ pub fn WritingSystem::language(self : WritingSystem) -> Language? {
 ///|
 /// Returns an iterator over the features provided by the writing system.
 pub fn WritingSystem::features(self : WritingSystem) -> Features {
-  Features::{
+  {
     kind: match self.kind {
-      WritingSystemKind::At(ws) => FeaturesKind::At(ws.features())
-      WritingSystemKind::Aat(ws) => FeaturesKind::Aat(ws.features())
+      At(ws) => At(ws.features())
+      Aat(ws) => Aat(ws.features())
     },
   }
 }
@@ -186,38 +186,28 @@ fn action_for_aat_tag(tag : Tag) -> Action {
 ///|
 fn action_for_stage_tag(stage : Int, tag : Tag) -> Action {
   if stage == 0 {
-    Action::Substitution
+    Substitution
   } else if tag == MARK || tag == MKMK {
-    Action::Attachment
+    Attachment
   } else {
-    Action::Adjustment
+    Adjustment
   }
 }
 
 ///|
 pub fn Features::from_font(font : FontRef) -> Features {
   match Kind::from_font(font) {
-    Kind::At(gsub, gpos) =>
-      Features::{
-        kind: FeaturesKind::AtAll(
-          AtAllFeatures::AtAllFeatures(font.data(), gsub, gpos),
-        ),
-      }
-    Kind::Aat(morx, kern) =>
-      Features::{
-        kind: FeaturesKind::Aat(
-          AatFeatures::AatFeatures(font.data(), morx, kern),
-        ),
-      }
-    Kind::Empty => Features::{ kind: FeaturesKind::Empty, }
+    At(gsub, gpos) => { kind: AtAll(AtAllFeatures(font.data(), gsub, gpos)), }
+    Aat(morx, kern) => { kind: Aat(AatFeatures(font.data(), morx, kern)), }
+    Empty => { kind: Empty, }
   }
 }
 
 ///|
 pub fn Features::iter(self : Features) -> Iter[Feature] {
   match self.kind {
-    FeaturesKind::Empty => Iter::new(fn() { None })
-    FeaturesKind::At(af) => {
+    Empty => Iter::new(fn() { None })
+    At(af) => {
       let it = af.iter()
       Iter::new(fn() {
         match it.next() {
@@ -230,7 +220,7 @@ pub fn Features::iter(self : Features) -> Iter[Feature] {
         }
       })
     }
-    FeaturesKind::AtAll(af) => {
+    AtAll(af) => {
       let it = af.iter()
       Iter::new(fn() {
         match it.next() {
@@ -242,17 +232,13 @@ pub fn Features::iter(self : Features) -> Iter[Feature] {
         }
       })
     }
-    FeaturesKind::Aat(af) => {
+    Aat(af) => {
       let it = af.iter()
       Iter::new(fn() {
         match it.next() {
           None => None
           Some((tag, desc)) =>
-            Some(Feature::{
-              tag,
-              name: Option::Some(desc),
-              action: action_for_aat_tag(tag),
-            })
+            Some({ tag, name: Some(desc), action: action_for_aat_tag(tag), })
         }
       })
     }
@@ -289,7 +275,7 @@ fn AatWritingSystems::iter(self : AatWritingSystems) -> Iter[AatWritingSystem] {
       None
     } else {
       done = true
-      Some(AatWritingSystem::{ data, morx, kern, })
+      Some({ data, morx, kern, })
     }
   })
 }
@@ -303,31 +289,20 @@ struct WritingSystems {
 ///|
 pub fn WritingSystems::from_font(font : FontRef) -> WritingSystems {
   match Kind::from_font(font) {
-    Kind::At(gsub, gpos) => {
+    At(gsub, gpos) => {
       let scripts = AtScripts::AtScripts(font.data(), gsub, gpos)
-      WritingSystems::{
-        kind: WritingSystemsKind::At(
-          AtWritingSystems::AtWritingSystems(scripts),
-        ),
-      }
+      { kind: At(AtWritingSystems(scripts)), }
     }
-    Kind::Aat(morx, kern) =>
-      WritingSystems::{
-        kind: WritingSystemsKind::Aat(AatWritingSystems::{
-          data: font.data(),
-          morx,
-          kern,
-        }),
-      }
-    Kind::Empty => WritingSystems::{ kind: WritingSystemsKind::Empty, }
+    Aat(morx, kern) => { kind: Aat({ data: font.data(), morx, kern, }), }
+    Empty => { kind: Empty, }
   }
 }
 
 ///|
 pub fn WritingSystems::iter(self : WritingSystems) -> Iter[WritingSystem] {
   match self.kind {
-    WritingSystemsKind::Empty => Iter::new(fn() { None })
-    WritingSystemsKind::At(ws) => {
+    Empty => Iter::new(fn() { None })
+    At(ws) => {
       let it = ws.iter()
       Iter::new(fn() {
         match it.next() {
@@ -335,8 +310,8 @@ pub fn WritingSystems::iter(self : WritingSystems) -> Iter[WritingSystem] {
           Some(v) => {
             let script_tag = v.script_tag()
             let lang_tag = v.language_tag()
-            Some(WritingSystem::{
-              kind: WritingSystemKind::At(v),
+            Some({
+              kind: At(v),
               script_tag,
               lang_tag,
               lang: Language::from_opentype(lang_tag),
@@ -345,18 +320,13 @@ pub fn WritingSystems::iter(self : WritingSystems) -> Iter[WritingSystem] {
         }
       })
     }
-    WritingSystemsKind::Aat(ws) => {
+    Aat(ws) => {
       let it = ws.iter()
       Iter::new(fn() {
         match it.next() {
           None => None
           Some(v) =>
-            Some(WritingSystem::{
-              kind: WritingSystemKind::Aat(v),
-              script_tag: DFLT,
-              lang_tag: DFLT,
-              lang: Option::None,
-            })
+            Some({ kind: Aat(v), script_tag: DFLT, lang_tag: DFLT, lang: None, })
         }
       })
     }

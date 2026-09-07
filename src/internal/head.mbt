@@ -46,12 +46,12 @@ pub const HEAD_MAGIC : UInt = 0x5F0F3CF5
 
 ///|
 pub fn Head::Head(data : BytesView) -> Head {
-  Head::{ data, }
+  { data, }
 }
 
 ///|
 pub fn[T : RawFont] Head::from_font(font : T) -> Head? {
-  table_data(font, HEAD).map(data => Head::Head(data))
+  table_data(font, HEAD).map(data => Head(data))
 }
 
 ///|
@@ -144,12 +144,12 @@ pub struct Os2 {
 
 ///|
 pub fn Os2::Os2(data : BytesView) -> Os2 {
-  Os2::{ data, }
+  { data, }
 }
 
 ///|
 pub fn[T : RawFont] Os2::from_font(font : T) -> Os2? {
-  table_data(font, OS_2).map(data => Os2::Os2(data))
+  table_data(font, OS_2).map(data => Os2(data))
 }
 
 ///|
@@ -204,7 +204,7 @@ pub fn Os2Flags::oblique(self : Os2Flags) -> Bool {
 
 ///|
 pub fn Os2::selection_flags(self : Os2) -> Os2Flags {
-  Os2Flags::{ value: BeBytes::from_view(self.data).read_u16(62).unwrap_or(0), }
+  { value: BeBytes::from_view(self.data).read_u16(62).unwrap_or(0), }
 }
 
 ///|
@@ -250,12 +250,12 @@ pub struct Post {
 
 ///|
 pub fn Post::Post(data : BytesView) -> Post {
-  Post::{ data, }
+  { data, }
 }
 
 ///|
 pub fn[T : RawFont] Post::from_font(font : T) -> Post? {
-  table_data(font, POST).map(data => Post::Post(data))
+  table_data(font, POST).map(data => Post(data))
 }
 
 ///|
@@ -324,12 +324,12 @@ pub struct Maxp {
 
 ///|
 pub fn Maxp::Maxp(data : BytesView) -> Maxp {
-  Maxp::{ data, }
+  { data, }
 }
 
 ///|
 pub fn[T : RawFont] Maxp::from_font(font : T) -> Maxp? {
-  table_data(font, MAXP).map(data => Maxp::Maxp(data))
+  table_data(font, MAXP).map(data => Maxp(data))
 }
 
 ///|
@@ -422,12 +422,12 @@ pub struct Hhea {
 
 ///|
 pub fn Hhea::Hhea(data : BytesView) -> Hhea {
-  Hhea::{ data, }
+  { data, }
 }
 
 ///|
 pub fn[T : RawFont] Hhea::from_font(font : T) -> Hhea? {
-  table_data(font, HHEA).map(data => Hhea::Hhea(data))
+  table_data(font, HHEA).map(data => Hhea(data))
 }
 
 ///|
@@ -465,12 +465,12 @@ pub struct Vhea {
 
 ///|
 pub fn Vhea::Vhea(data : BytesView) -> Vhea {
-  Vhea::{ data, }
+  { data, }
 }
 
 ///|
 pub fn[T : RawFont] Vhea::from_font(font : T) -> Vhea? {
-  table_data(font, VHEA).map(data => Vhea::Vhea(data))
+  table_data(font, VHEA).map(data => Vhea(data))
 }
 
 ///|

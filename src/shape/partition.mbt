@@ -34,7 +34,7 @@ pub struct SelectedFont {
 ///|
 /// Creates a selected font wrapper.
 pub fn SelectedFont::SelectedFont(font : @swash.FontRef) -> SelectedFont {
-  SelectedFont::{ font, id_override: None, synthesis: None, }
+  { font, id_override: None, synthesis: None, }
 }
 
 ///|
@@ -43,11 +43,7 @@ pub fn SelectedFont::with_id_override(
   self : SelectedFont,
   id : (UInt64, UInt64),
 ) -> SelectedFont {
-  SelectedFont::{
-    font: self.font,
-    id_override: Some(id),
-    synthesis: self.synthesis,
-  }
+  { font: self.font, id_override: Some(id), synthesis: self.synthesis, }
 }
 
 ///|
@@ -56,11 +52,7 @@ pub fn SelectedFont::with_synthesis(
   self : SelectedFont,
   syn : @swash.Synthesis,
 ) -> SelectedFont {
-  SelectedFont::{
-    font: self.font,
-    id_override: self.id_override,
-    synthesis: Some(syn),
-  }
+  { font: self.font, id_override: self.id_override, synthesis: Some(syn), }
 }
 
 ///|
@@ -114,10 +106,10 @@ pub struct SimpleShapeOptions {
 
 ///|
 pub fn SimpleShapeOptions::default() -> SimpleShapeOptions {
-  SimpleShapeOptions::{
-    script: @swash.Script::Latin,
+  {
+    script: Latin,
     language: None,
-    direction: Direction::LeftToRight,
+    direction: LeftToRight,
     size: 0.0,
     features: [],
     variations: [],
@@ -179,7 +171,7 @@ pub fn[S : Selector, O : ShapeOptions] shape(
   f : (SelectedFont, Shaper) -> Unit,
 ) -> Unit {
   let mut cluster = @swash.CharCluster::CharCluster()
-  let parser0 = if options.direction() == Direction::RightToLeft {
+  let parser0 = if options.direction() == RightToLeft {
     // Mirror characters for RTL text.
     @swash.Parser::Parser(
       options.script(),
@@ -189,11 +181,11 @@ pub fn[S : Selector, O : ShapeOptions] shape(
           None => ch0
           Some(m) => m
         }
-        @swash.Token::Token(ch, t.offset(), t.len(), t.info(), t.data())
+        Token(ch, t.offset(), t.len(), t.info(), t.data())
       }),
     )
   } else {
-    @swash.Parser::Parser(options.script(), tokens)
+    Parser(options.script(), tokens)
   }
   if !parser0.next(cluster) {
     return

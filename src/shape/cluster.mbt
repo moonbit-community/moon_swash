@@ -27,12 +27,12 @@ pub struct GlyphInfo {
 
 ///|
 pub fn GlyphInfo::default() -> GlyphInfo {
-  GlyphInfo::{ bits: 0, }
+  { bits: 0, }
 }
 
 ///|
 pub fn GlyphInfo::GlyphInfo(bits : UInt16) -> GlyphInfo {
-  GlyphInfo::{ bits, }
+  { bits, }
 }
 
 ///|
@@ -60,7 +60,7 @@ pub struct Glyph {
 
 ///|
 pub fn Glyph::default() -> Glyph {
-  Glyph::{
+  {
     id: (0).to_uint16(),
     info: GlyphInfo::default(),
     x: 0.0,

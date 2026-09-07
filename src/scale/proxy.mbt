@@ -45,7 +45,7 @@ pub fn ScalerProxy::from_font(font : @swash.FontRef) -> ScalerProxy {
   } else {
     n.to_uint16()
   }
-  ScalerProxy::{
+  {
     metrics: @swash.MetricsProxy::from_font(font),
     color: ColorProxy::from_font(font),
     bitmaps: @swash.BitmapStrikesProxy::from_font(font),

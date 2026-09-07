@@ -28,17 +28,14 @@ pub(all) enum WordBreakStrength {
 
 ///|
 fn WordBreakStrength::default() -> WordBreakStrength {
-  WordBreakStrength::Normal
+  Normal
 }
 
 ///|
 /// Returns an iterator yielding unicode properties and boundary analysis for
 /// each character in the specified sequence.
 pub fn analyze(chars : Iter[Char]) -> Analyze {
-  Analyze::{
-    chars: CharStream::CharStream(chars),
-    state: BoundaryState::BoundaryState(),
-  }
+  { chars: CharStream(chars), state: BoundaryState(), }
 }
 
 ///|
@@ -86,7 +83,7 @@ struct CharStream {
 
 ///|
 fn CharStream::CharStream(iter : Iter[Char]) -> CharStream {
-  CharStream::{ iter, buf: ([] : Array[Char]), buf_offset: 0, done: false, }
+  { iter, buf: ([] : Array[Char]), buf_offset: 0, done: false, }
 }
 
 ///|
@@ -150,9 +147,9 @@ struct BoundaryState {
 
 ///|
 fn BoundaryState::BoundaryState() -> BoundaryState {
-  BoundaryState::{
+  {
     strength: WordBreakStrength::default(),
-    prev: WordBreak::EX,
+    prev: EX,
     prevent_next: false,
     ri_count: 0,
     emoji: false,
@@ -181,7 +178,7 @@ fn BoundaryState::check_word(
     self.first = false
     self.prev = b
     self.next_emoji = emoji
-    if word_break_eq(b, WordBreak::RI) {
+    if word_break_eq(b, RI) {
       self.ri_count = 1
     }
     return true
@@ -195,7 +192,7 @@ fn BoundaryState::check_word(
     self.prevent_next = false
     return false
   }
-  if word_break_eq(a, WordBreak::CR) && word_break_eq(b, WordBreak::LF) {
+  if word_break_eq(a, CR) && word_break_eq(b, LF) {
     self.reset_state()
     return false
   }
@@ -207,7 +204,7 @@ fn BoundaryState::check_word(
     self.reset_state()
     return true
   }
-  if word_break_eq(a, WordBreak::ZWJ) && emoji {
+  if word_break_eq(a, ZWJ) && emoji {
     self.reset_state()
     return false
   }
@@ -217,8 +214,7 @@ fn BoundaryState::check_word(
     self.prev = a
     return false
   }
-  if word_break_eq(a, WordBreak::WSegSpace) &&
-    word_break_eq(b, WordBreak::WSegSpace) {
+  if word_break_eq(a, WSegSpace) && word_break_eq(b, WSegSpace) {
     // WSegSpace × WSegSpace
     self.reset_state()
     return false
@@ -246,19 +242,19 @@ fn BoundaryState::check_word(
       }
     }
   }
-  if word_break_eq(a, WordBreak::HL) {
-    if word_break_eq(b, WordBreak::SQ) {
+  if word_break_eq(a, HL) {
+    if word_break_eq(b, SQ) {
       self.reset_state()
       return false
     }
-    if word_break_eq(b, WordBreak::DQ) {
+    if word_break_eq(b, DQ) {
       // Hebrew_Letter × Double_Quote Hebrew_Letter
       // Hebrew_Letter Double_Quote × Hebrew_Letter
       match stream.peek(0) {
         None => ()
         Some(ch) => {
           let c = Codepoint::properties(ch).word_break()
-          if word_break_eq(c, WordBreak::HL) {
+          if word_break_eq(c, HL) {
             self.prevent_next = true
             self.reset_state()
             return false
@@ -281,7 +277,7 @@ fn BoundaryState::check_word(
           let c = Codepoint::properties(ch).word_break()
           // Numeric (MidNum | MidNumLetQ) × Numeric
           // Numeric × (MidNum | MidNumLetQ) Numeric
-          if word_break_eq(c, WordBreak::NU) {
+          if word_break_eq(c, NU) {
             self.prevent_next = true
             self.reset_state()
             return false
@@ -290,35 +286,35 @@ fn BoundaryState::check_word(
       }
     }
   }
-  if word_break_eq(a, WordBreak::KA) && word_break_eq(b, WordBreak::KA) {
+  if word_break_eq(a, KA) && word_break_eq(b, KA) {
     // Katakana × Katakana
     self.reset_state()
     return false
   }
-  if (a_mask & wb13_a) != 0U && word_break_eq(b, WordBreak::EX) {
+  if (a_mask & wb13_a) != 0U && word_break_eq(b, EX) {
     // (AHLetter | Numeric | Katakana | ExtendNumLet) ×	ExtendNumLet
     self.reset_state()
     return false
   }
-  if word_break_eq(a, WordBreak::EX) && (b_mask & wb13_b) != 0U {
+  if word_break_eq(a, EX) && (b_mask & wb13_b) != 0U {
     // ExtendNumLet × (AHLetter | Numeric | Katakana)
     self.reset_state()
     return false
   }
-  if prev_emoji && word_break_eq(a, WordBreak::ZWJ) && emoji {
+  if prev_emoji && word_break_eq(a, ZWJ) && emoji {
     self.ri_count = 0
     return false
   }
   if self.ri_count == 2 {
     self.reset_state()
-    if word_break_eq(b, WordBreak::RI) {
+    if word_break_eq(b, RI) {
       self.ri_count = 1
     }
     return true
   }
-  if word_break_eq(b, WordBreak::RI) {
+  if word_break_eq(b, RI) {
     self.ri_count = self.ri_count + 1
-    if !word_break_eq(a, WordBreak::RI) {
+    if !word_break_eq(a, RI) {
       self.reset_state()
       self.ri_count = 1
       return true
@@ -343,7 +339,7 @@ fn BoundaryState::check_line(
   //
   // Treat the NU, AL, and SA line breaking classes as ID.
   let mode_val = match self.strength {
-    WordBreakStrength::BreakAll => {
+    BreakAll => {
       let left = match prev_lb {
         Some(prev) =>
           if is_break_all_class(prev) {
@@ -365,10 +361,10 @@ fn BoundaryState::check_line(
   let mut mode = if (mode_val & MANDATORY_BREAK_BIT) != 0U {
     Boundary::Mandatory
   } else if (mode_val & ALLOWED_BREAK_BIT) != 0U &&
-    !opt_line_break_eq(prev_lb, LineBreak::ZWJ) {
-    Boundary::Line
+    !opt_line_break_eq(prev_lb, ZWJ) {
+    Line
   } else {
-    Boundary::None
+    None
   }
 
   // word-break: keep-all
@@ -377,9 +373,9 @@ fn BoundaryState::check_line(
   // AI, or ID classes.
   // (See https://github.com/unicode-org/icu4x/blob/1e27279/components/segmenter/src/line.rs#L836-L840)
   match (self.strength, prev_lb) {
-    (WordBreakStrength::KeepAll, Some(prev)) =>
+    (KeepAll, Some(prev)) =>
       if is_keep_all_class(prev) && is_keep_all_class(lb) {
-        mode = Boundary::None
+        mode = None
       }
     _ => ()
   }
@@ -401,7 +397,7 @@ fn BoundaryState::next(
       let mut boundary = self.check_line(props)
       let word = self.check_word(props, stream)
       match boundary {
-        Boundary::None => if word { boundary = Boundary::Word }
+        None => if word { boundary = Word }
         _ => ()
       }
       self.needs_bidi = self.needs_bidi || props.bidi_class().needs_resolution()
@@ -428,7 +424,7 @@ const LINEBREAK_ID : Int = 20
 ///|
 fn is_break_all_class(lb : LineBreak) -> Bool {
   match lb {
-    LineBreak::AL | LineBreak::NU | LineBreak::SA => true
+    AL | NU | SA => true
     _ => false
   }
 }
@@ -436,17 +432,7 @@ fn is_break_all_class(lb : LineBreak) -> Bool {
 ///|
 fn is_keep_all_class(lb : LineBreak) -> Bool {
   match lb {
-    LineBreak::AI
-    | LineBreak::AL
-    | LineBreak::ID
-    | LineBreak::NU
-    | LineBreak::HY
-    | LineBreak::H2
-    | LineBreak::H3
-    | LineBreak::JL
-    | LineBreak::JV
-    | LineBreak::JT
-    | LineBreak::CJ => true
+    AI | AL | ID | NU | HY | H2 | H3 | JL | JV | JT | CJ => true
     _ => false
   }
 }
@@ -467,49 +453,49 @@ fn line_break_eq(a : LineBreak, b : LineBreak) -> Bool {
 ///|
 fn line_break_index(lb : LineBreak) -> Int {
   match lb {
-    LineBreak::AI => 0
-    LineBreak::AL => 1
-    LineBreak::B2 => 2
-    LineBreak::BA => 3
-    LineBreak::BB => 4
-    LineBreak::BK => 5
-    LineBreak::CB => 6
-    LineBreak::CJ => 7
-    LineBreak::CL => 8
-    LineBreak::CM => 9
-    LineBreak::CP => 10
-    LineBreak::CR => 11
-    LineBreak::EB => 12
-    LineBreak::EM => 13
-    LineBreak::EX => 14
-    LineBreak::GL => 15
-    LineBreak::H2 => 16
-    LineBreak::H3 => 17
-    LineBreak::HL => 18
-    LineBreak::HY => 19
-    LineBreak::ID => 20
-    LineBreak::IN => 21
-    LineBreak::IS => 22
-    LineBreak::JL => 23
-    LineBreak::JT => 24
-    LineBreak::JV => 25
-    LineBreak::LF => 26
-    LineBreak::NL => 27
-    LineBreak::NS => 28
-    LineBreak::NU => 29
-    LineBreak::OP => 30
-    LineBreak::PO => 31
-    LineBreak::PR => 32
-    LineBreak::QU => 33
-    LineBreak::RI => 34
-    LineBreak::SA => 35
-    LineBreak::SG => 36
-    LineBreak::SP => 37
-    LineBreak::SY => 38
-    LineBreak::WJ => 39
-    LineBreak::XX => 40
-    LineBreak::ZW => 41
-    LineBreak::ZWJ => 42
+    AI => 0
+    AL => 1
+    B2 => 2
+    BA => 3
+    BB => 4
+    BK => 5
+    CB => 6
+    CJ => 7
+    CL => 8
+    CM => 9
+    CP => 10
+    CR => 11
+    EB => 12
+    EM => 13
+    EX => 14
+    GL => 15
+    H2 => 16
+    H3 => 17
+    HL => 18
+    HY => 19
+    ID => 20
+    IN => 21
+    IS => 22
+    JL => 23
+    JT => 24
+    JV => 25
+    LF => 26
+    NL => 27
+    NS => 28
+    NU => 29
+    OP => 30
+    PO => 31
+    PR => 32
+    QU => 33
+    RI => 34
+    SA => 35
+    SG => 36
+    SP => 37
+    SY => 38
+    WJ => 39
+    XX => 40
+    ZW => 41
+    ZWJ => 42
   }
 }
 
@@ -526,25 +512,25 @@ fn WordBreak::mask(self : WordBreak) -> UInt {
 ///|
 fn word_break_index(wb : WordBreak) -> Int {
   match wb {
-    WordBreak::CR => 0
-    WordBreak::DQ => 1
-    WordBreak::EX => 2
-    WordBreak::Extend => 3
-    WordBreak::FO => 4
-    WordBreak::HL => 5
-    WordBreak::KA => 6
-    WordBreak::LE => 7
-    WordBreak::LF => 8
-    WordBreak::MB => 9
-    WordBreak::ML => 10
-    WordBreak::MN => 11
-    WordBreak::NL => 12
-    WordBreak::NU => 13
-    WordBreak::RI => 14
-    WordBreak::SQ => 15
-    WordBreak::WSegSpace => 16
-    WordBreak::XX => 17
-    WordBreak::ZWJ => 18
+    CR => 0
+    DQ => 1
+    EX => 2
+    Extend => 3
+    FO => 4
+    HL => 5
+    KA => 6
+    LE => 7
+    LF => 8
+    MB => 9
+    ML => 10
+    MN => 11
+    NL => 12
+    NU => 13
+    RI => 14
+    SQ => 15
+    WSegSpace => 16
+    XX => 17
+    ZWJ => 18
   }
 }
 

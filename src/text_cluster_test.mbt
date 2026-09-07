@@ -17,7 +17,7 @@ fn tokens_from_string(s : String) -> Array[Token] {
   let tokens : Array[Token] = []
   let mut offset = 0U
   for ch in s {
-    tokens.push(Token::Token(ch, offset, 1U, CharInfo::from_char(ch), 0U))
+    tokens.push(Token(ch, offset, 1U, CharInfo::from_char(ch), 0U))
     offset = offset + 1U
   }
   tokens
@@ -26,27 +26,27 @@ fn tokens_from_string(s : String) -> Array[Token] {
 ///|
 test "text cluster: CRLF clusters as newline" {
   let tokens = tokens_from_string("\r\n")
-  let parser = Parser::Parser(Script::Latin, tokens.iter())
+  let parser = Parser::Parser(Latin, tokens.iter())
   let cluster = CharCluster::CharCluster()
   inspect(parser.next(cluster), content="true")
   inspect(cluster.chars().length(), content="2")
   inspect(
     match cluster.info().whitespace() {
-      Whitespace::Newline => true
+      Newline => true
       _ => false
     },
     content="true",
   )
   inspect(
     match cluster.chars()[0].shape_class() {
-      ShapeClass::Control => true
+      Control => true
       _ => false
     },
     content="true",
   )
   inspect(
     match cluster.chars()[1].shape_class() {
-      ShapeClass::Control => true
+      Control => true
       _ => false
     },
     content="true",
@@ -60,7 +60,7 @@ test "text cluster: CRLF clusters as newline" {
 test "text cluster: emoji VS16 excluded from shaping chars but included in range" {
   // U+263A WHITE SMILING FACE + U+FE0F VARIATION SELECTOR-16
   let tokens = tokens_from_string("\u{263A}\u{FE0F}")
-  let parser = Parser::Parser(Script::Latin, tokens.iter())
+  let parser = Parser::Parser(Latin, tokens.iter())
   let cluster = CharCluster::CharCluster()
   inspect(parser.next(cluster), content="true")
   inspect(cluster.chars().length(), content="1")
@@ -68,7 +68,7 @@ test "text cluster: emoji VS16 excluded from shaping chars but included in range
   inspect(cluster.range().end(), content="2")
   inspect(
     match cluster.info().emoji() {
-      Emoji::Color => true
+      Color => true
       _ => false
     },
     content="true",
@@ -79,7 +79,7 @@ test "text cluster: emoji VS16 excluded from shaping chars but included in range
 ///|
 test "text cluster: force-normalize prefers composed mapping" {
   let tokens = tokens_from_string("A\u{030A}")
-  let parser = Parser::Parser(Script::Latin, tokens.iter())
+  let parser = Parser::Parser(Latin, tokens.iter())
   let cluster = CharCluster::CharCluster()
   inspect(parser.next(cluster), content="true")
   inspect(
@@ -91,7 +91,7 @@ test "text cluster: force-normalize prefers composed mapping" {
           (0).to_uint16()
         }
       }) {
-      Status::Complete => true
+      Complete => true
       _ => false
     },
     content="true",
@@ -104,14 +104,14 @@ test "text cluster: force-normalize prefers composed mapping" {
 test "text cluster: Myanmar kinzi prefix is classified" {
   // 1004 + 103A + 1039 + 1000
   let tokens = tokens_from_string("\u{1004}\u{103A}\u{1039}\u{1000}")
-  let parser = Parser::Parser(Script::Myanmar, tokens.iter())
+  let parser = Parser::Parser(Myanmar, tokens.iter())
   let cluster = CharCluster::CharCluster()
   inspect(parser.next(cluster), content="true")
   inspect(cluster.chars().length(), content="4")
   for i in 0..<3 {
     inspect(
       match cluster.chars()[i].shape_class() {
-        ShapeClass::Kinzi => true
+        Kinzi => true
         _ => false
       },
       content="true",
@@ -119,7 +119,7 @@ test "text cluster: Myanmar kinzi prefix is classified" {
   }
   inspect(
     match cluster.chars()[3].shape_class() {
-      ShapeClass::Base => true
+      Base => true
       _ => false
     },
     content="true",

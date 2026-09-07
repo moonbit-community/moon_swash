@@ -28,8 +28,8 @@ pub struct CharmapProxy {
 ///|
 pub fn CharmapProxy::from_font(font : FontRef) -> CharmapProxy {
   match @internal.subtable(font) {
-    None => CharmapProxy::{ offset: 0, format: 0, symbol: false, }
-    Some((offset, format, symbol)) => CharmapProxy::{ offset, format, symbol, }
+    None => { offset: 0, format: 0, symbol: false, }
+    Some((offset, format, symbol)) => { offset, format, symbol, }
   }
 }
 
@@ -40,7 +40,7 @@ pub fn CharmapProxy::materialize(
   self : CharmapProxy,
   font : FontRef,
 ) -> Charmap {
-  Charmap::{ data: font.data(), proxy: self, }
+  { data: font.data(), proxy: self, }
 }
 
 ///|
@@ -53,7 +53,7 @@ pub struct Charmap {
 ///|
 pub fn Charmap::from_font(font : FontRef) -> Charmap {
   let proxy = CharmapProxy::from_font(font)
-  Charmap::{ data: font.data(), proxy, }
+  { data: font.data(), proxy, }
 }
 
 ///|

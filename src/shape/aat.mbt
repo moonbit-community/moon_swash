@@ -83,7 +83,7 @@ pub fn apply_morx(
         Some(v) => v
       }
       match kind {
-        @internal.MorxSubtableKind::Rearrangement(t) => {
+        Rearrangement(t) => {
           let mut i = 0
           let state = @internal.MorxRearrangementState::MorxRearrangementState()
           while i < buffer.glyphs.length() && ops < max_ops {
@@ -105,7 +105,7 @@ pub fn apply_morx(
           })
           |> ignore
         }
-        @internal.MorxSubtableKind::Contextual(t) => {
+        Contextual(t) => {
           let state = @internal.MorxContextualState::MorxContextualState()
           for i in 0..<buffer.glyphs.length() {
             let gid = buffer.glyphs[i].id
@@ -127,7 +127,7 @@ pub fn apply_morx(
             |> ignore
           }
         }
-        @internal.MorxSubtableKind::NonContextual(t) =>
+        NonContextual(t) =>
           for i in 0..<buffer.glyphs.length() {
             let gid = buffer.glyphs[i].id
             match t.substitute(gid) {
@@ -135,7 +135,7 @@ pub fn apply_morx(
               Some(s) => buffer.glyphs[i].id = s
             }
           }
-        @internal.MorxSubtableKind::Ligature(t) => {
+        Ligature(t) => {
           let mut i = 0
           let state = @internal.MorxLigatureState::MorxLigatureState()
           while i < buffer.glyphs.length() && ops < max_ops {
@@ -159,7 +159,7 @@ pub fn apply_morx(
           })
           |> ignore
         }
-        @internal.MorxSubtableKind::Insertion(t) => {
+        Insertion(t) => {
           let mut i = 0
           let state = @internal.MorxInsertionState::MorxInsertionState()
           while i < buffer.glyphs.length() && ops < max_ops {
@@ -221,7 +221,7 @@ pub fn apply_kerx(
           continue
         }
         match kind {
-          @internal.KerxSubtableKind::Format0(t) => {
+          Format0(t) => {
             if disable_kern {
               continue
             }
@@ -249,7 +249,7 @@ pub fn apply_kerx(
               left = right
             }
           }
-          @internal.KerxSubtableKind::Format1(t) => {
+          Format1(t) => {
             if disable_kern {
               continue
             }
@@ -268,7 +268,7 @@ pub fn apply_kerx(
               }
             }
           }
-          @internal.KerxSubtableKind::Format2(t) => {
+          Format2(t) => {
             if disable_kern {
               continue
             }
@@ -296,7 +296,7 @@ pub fn apply_kerx(
               left = right
             }
           }
-          @internal.KerxSubtableKind::Format4(t) => {
+          Format4(t) => {
             let mut i = 0
             let len = buffer.glyphs.length()
             let state = @internal.KerxFormat4State::KerxFormat4State()
@@ -331,7 +331,7 @@ pub fn apply_kern(data : Bytes, kern : UInt, buffer : Buffer) -> Unit {
     buffer.ensure_order(buffer.is_rtl)
     let cross_stream = subtable.cross_stream()
     match kind {
-      @internal.KernSubtableKind::Format0(t) => {
+      Format0(t) => {
         buffer.ensure_order(false)
         let len = buffer.len()
         let left_index_opt = first_non_joining_index(buffer)
@@ -357,7 +357,7 @@ pub fn apply_kern(data : Bytes, kern : UInt, buffer : Buffer) -> Unit {
           left = right
         }
       }
-      @internal.KernSubtableKind::Format1(t) => {
+      Format1(t) => {
         let mut i = 0
         let len = buffer.glyphs.length()
         let state = @internal.KernFormat1State::KernFormat1State()
@@ -405,7 +405,7 @@ fn find_base(buffer : Buffer, reverse : Bool, index : Int) -> Int? {
       if g.cluster != cluster {
         return None
       }
-      if g.char_class is ShapeClass::Base {
+      if g.char_class is Base {
         return Some(i)
       }
     }
@@ -416,7 +416,7 @@ fn find_base(buffer : Buffer, reverse : Bool, index : Int) -> Int? {
       if g.cluster != cluster {
         return None
       }
-      if g.char_class is ShapeClass::Base {
+      if g.char_class is Base {
         return Some(i)
       }
       if i == 0 {

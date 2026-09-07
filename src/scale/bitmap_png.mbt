@@ -38,7 +38,7 @@ pub fn is_png(data : Bytes) -> Bool {
 ///
 /// In PNG this is used for concatenated IDAT data.
 pub fn inflate_zlib(data : Bytes) -> Array[Byte] raise @yazi.YaziError {
-  let (out, _) = @yazi.decompress(data, @yazi.Format::Zlib)
+  let (out, _) = @yazi.decompress(data, Zlib)
   out
 }
 

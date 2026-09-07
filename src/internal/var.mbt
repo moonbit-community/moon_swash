@@ -48,7 +48,7 @@ pub struct Fvar {
 ///|
 pub fn Fvar::Fvar(data : BytesView) -> Fvar {
   let b = BeBytes::from_view(data)
-  Fvar::{
+  {
     data,
     axis_offset: b.read_u16(4).unwrap_or(0),
     axis_count: b.read_u16(8).unwrap_or(0),
@@ -60,7 +60,7 @@ pub fn Fvar::Fvar(data : BytesView) -> Fvar {
 
 ///|
 pub fn[T : RawFont] Fvar::from_font(font : T) -> Fvar? {
-  table_data(font, FVAR).map(data => Fvar::Fvar(data))
+  table_data(font, FVAR).map(data => Fvar(data))
 }
 
 ///|
@@ -92,7 +92,7 @@ pub struct VarAxis {
 
 ///|
 pub fn VarAxis::default() -> VarAxis {
-  VarAxis::{
+  {
     index: 0,
     tag: 0,
     name_id: 0,
@@ -182,7 +182,7 @@ pub fn Fvar::get_axis(self : Fvar, index : UInt) -> VarAxis? {
     None => return None
     Some(v) => v
   }
-  Some(VarAxis::{ index, tag, name_id, flags, min, default, max, })
+  Some({ index, tag, name_id, flags, min, default, max, })
 }
 
 ///|
@@ -231,7 +231,7 @@ pub fn Fvar::get_instance(self : Fvar, index : UInt) -> VarInstance? {
   } else {
     None
   }
-  Some(VarInstance::{ index, name_id, postscript_name_id, values, })
+  Some({ index, name_id, postscript_name_id, values, })
 }
 
 ///|
@@ -353,14 +353,7 @@ pub fn Mvar::from_data(
   if rec_count == 0 || store_rel == 0 {
     return None
   }
-  Some(Mvar::{
-    data,
-    coords,
-    base,
-    rec_size,
-    rec_count,
-    store: store_rel + mvar,
-  })
+  Some({ data, coords, base, rec_size, rec_count, store: store_rel + mvar, })
 }
 
 ///|

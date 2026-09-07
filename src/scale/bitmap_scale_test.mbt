@@ -249,9 +249,7 @@ test "Scaler.scale_color_bitmap decodes sbix PNG glyph into RGBA" {
   let font = @swash.FontRef::from_offset(sfnt, 0).unwrap()
   let cx = ScaleContext::ScaleContext()
   let scaler = cx.builder(font).size(16.0).build()
-  let img = scaler
-    .scale_color_bitmap((0).to_uint16(), StrikeWith::ExactSize)
-    .unwrap()
+  let img = scaler.scale_color_bitmap((0).to_uint16(), ExactSize).unwrap()
   inspect(
     match img.source() {
       ColorBitmap(_) => true
@@ -297,7 +295,7 @@ test "Scaler.scale_bitmap decodes EBDT 1bpp glyph into alpha mask" {
   let font = @swash.FontRef::from_offset(sfnt, 0).unwrap()
   let cx = ScaleContext::ScaleContext()
   let scaler = cx.builder(font).size(12.0).build()
-  let img = scaler.scale_bitmap((0).to_uint16(), StrikeWith::ExactSize).unwrap()
+  let img = scaler.scale_bitmap((0).to_uint16(), ExactSize).unwrap()
   inspect(
     match img.source() {
       Bitmap(_) => true

@@ -27,9 +27,9 @@ pub(all) enum EngineMode {
 ///|
 pub impl Eq for EngineMode with fn equal(self, other) {
   match self {
-    EngineMode::Simple => other is EngineMode::Simple
-    EngineMode::Myanmar => other is EngineMode::Myanmar
-    EngineMode::Complex => other is EngineMode::Complex
+    Simple => other is Simple
+    Myanmar => other is Myanmar
+    Complex => other is Complex
   }
 }
 
@@ -43,9 +43,9 @@ pub(all) enum SubMode {
 ///|
 pub impl Eq for SubMode with fn equal(self, other) {
   match self {
-    SubMode::None => other is SubMode::None
-    SubMode::Gsub => other is SubMode::Gsub
-    SubMode::Morx => other is SubMode::Morx
+    None => other is None
+    Gsub => other is Gsub
+    Morx => other is Morx
   }
 }
 
@@ -60,10 +60,10 @@ pub(all) enum PosMode {
 ///|
 pub impl Eq for PosMode with fn equal(self, other) {
   match self {
-    PosMode::None => other is PosMode::None
-    PosMode::Gpos => other is PosMode::Gpos
-    PosMode::Kerx => other is PosMode::Kerx
-    PosMode::Kern => other is PosMode::Kern
+    None => other is None
+    Gpos => other is Gpos
+    Kerx => other is Kerx
+    Kern => other is Kern
   }
 }
 
@@ -92,29 +92,19 @@ pub fn EngineMetadata::from_font(font : @swash.FontRef) -> EngineMetadata {
   let kern = font.table_offset(0x6B65726E) // "kern"
   let mut sub_mode = SubMode::None
   if gsub != 0U {
-    sub_mode = SubMode::Gsub
+    sub_mode = Gsub
   } else if morx != 0U {
-    sub_mode = SubMode::Morx
+    sub_mode = Morx
   }
   let mut pos_mode = PosMode::None
   if gpos != 0U {
-    pos_mode = PosMode::Gpos
+    pos_mode = Gpos
   } else if kerx != 0U {
-    pos_mode = PosMode::Kerx
+    pos_mode = Kerx
   } else if kern != 0U {
-    pos_mode = PosMode::Kern
+    pos_mode = Kern
   }
-  EngineMetadata::{
-    gdef,
-    gsub,
-    gpos,
-    morx,
-    kerx,
-    ankr,
-    kern,
-    sub_mode,
-    pos_mode,
-  }
+  { gdef, gsub, gpos, morx, kerx, ankr, kern, sub_mode, pos_mode, }
 }
 
 ///|
@@ -156,7 +146,7 @@ pub fn Engine::Engine(
     None => None
     Some(l) => l.to_opentype()
   }
-  let (gsub, stags) = if metadata.sub_mode == SubMode::Gsub {
+  let (gsub, stags) = if metadata.sub_mode == Gsub {
     match
       StageOffsets::from_layout(font_data, metadata.gsub, script_tag, lang_tag) {
       None => (StageOffsets::default(), (0U, 0U))
@@ -165,7 +155,7 @@ pub fn Engine::Engine(
   } else {
     (StageOffsets::default(), (0U, 0U))
   }
-  let (gpos, ptags) = if metadata.pos_mode == PosMode::Gpos {
+  let (gpos, ptags) = if metadata.pos_mode == Gpos {
     match
       StageOffsets::from_layout(font_data, metadata.gpos, script_tag, lang_tag) {
       None => (StageOffsets::default(), (0U, 0U))
@@ -177,25 +167,25 @@ pub fn Engine::Engine(
   let tags : (UInt, UInt, UInt, UInt) = (stags.0, stags.1, ptags.0, ptags.1)
   let use_ot = gsub.lang != 0U || gpos.lang != 0U
   let mode = if gsub.lang != 0U && script.is_complex() {
-    if script is @swash.Script::Myanmar {
+    if script is Myanmar {
       EngineMode::Myanmar
     } else {
-      EngineMode::Complex
+      Complex
     }
   } else {
-    EngineMode::Simple
+    Simple
   }
-  let sub_mode = if metadata.sub_mode == SubMode::Gsub && gsub.lang == 0U {
+  let sub_mode = if metadata.sub_mode == Gsub && gsub.lang == 0U {
     SubMode::None
   } else {
     metadata.sub_mode
   }
-  let pos_mode = if metadata.pos_mode == PosMode::Gpos && gpos.lang == 0U {
+  let pos_mode = if metadata.pos_mode == Gpos && gpos.lang == 0U {
     PosMode::None
   } else {
     metadata.pos_mode
   }
-  Engine::{
+  {
     data: font_data,
     gdef,
     gsub,

@@ -47,7 +47,7 @@ pub(all) enum Source {
 
 ///|
 pub fn Source::default() -> Source {
-  Source::Outline
+  Outline
 }
 
 ///|

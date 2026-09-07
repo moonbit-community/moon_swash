@@ -22,10 +22,7 @@ const MAX_CACHED_HINT_INSTANCES : Int = 8
 
 ///|
 fn hinting_options() -> @skrifa_outline.HintingOptions {
-  @skrifa_outline.HintingMode::Smooth(
-    Some(@skrifa_outline.LcdLayout::Horizontal),
-    true,
-  ).into()
+  @skrifa_outline.HintingMode::Smooth(Some(Horizontal), true).into()
 }
 
 ///|
@@ -80,7 +77,7 @@ priv struct HintingCache {
 
 ///|
 fn HintingCache::HintingCache() -> HintingCache {
-  HintingCache::{ glyf_entries: [], cff_entries: [], serial: 0, }
+  { glyf_entries: [], cff_entries: [], serial: 0, }
 }
 
 ///|
@@ -127,7 +124,7 @@ fn HintingCache::get(
     Some(f) => f
   }
   let entries = match fmt {
-    @skrifa_outline.OutlineGlyphFormat::Glyf => self.glyf_entries
+    Glyf => self.glyf_entries
     _ => self.cff_entries
   }
   let coords = effective_coords(loc)
@@ -145,7 +142,7 @@ fn HintingCache::get(
           ) {
           Err(_) => None
           Ok(h) => {
-            entries.push(HintingEntry::{
+            entries.push({
               id0,
               id1,
               size,
@@ -158,7 +155,7 @@ fn HintingCache::get(
         }
       } else {
         let e = entries[ix]
-        entries[ix] = HintingEntry::{
+        entries[ix] = {
           id0: e.id0,
           id1: e.id1,
           size: e.size,
@@ -175,7 +172,7 @@ fn HintingCache::get(
           match inst.reconfigure(outlines, size, loc, hinting_options()) {
             Err(_) => None
             Ok(_) => {
-              entries[ix] = HintingEntry::{
+              entries[ix] = {
                 id0,
                 id1,
                 size,

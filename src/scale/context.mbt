@@ -40,12 +40,7 @@ priv struct State {
 
 ///|
 fn State::State() -> State {
-  State::{
-    _scratch0: [],
-    _scratch1: [],
-    outline: Outline::Outline(),
-    rcx: Ref(@zeno.Scratch::Scratch()),
-  }
+  { _scratch0: [], _scratch1: [], outline: Outline(), rcx: Ref(Scratch()), }
 }
 
 ///|
@@ -65,10 +60,10 @@ pub fn ScaleContext::with_max_entries(max_entries : Int) -> ScaleContext {
   } else {
     max_entries
   }
-  ScaleContext::{
-    fonts: Ref(@swash.FontCache::FontCache(max_entries)),
-    state: Ref(State::State()),
-    hinting_cache: Ref(HintingCache::HintingCache()),
+  {
+    fonts: Ref(FontCache(max_entries)),
+    state: Ref(State()),
+    hinting_cache: Ref(HintingCache()),
   }
 }
 
@@ -78,7 +73,7 @@ pub fn ScaleContext::builder(
   font : @swash.FontRef,
 ) -> ScalerBuilder {
   let (id, proxy) = self.fonts.val.get(font, None, ScalerProxy::from_font)
-  ScalerBuilder::{
+  {
     state: self.state,
     hinting_cache: self.hinting_cache,
     font,
@@ -100,7 +95,7 @@ pub fn ScaleContext::builder_with_id(
   id : (UInt64, UInt64),
 ) -> ScalerBuilder {
   let (id2, proxy) = self.fonts.val.get(font, Some(id), ScalerProxy::from_font)
-  ScalerBuilder::{
+  {
     state: self.state,
     hinting_cache: self.hinting_cache,
     font,
@@ -132,7 +127,7 @@ pub fn ScalerBuilder::size(
   self : ScalerBuilder,
   ppem : Double,
 ) -> ScalerBuilder {
-  ScalerBuilder::{
+  {
     state: self.state,
     hinting_cache: self.hinting_cache,
     font: self.font,
@@ -151,7 +146,7 @@ pub fn ScalerBuilder::size(
 
 ///|
 pub fn ScalerBuilder::hint(self : ScalerBuilder, yes : Bool) -> ScalerBuilder {
-  ScalerBuilder::{
+  {
     state: self.state,
     hinting_cache: self.hinting_cache,
     font: self.font,
@@ -221,7 +216,7 @@ pub fn ScalerBuilder::build(self : ScalerBuilder) -> Scaler {
   let loc = if self.coords.is_empty() {
     @skrifa.LocationRef::default()
   } else {
-    @skrifa.LocationRef::LocationRef(self.coords[:])
+    LocationRef(self.coords[:])
   }
   let skrifa_font = to_skrifa_font(self.font)
   let outlines = match skrifa_font {
@@ -234,7 +229,7 @@ pub fn ScalerBuilder::build(self : ScalerBuilder) -> Scaler {
   } else {
     None
   }
-  Scaler::{
+  {
     state: self.state,
     _hinting_cache: self.hinting_cache,
     font: self.font,
@@ -375,7 +370,7 @@ struct OutlineWriter {
 
 ///|
 fn OutlineWriter::OutlineWriter(outline : Outline) -> OutlineWriter {
-  OutlineWriter::{ outline, }
+  { outline, }
 }
 
 ///|
@@ -384,7 +379,7 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with fn move_to(
   x,
   y,
 ) {
-  self.outline.move_to(Vector::Vector(x, y))
+  self.outline.move_to(Vector(x, y))
 }
 
 ///|
@@ -393,7 +388,7 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with fn line_to(
   x,
   y,
 ) {
-  self.outline.line_to(Vector::Vector(x, y))
+  self.outline.line_to(Vector(x, y))
 }
 
 ///|
@@ -404,7 +399,7 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with fn quad_to(
   x,
   y,
 ) {
-  self.outline.quad_to(Vector::Vector(cx0, cy0), Vector::Vector(x, y))
+  self.outline.quad_to(Vector(cx0, cy0), Vector(x, y))
 }
 
 ///|
@@ -417,11 +412,7 @@ pub impl @skrifa_outline.OutlinePen for OutlineWriter with fn curve_to(
   x,
   y,
 ) {
-  self.outline.curve_to(
-    Vector::Vector(cx0, cy0),
-    Vector::Vector(cx1, cy1),
-    Vector::Vector(x, y),
-  )
+  self.outline.curve_to(Vector(cx0, cy0), Vector(cx1, cy1), Vector(x, y))
 }
 
 ///|
@@ -555,20 +546,12 @@ fn Scaler::scale_bitmap_impl(
     Some(f) => f
   }
   let strikes = if color {
-    match
-      @skrifa.BitmapStrikes::with_format(
-        skrifa_font,
-        @skrifa.BitmapFormat::Sbix,
-      ) {
-      None =>
-        @skrifa.BitmapStrikes::with_format(
-          skrifa_font,
-          @skrifa.BitmapFormat::Cbdt,
-        )
+    match @skrifa.BitmapStrikes::with_format(skrifa_font, Sbix) {
+      None => @skrifa.BitmapStrikes::with_format(skrifa_font, Cbdt)
       Some(s) => Some(s)
     }
   } else {
-    @skrifa.BitmapStrikes::with_format(skrifa_font, @skrifa.BitmapFormat::Ebdt)
+    @skrifa.BitmapStrikes::with_format(skrifa_font, Ebdt)
   }
   let strikes = match strikes {
     None => return None
@@ -581,7 +564,7 @@ fn Scaler::scale_bitmap_impl(
   let mut glyph : @skrifa.BitmapGlyph? = None
   let mut strike_ppem = 0
   match strike {
-    StrikeWith::ExactSize => {
+    ExactSize => {
       if size == 0.0 {
         return None
       }
@@ -602,7 +585,7 @@ fn Scaler::scale_bitmap_impl(
         }
       }
     }
-    StrikeWith::BestFit => {
+    BestFit => {
       if size == 0.0 {
         return None
       }
@@ -635,7 +618,7 @@ fn Scaler::scale_bitmap_impl(
         strike_ppem = best_size
       }
     }
-    StrikeWith::LargestSize => {
+    LargestSize => {
       let mut best : @skrifa.BitmapGlyph? = None
       let mut best_size = 0
       for i in 0..<strikes.len() {
@@ -657,7 +640,7 @@ fn Scaler::scale_bitmap_impl(
       glyph = best
       strike_ppem = best_size
     }
-    StrikeWith::Index(index) => {
+    Index(index) => {
       let i = index.reinterpret_as_int()
       if i < 0 || i >= strikes.len() {
         return None
@@ -693,13 +676,9 @@ fn Scaler::scale_bitmap_impl(
     Some(h) => h
   }
   if w <= 0 || h <= 0 {
-    image.placement = Placement::{ left: 0, top: 0, width: 0U, height: 0U, }
-    image.source = if color {
-      Source::ColorBitmap(strike)
-    } else {
-      Source::Bitmap(strike)
-    }
-    image.content = if color { Content::Color } else { Content::Mask }
+    image.placement = { left: 0, top: 0, width: 0U, height: 0U, }
+    image.source = if color { ColorBitmap(strike) } else { Bitmap(strike) }
+    image.content = if color { Color } else { Mask }
     return Some(true)
   }
   let scale = if size == 0.0 { 1.0 } else { size / strike_ppem.to_double() }
@@ -718,7 +697,7 @@ fn Scaler::scale_bitmap_impl(
   let origin_x = glyph.origin_x()
   let origin_y = glyph.origin_y()
   match (color, glyph.format()) {
-    (true, @skrifa.BitmapImageFormat::Png) => {
+    (true, Png) => {
       let raw : Array[Byte] = []
       for b in glyph.data() {
         raw.push(b)
@@ -759,7 +738,7 @@ fn Scaler::scale_bitmap_impl(
           Some(_) => ()
         }
       }
-      image.placement = Placement::{
+      image.placement = {
         left: if size != 0.0 && scale != 1.0 {
           (origin_x.to_double() * scale).to_int()
         } else {
@@ -773,8 +752,8 @@ fn Scaler::scale_bitmap_impl(
         width: scaled_w,
         height: scaled_h,
       }
-      image.source = Source::ColorBitmap(strike)
-      image.content = Content::Color
+      image.source = ColorBitmap(strike)
+      image.content = Color
       Some(true)
     }
     (false, _) => {
@@ -815,7 +794,7 @@ fn Scaler::scale_bitmap_impl(
           return None
         }
       }
-      image.placement = Placement::{
+      image.placement = {
         left: if size != 0.0 && scale != 1.0 {
           (origin_x.to_double() * scale).to_int()
         } else {
@@ -829,8 +808,8 @@ fn Scaler::scale_bitmap_impl(
         width: scaled_w,
         height: scaled_h,
       }
-      image.source = Source::Bitmap(strike)
-      image.content = Content::Mask
+      image.source = Bitmap(strike)
+      image.content = Mask
       Some(true)
     }
     _ => None

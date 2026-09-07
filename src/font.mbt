@@ -29,7 +29,7 @@ pub fn FontDataRef::from_data(data : Bytes) -> FontDataRef? {
   if !@internal.is_font(data, 0) && !@internal.is_collection(data) {
     None
   } else {
-    Some(FontDataRef::{ data, len: @internal.count(data), })
+    Some({ data, len: @internal.count(data), })
   }
 }
 
@@ -120,7 +120,7 @@ pub fn FontRef::from_offset(data : Bytes, offset : Int) -> FontRef? {
   if !@internal.is_font(data, offset) {
     None
   } else {
-    Some(FontRef::{ data, offset, key: CacheKey::CacheKey(), })
+    Some({ data, offset, key: CacheKey(), })
   }
 }
 

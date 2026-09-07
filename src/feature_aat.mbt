@@ -38,12 +38,12 @@ fn AatFeatures::AatFeatures(
   kern : Bool,
 ) -> AatFeatures {
   let chains = @internal.morx_chains(data, morx_offset).iter()
-  AatFeatures::{
+  {
     chains,
     has_features: false,
     features: Iter::new(fn() { None }),
     kern,
-    seen: SeenFeatures::SeenFeatures(),
+    seen: SeenFeatures(),
   }
 }
 

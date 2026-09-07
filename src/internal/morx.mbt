@@ -34,7 +34,7 @@ pub fn morx_chains(data : Bytes, offset : UInt) -> MorxChains {
   }
   let b = BeBytes::from_view(view)
   let len = b.read_u32(4).unwrap_or(0)
-  MorxChains::{ b, offset: 8, len, cur: 0U, }
+  { b, offset: 8, len, cur: 0U, }
 }
 
 ///|
@@ -75,13 +75,7 @@ pub fn MorxChains::iter(self : MorxChains) -> Iter[MorxChain] {
       None => return None
       Some(v) => v
     }
-    Some(MorxChain::{
-      b,
-      offset: base,
-      default_flags,
-      feature_count,
-      subtable_count,
-    })
+    Some({ b, offset: base, default_flags, feature_count, subtable_count, })
   })
 }
 
@@ -127,12 +121,7 @@ pub fn MorxChain::features(self : MorxChain) -> Iter[MorxFeature] {
       None => return None
       Some(v) => v
     }
-    Some(MorxFeature::{
-      selector,
-      setting_selector,
-      enable_flags,
-      disable_flags,
-    })
+    Some({ selector, setting_selector, enable_flags, disable_flags, })
   })
 }
 
@@ -147,7 +136,7 @@ pub struct MorxSubtables {
 ///|
 pub fn MorxChain::subtables(self : MorxChain) -> MorxSubtables {
   let offset = self.offset + 16 + 12 * self.feature_count.reinterpret_as_int()
-  MorxSubtables::{ b: self.b, offset, len: self.subtable_count, cur: 0U, }
+  { b: self.b, offset, len: self.subtable_count, cur: 0U, }
 }
 
 ///|
@@ -185,7 +174,7 @@ pub fn MorxSubtables::iter(self : MorxSubtables) -> Iter[MorxSubtable] {
       None => return None
       Some(v) => v
     }
-    Some(MorxSubtable::{ b, offset: base, kind, coverage, flags, })
+    Some({ b, offset: base, kind, coverage, flags, })
   })
 }
 
@@ -219,17 +208,11 @@ pub(all) enum MorxSubtableKind {
 pub fn MorxSubtable::kind(self : MorxSubtable) -> MorxSubtableKind? {
   let data = aat_subview(self.b.data(), self.offset + 12)
   match self.kind {
-    0U =>
-      MorxRearrangement::parse(data).map(x => MorxSubtableKind::Rearrangement(x))
-    1U => MorxContextual::parse(data).map(x => MorxSubtableKind::Contextual(x))
-    2U => MorxLigature::parse(data).map(x => MorxSubtableKind::Ligature(x))
-    4U =>
-      Some(
-        MorxSubtableKind::NonContextual(
-          MorxNonContextual::MorxNonContextual(data),
-        ),
-      )
-    5U => MorxInsertion::parse(data).map(x => MorxSubtableKind::Insertion(x))
+    0U => MorxRearrangement::parse(data).map(x => Rearrangement(x))
+    1U => MorxContextual::parse(data).map(x => Contextual(x))
+    2U => MorxLigature::parse(data).map(x => Ligature(x))
+    4U => Some(NonContextual(MorxNonContextual(data)))
+    5U => MorxInsertion::parse(data).map(x => Insertion(x))
     _ => None
   }
 }
@@ -243,9 +226,7 @@ pub struct MorxRearrangement {
 
 ///|
 fn MorxRearrangement::parse(data : BytesView) -> MorxRearrangement? {
-  ExtendedStateTable::from_view(data).map(t => MorxRearrangement::{
-    state_table: t,
-  })
+  ExtendedStateTable::from_view(data).map(t => { state_table: t, })
 }
 
 ///|
@@ -280,7 +261,7 @@ pub struct MorxRearrangementState {
 
 ///|
 pub fn MorxRearrangementState::MorxRearrangementState() -> MorxRearrangementState {
-  MorxRearrangementState::{ state: 0, first: 0, last: 0, cycles: 0, }
+  { state: 0, first: 0, last: 0, cycles: 0, }
 }
 
 ///|
@@ -397,7 +378,7 @@ pub fn MorxRearrangement::next(
     }
     let reverse_l = m >> 4 == 3
     let reverse_r = (m & 0x0F) == 3
-    match f(MorxRearrange::{ l, r, reverse_l, reverse_r, start, end, }) {
+    match f({ l, r, reverse_l, reverse_r, start, end, }) {
       None => return None
       Some(_) => ()
     }
@@ -432,7 +413,7 @@ fn read_morx_contextual_data(b : BeBytes, offset : Int) -> MorxContextualData? {
     None => return None
     Some(v) => v.to_uint16()
   }
-  Some(MorxContextualData::{ mark_index, current_index, })
+  Some({ mark_index, current_index, })
 }
 
 ///|
@@ -453,7 +434,7 @@ fn MorxContextual::parse(data : BytesView) -> MorxContextual? {
     None => return None
     Some(v) => v
   }
-  Some(MorxContextual::{ b, state_table, table, })
+  Some({ b, state_table, table, })
 }
 
 ///|
@@ -468,12 +449,7 @@ pub struct MorxContextualState {
 
 ///|
 pub fn MorxContextualState::MorxContextualState() -> MorxContextualState {
-  MorxContextualState::{
-    state: 0,
-    mark_set: false,
-    mark_index: 0,
-    mark_id: (0).to_uint16(),
-  }
+  { state: 0, mark_set: false, mark_index: 0, mark_id: (0).to_uint16(), }
 }
 
 ///|
@@ -595,7 +571,7 @@ fn MorxLigature::parse(data : BytesView) -> MorxLigature? {
     None => return None
     Some(v) => v.reinterpret_as_int()
   }
-  Some(MorxLigature::{ b, state_table, action, component, ligature, })
+  Some({ b, state_table, action, component, ligature, })
 }
 
 ///|
@@ -610,7 +586,7 @@ pub struct MorxLigatureState {
 
 ///|
 pub fn MorxLigatureState::MorxLigatureState() -> MorxLigatureState {
-  MorxLigatureState::{
+  {
     state: 0,
     indices: Array::make(32, 0),
     glyphs: Array::make(32, (0).to_uint16()),
@@ -753,7 +729,7 @@ pub struct MorxNonContextual {
 
 ///|
 fn MorxNonContextual::MorxNonContextual(data : BytesView) -> MorxNonContextual {
-  MorxNonContextual::{ b: BeBytes::from_view(data), }
+  { b: BeBytes::from_view(data), }
 }
 
 ///|
@@ -782,7 +758,7 @@ fn read_morx_insertion_data(b : BeBytes, offset : Int) -> MorxInsertionData? {
     None => return None
     Some(v) => v.to_uint16()
   }
-  Some(MorxInsertionData::{ current_index, mark_index, })
+  Some({ current_index, mark_index, })
 }
 
 ///|
@@ -803,7 +779,7 @@ fn MorxInsertion::parse(data : BytesView) -> MorxInsertion? {
     None => return None
     Some(v) => v.reinterpret_as_int()
   }
-  Some(MorxInsertion::{ b, state_table, action, })
+  Some({ b, state_table, action, })
 }
 
 ///|
@@ -817,7 +793,7 @@ pub struct MorxInsertionState {
 
 ///|
 pub fn MorxInsertionState::MorxInsertionState() -> MorxInsertionState {
-  MorxInsertionState::{ state: 0, mark: 0, cycles: 0, }
+  { state: 0, mark: 0, cycles: 0, }
 }
 
 ///|

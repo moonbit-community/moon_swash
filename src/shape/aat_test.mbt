@@ -73,12 +73,10 @@ fn make_buffer_ab() -> Buffer {
   let tokens : Array[@swash.Token] = []
   let mut offset = 0U
   for ch in "ab" {
-    tokens.push(
-      @swash.Token::Token(ch, offset, 1U, @swash.CharInfo::from_char(ch), 0U),
-    )
+    tokens.push(Token(ch, offset, 1U, @swash.CharInfo::from_char(ch), 0U))
     offset = offset + 1U
   }
-  let parser = @swash.Parser::Parser(@swash.Script::Latin, tokens.iter())
+  let parser = @swash.Parser::Parser(Latin, tokens.iter())
   let cluster = @swash.CharCluster::CharCluster()
   while parser.next(cluster) {
     cluster.map(fn(ch) {

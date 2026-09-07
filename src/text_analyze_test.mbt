@@ -19,7 +19,7 @@ test "analyze marks word boundary at start" {
   let (_, boundary) = a.next().unwrap()
   inspect(
     match boundary {
-      Boundary::Word => true
+      Word => true
       _ => false
     },
     content="true",
@@ -42,7 +42,7 @@ test "analyze: ZWJ x emoji has no word boundary" {
   let (_, boundary) = a.next().unwrap()
   inspect(
     match boundary {
-      Boundary::Word => false
+      Word => false
       _ => true
     },
     content="true",

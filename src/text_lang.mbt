@@ -187,9 +187,9 @@ pub fn Language::parse(tag : String) -> Language? {
     if a == b'z' && b == b'h' {
       zh = true
     } else if a == b'j' && b == b'a' {
-      cjk = Cjk::Japanese
+      cjk = Japanese
     } else if a == b'k' && b == b'o' {
-      cjk = Cjk::Korean
+      cjk = Korean
     }
     language[0] = a
     language[1] = b
@@ -293,17 +293,17 @@ pub fn Language::parse(tag : String) -> Language? {
         if sc == "Hans" {
           (TEXT_LANG_ZHS_TAG, Cjk::Simplified)
         } else if sc == "Hant" {
-          (TEXT_LANG_ZHT_TAG, Cjk::Traditional)
+          (TEXT_LANG_ZHT_TAG, Traditional)
         } else {
-          (TEXT_LANG_ZHT_TAG, Cjk::Traditional)
+          (TEXT_LANG_ZHT_TAG, Traditional)
         }
-      None => (TEXT_LANG_ZHT_TAG, Cjk::Traditional)
+      None => (TEXT_LANG_ZHT_TAG, Traditional)
     }
     tag_opt = Some(tag)
     cjk = zh_cjk
     name_index = text_lang_lookup_tag(tag).unwrap_or(-1)
   }
-  Some(Language::{
+  Some({
     language,
     script,
     region,

@@ -88,7 +88,7 @@ pub fn BitmapStrikesProxy::from_font(font : FontRef) -> BitmapStrikesProxy {
   let sbix = font.table_offset(SBIX)
   if sbix != 0U {
     color_bitmaps = (sbix, sbix)
-    match font.localized_strings().find_by_id(StringId::Family, None) {
+    match font.localized_strings().find_by_id(Family, None) {
       None => ()
       Some(name) => is_apple = name.to_string() == "Apple Color Emoji"
     }
@@ -101,7 +101,7 @@ pub fn BitmapStrikesProxy::from_font(font : FontRef) -> BitmapStrikesProxy {
       }
     }
   }
-  BitmapStrikesProxy::{ bitmaps, color_bitmaps, upem, is_apple, }
+  { bitmaps, color_bitmaps, upem, is_apple, }
 }
 
 ///|
@@ -152,7 +152,7 @@ fn materialize_impl(
   is_apple : Bool,
 ) -> BitmapStrikes {
   if loc == 0U {
-    BitmapStrikes::BitmapStrikes(
+    BitmapStrikes(
       strike_empty_bytes_view(),
       strike_empty_bytes_view(),
       upem,
@@ -161,9 +161,9 @@ fn materialize_impl(
     )
   } else if loc == dat {
     let slice = slice_from(data, loc)
-    BitmapStrikes::BitmapStrikes(slice, slice, upem, is_sbix, is_apple)
+    BitmapStrikes(slice, slice, upem, is_sbix, is_apple)
   } else {
-    BitmapStrikes::BitmapStrikes(
+    BitmapStrikes(
       slice_from(data, loc),
       slice_from(data, dat),
       upem,
@@ -196,7 +196,7 @@ fn BitmapStrikes::BitmapStrikes(
 ) -> BitmapStrikes {
   let b = @internal.BeBytes::from_view(data)
   let len = b.read_u32(4).unwrap_or(0).reinterpret_as_int()
-  BitmapStrikes::{ b, bitmap_data, is_sbix, is_apple, upem, len, }
+  { b, bitmap_data, is_sbix, is_apple, upem, len, }
 }
 
 ///|
@@ -233,7 +233,7 @@ fn BitmapStrikes::get(self : BitmapStrikes, index : Int) -> BitmapStrike? {
   } else {
     8 + index * 48
   }
-  Some(BitmapStrike::{
+  Some({
     b: self.b,
     bitmap_data: self.bitmap_data,
     upem: self.upem,

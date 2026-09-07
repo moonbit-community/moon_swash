@@ -77,7 +77,7 @@ pub fn Layer::color_index(self : Layer) -> UInt16? {
 
 ///|
 pub fn Outline::Outline() -> Outline {
-  Outline::{ layers: [], points: [], verbs: [], is_color: false, }
+  { layers: [], points: [], verbs: [], is_color: false, }
 }
 
 ///|
@@ -129,7 +129,7 @@ pub fn Outline::get(self : Outline, index : Int) -> Layer? {
       for i in vs..<ve {
         verbs.push(self.verbs[i])
       }
-      Some(Layer::{ points, verbs, color_index: layer.color_index, })
+      Some({ points, verbs, color_index: layer.color_index, })
     }
   }
 }
@@ -260,7 +260,7 @@ fn embolden_contour(
       while i != j {
         let abs_i = start + i
         let p = points[abs_i]
-        points[abs_i] = Vector::Vector(
+        points[abs_i] = Vector(
           p.x() + x_strength + shift.x(),
           p.y() + y_strength + shift.y(),
         )
@@ -297,9 +297,9 @@ pub fn Outline::embolden(
     for vi in vs..<ve {
       let verb = self.verbs[vi]
       match verb {
-        Verb::MoveTo | Verb::Close => {
+        MoveTo | Close => {
           let is_move_to = match verb {
-            Verb::MoveTo => true
+            MoveTo => true
             _ => false
           }
           if pos > point_start {
@@ -317,9 +317,9 @@ pub fn Outline::embolden(
             pos = pos + 1
           }
         }
-        Verb::LineTo => pos = pos + 1
-        Verb::QuadTo => pos = pos + 2
-        Verb::CurveTo => pos = pos + 3
+        LineTo => pos = pos + 1
+        QuadTo => pos = pos + 2
+        CurveTo => pos = pos + 3
       }
     }
     if pos > point_start {
@@ -358,11 +358,11 @@ fn Outline::maybe_close(self : Outline) -> Unit {
     return
   }
   match self.verbs[self.verbs.length() - 1] {
-    Verb::Close => return
+    Close => return
     _ => ()
   }
   // Close current contour at layer boundary.
-  self.verbs.push(Verb::Close)
+  self.verbs.push(Close)
 }
 
 ///|
@@ -372,7 +372,7 @@ pub fn Outline::begin_layer(self : Outline, color_index : UInt16?) -> Unit {
   let verbs_end = self.verbs.length()
   if self.layers.length() > 0 {
     let last = self.layers[self.layers.length() - 1]
-    self.layers[self.layers.length() - 1] = LayerData::{
+    self.layers[self.layers.length() - 1] = {
       points_start: last.points_start,
       points_end,
       verbs_start: last.verbs_start,
@@ -380,7 +380,7 @@ pub fn Outline::begin_layer(self : Outline, color_index : UInt16?) -> Unit {
       color_index: last.color_index,
     }
   }
-  self.layers.push(LayerData::{
+  self.layers.push({
     points_start: points_end,
     points_end,
     verbs_start: verbs_end,
@@ -396,7 +396,7 @@ pub fn Outline::finish(self : Outline) -> Unit {
   let verbs_end = self.verbs.length()
   if self.layers.length() > 0 {
     let last = self.layers[self.layers.length() - 1]
-    self.layers[self.layers.length() - 1] = LayerData::{
+    self.layers[self.layers.length() - 1] = {
       points_start: last.points_start,
       points_end,
       verbs_start: last.verbs_start,
@@ -404,7 +404,7 @@ pub fn Outline::finish(self : Outline) -> Unit {
       color_index: last.color_index,
     }
   } else {
-    self.layers.push(LayerData::{
+    self.layers.push({
       points_start: 0,
       points_end,
       verbs_start: 0,
@@ -419,14 +419,14 @@ pub fn Outline::finish(self : Outline) -> Unit {
 pub fn Outline::move_to(self : Outline, p : Point) -> Unit {
   self.maybe_close()
   self.points.push(p)
-  self.verbs.push(Verb::MoveTo)
+  self.verbs.push(MoveTo)
 }
 
 ///|
 /// Internal builder method (upstream: `pub(super)`).
 pub fn Outline::line_to(self : Outline, p : Point) -> Unit {
   self.points.push(p)
-  self.verbs.push(Verb::LineTo)
+  self.verbs.push(LineTo)
 }
 
 ///|
@@ -434,7 +434,7 @@ pub fn Outline::line_to(self : Outline, p : Point) -> Unit {
 pub fn Outline::quad_to(self : Outline, p0 : Point, p1 : Point) -> Unit {
   self.points.push(p0)
   self.points.push(p1)
-  self.verbs.push(Verb::QuadTo)
+  self.verbs.push(QuadTo)
 }
 
 ///|
@@ -448,13 +448,13 @@ pub fn Outline::curve_to(
   self.points.push(p0)
   self.points.push(p1)
   self.points.push(p2)
-  self.verbs.push(Verb::CurveTo)
+  self.verbs.push(CurveTo)
 }
 
 ///|
 /// Internal builder method (upstream: `pub(super)`).
 pub fn Outline::close(self : Outline) -> Unit {
-  self.verbs.push(Verb::Close)
+  self.verbs.push(Close)
 }
 
 ///|
@@ -462,15 +462,11 @@ test "Outline basic path recording" {
   let o = Outline::Outline()
   o.set_color(false)
   o.begin_layer(None)
-  o.move_to(Vector::Vector(0.0, 0.0))
-  o.line_to(Vector::Vector(10.0, 0.0))
-  o.line_to(Vector::Vector(10.0, 10.0))
-  o.quad_to(Vector::Vector(0.0, 10.0), Vector::Vector(0.0, 0.0))
-  o.curve_to(
-    Vector::Vector(1.0, 1.0),
-    Vector::Vector(2.0, 2.0),
-    Vector::Vector(3.0, 3.0),
-  )
+  o.move_to(Vector(0.0, 0.0))
+  o.line_to(Vector(10.0, 0.0))
+  o.line_to(Vector(10.0, 10.0))
+  o.quad_to(Vector(0.0, 10.0), Vector(0.0, 0.0))
+  o.curve_to(Vector(1.0, 1.0), Vector(2.0, 2.0), Vector(3.0, 3.0))
   o.close()
   o.finish()
   inspect(o.points().length(), content="8")

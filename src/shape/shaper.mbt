@@ -32,8 +32,8 @@ pub(all) enum Direction {
 ///|
 pub impl Eq for Direction with fn equal(self, other) {
   match self {
-    Direction::LeftToRight => other is Direction::LeftToRight
-    Direction::RightToLeft => other is Direction::RightToLeft
+    LeftToRight => other is LeftToRight
+    RightToLeft => other is RightToLeft
   }
 }
 
@@ -55,8 +55,8 @@ priv struct State {
 
 ///|
 fn State::State() -> State {
-  State::{
-    buffer: Buffer::Buffer(),
+  {
+    buffer: Buffer(),
     order: [],
     glyphs: [],
     store_builder: FeatureStoreBuilder::default(),
@@ -86,11 +86,11 @@ struct ContextState {
 
 ///|
 fn ContextState::ContextState(max_entries : Int) -> ContextState {
-  ContextState::{
-    font_cache: @swash.FontCache::FontCache(max_entries),
-    feature_cache: FeatureCache::FeatureCache(max_entries),
+  {
+    font_cache: FontCache(max_entries),
+    feature_cache: FeatureCache(max_entries),
     coords: [],
-    state: State::State(),
+    state: State(),
   }
 }
 
@@ -120,7 +120,7 @@ pub fn ShapeContext::with_max_entries(max_entries : Int) -> ShapeContext {
   } else if max_entries0 > 64 {
     max_entries0 = 64
   }
-  ShapeContext::{ inner: Ref(ContextState::ContextState(max_entries0)), }
+  { inner: Ref(ContextState(max_entries0)), }
 }
 
 ///|
@@ -142,19 +142,19 @@ pub fn ShapeContext::builder_with_id(
   id : (UInt64, UInt64),
 ) -> ShaperBuilder {
   let (font_id, font_entry) = self.inner.val.font_cache.get(font, Some(id), font => {
-    FontEntry::FontEntry(font)
+    FontEntry(font)
   })
   self.inner.val.state.reset()
   self.inner.val.coords.clear()
-  ShaperBuilder::{
+  {
     cx: self.inner,
     font,
     id0: font_id.0,
     id1: font_id.1,
     size: 0.0,
-    script: @swash.Script::Latin,
+    script: Latin,
     language: None,
-    direction: Direction::LeftToRight,
+    direction: LeftToRight,
     charmap: font_entry.val.charmap.materialize(font),
     dotted_circle: None,
     retain_ignorables: false,
@@ -185,7 +185,7 @@ pub fn ShaperBuilder::script(
   self : ShaperBuilder,
   script : @swash.Script,
 ) -> ShaperBuilder {
-  ShaperBuilder::{
+  {
     cx: self.cx,
     font: self.font,
     id0: self.id0,
@@ -207,7 +207,7 @@ pub fn ShaperBuilder::language(
   self : ShaperBuilder,
   language : @swash.Language?,
 ) -> ShaperBuilder {
-  ShaperBuilder::{
+  {
     cx: self.cx,
     font: self.font,
     id0: self.id0,
@@ -229,7 +229,7 @@ pub fn ShaperBuilder::direction(
   self : ShaperBuilder,
   direction : Direction,
 ) -> ShaperBuilder {
-  ShaperBuilder::{
+  {
     cx: self.cx,
     font: self.font,
     id0: self.id0,
@@ -252,7 +252,7 @@ pub fn ShaperBuilder::size(
   self : ShaperBuilder,
   ppem : Double,
 ) -> ShaperBuilder {
-  ShaperBuilder::{
+  {
     cx: self.cx,
     font: self.font,
     id0: self.id0,
@@ -328,7 +328,7 @@ pub fn ShaperBuilder::insert_dotted_circles(
   } else {
     None
   }
-  ShaperBuilder::{
+  {
     cx: self.cx,
     font: self.font,
     id0: self.id0,
@@ -351,7 +351,7 @@ pub fn ShaperBuilder::retain_ignorables(
   self : ShaperBuilder,
   yes : Bool,
 ) -> ShaperBuilder {
-  ShaperBuilder::{
+  {
     cx: self.cx,
     font: self.font,
     id0: self.id0,
@@ -372,7 +372,7 @@ pub fn ShaperBuilder::retain_ignorables(
 pub fn ShaperBuilder::build(self : ShaperBuilder) -> Shaper {
   let cx = self.cx
   cx.val.state.buffer.dotted_circle = self.dotted_circle
-  cx.val.state.buffer.is_rtl = self.direction == Direction::RightToLeft
+  cx.val.state.buffer.is_rtl = self.direction == RightToLeft
   let engine = Engine::Engine(
     self.font_entry.val.metadata,
     self.font.data(),
@@ -388,8 +388,8 @@ pub fn ShaperBuilder::build(self : ShaperBuilder) -> Shaper {
       engine.tags(),
     )
     let store_ref = match entry {
-      FeatureCacheEntry::Present(s) => s
-      FeatureCacheEntry::New(s) => {
+      Present(s) => s
+      New(s) => {
         engine.collect_features(cx.val.state.store_builder, s)
         s
       }
@@ -406,7 +406,7 @@ pub fn ShaperBuilder::build(self : ShaperBuilder) -> Shaper {
     (None, FeatureMask::default(), FeatureMask::default())
   }
   let joined = engine.use_ot && self.script.is_joined()
-  Shaper::{
+  {
     cx,
     font: self.font,
     id0: self.id0,
@@ -454,8 +454,8 @@ pub struct Shaper {
 pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
   let buf = self.cx.val.state.buffer
   match self.engine.mode {
-    EngineMode::Simple => buf.push(cluster) |> ignore
-    EngineMode::Myanmar => {
+    Simple => buf.push(cluster) |> ignore
+    Myanmar => {
       let e = self.engine
       let sref = match self.store {
         None => return
@@ -473,7 +473,7 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
         s,
         feature_bit_to_mask(s.groups.reph),
         buf,
-        Some(IndexRange::IndexRange(start, end)),
+        Some(IndexRange(start, end)),
       )
       |> ignore
       let end = buf.len()
@@ -481,17 +481,15 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
         s,
         feature_bit_to_mask(s.groups.pref),
         buf,
-        Some(IndexRange::IndexRange(start, end)),
+        Some(IndexRange(start, end)),
       )
       |> ignore
       let end = buf.len()
-      e.gsub(s, s.groups.stage1, buf, Some(IndexRange::IndexRange(start, end)))
-      |> ignore
+      e.gsub(s, s.groups.stage1, buf, Some(IndexRange(start, end))) |> ignore
       let end = buf.len()
-      e.gsub(s, s.groups.stage2, buf, Some(IndexRange::IndexRange(start, end)))
-      |> ignore
+      e.gsub(s, s.groups.stage2, buf, Some(IndexRange(start, end))) |> ignore
     }
-    EngineMode::Complex => {
+    Complex => {
       let e = self.engine
       let sref = match self.store {
         None => return
@@ -505,9 +503,9 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
       e.gsub(s, s.groups.default, buf, Some(range)) |> ignore
       for i in range.start..<range.end {
         let g = buf.glyphs[i]
-        if g.char_class is ShapeClass::Halant && (g.flags & SUBSTITUTED) != 0 {
+        if g.char_class is Halant && (g.flags & SUBSTITUTED) != 0 {
           // Don't prevent reordering across a virama that has been substituted.
-          g.char_class = ShapeClass::Other
+          g.char_class = Other
           buf.glyphs.set(i, g)
         }
       }
@@ -515,44 +513,43 @@ pub fn Shaper::add_cluster(self : Shaper, cluster : CharCluster) -> Unit {
       let total = buf.len() - start
       let len = if total < 3 { total } else { 3 }
       let end = start + len
-      buf.clear_flags(SUBSTITUTED, Some(IndexRange::IndexRange(start, end)))
+      buf.clear_flags(SUBSTITUTED, Some(IndexRange(start, end)))
       e.gsub(
         s,
         feature_bit_to_mask(s.groups.reph),
         buf,
-        Some(IndexRange::IndexRange(start, end)),
+        Some(IndexRange(start, end)),
       )
       |> ignore
       for i in start..<end {
         let g = buf.glyphs[i]
         if (g.flags & SUBSTITUTED) != 0 {
-          g.char_class = ShapeClass::Reph
+          g.char_class = Reph
           buf.glyphs.set(i, g)
           break
         }
       }
       // Pref identification.
       let end = buf.len()
-      buf.clear_flags(SUBSTITUTED, Some(IndexRange::IndexRange(start, end)))
+      buf.clear_flags(SUBSTITUTED, Some(IndexRange(start, end)))
       e.gsub(
         s,
         feature_bit_to_mask(s.groups.pref),
         buf,
-        Some(IndexRange::IndexRange(start, end)),
+        Some(IndexRange(start, end)),
       )
       |> ignore
       for i in start..<end {
         let g = buf.glyphs[i]
         if (g.flags & SUBSTITUTED) != 0 {
-          g.char_class = ShapeClass::Pref
+          g.char_class = Pref
           buf.glyphs.set(i, g)
           break
         }
       }
       // Orthographic group.
       let end = buf.len()
-      e.gsub(s, s.groups.stage1, buf, Some(IndexRange::IndexRange(start, end)))
-      |> ignore
+      e.gsub(s, s.groups.stage1, buf, Some(IndexRange(start, end))) |> ignore
       // Reordering.
       let total = buf.len() - start
       let len = if total < 64 { total } else { 64 }
@@ -577,15 +574,7 @@ pub fn Shaper::add_str(self : Shaper, s : String) -> Unit {
   for ch in s {
     // Keep source ranges in UTF-8 byte offsets to match upstream swash.
     let ch_len = @utf8.encode(ch.to_string())[:].length().reinterpret_as_uint()
-    tokens.push(
-      @swash.Token::Token(
-        ch,
-        offset,
-        ch_len,
-        @swash.CharInfo::from_char(ch),
-        0U,
-      ),
-    )
+    tokens.push(Token(ch, offset, ch_len, @swash.CharInfo::from_char(ch), 0U))
     offset = offset + ch_len
   }
   let parser = @swash.Parser::Parser(self.script, tokens.iter())
@@ -700,7 +689,7 @@ pub fn Shaper::shape_with(self : Shaper, f : (GlyphCluster) -> Unit) -> Unit {
     }
     last_cluster = g.cluster
     if self.retain_ignorables || (g.flags & IGNORABLE) == 0 {
-      buf.shaped_glyphs.push(Glyph::Glyph(g, p))
+      buf.shaped_glyphs.push(Glyph(g, p))
     }
   }
 }
@@ -713,9 +702,9 @@ fn Shaper::finish(self : Shaper) -> Unit {
   let e = self.engine
   let buf = self.cx.val.state.buffer
   match e.mode {
-    EngineMode::Simple =>
+    Simple =>
       match e.sub_mode {
-        SubMode::Gsub => {
+        Gsub => {
           let sref = match self.store {
             None => return
             Some(v) => v
@@ -727,7 +716,7 @@ fn Shaper::finish(self : Shaper) -> Unit {
           }
           e.gsub(s, self.sub_mask, buf, None) |> ignore
         }
-        SubMode::Morx => {
+        Morx => {
           e.collect_selectors(
             self.cx.val.state.features[:],
             self.cx.val.state.selectors,
@@ -736,7 +725,7 @@ fn Shaper::finish(self : Shaper) -> Unit {
         }
         _ => ()
       }
-    EngineMode::Myanmar => {
+    Myanmar => {
       let sref = match self.store {
         None => return
         Some(v) => v
@@ -744,7 +733,7 @@ fn Shaper::finish(self : Shaper) -> Unit {
       let s = sref.val
       e.gsub(s, self.sub_mask.or(s.groups.stage2), buf, None) |> ignore
     }
-    EngineMode::Complex => {
+    Complex => {
       let sref = match self.store {
         None => return
         Some(v) => v
@@ -758,9 +747,9 @@ fn Shaper::finish(self : Shaper) -> Unit {
       }
     }
   }
-  buf.setup_positions(e.sub_mode == SubMode::Morx)
+  buf.setup_positions(e.sub_mode == Morx)
   match e.pos_mode {
-    PosMode::Gpos => {
+    Gpos => {
       let sref = match self.store {
         None => return
         Some(v) => v
@@ -768,13 +757,8 @@ fn Shaper::finish(self : Shaper) -> Unit {
       let s = sref.val
       e.gpos(s, self.pos_mask, buf, None) |> ignore
     }
-    PosMode::Kerx => e.kerx(buf, self.cx.val.state.disable_kern)
-    PosMode::Kern =>
-      if !self.cx.val.state.disable_kern {
-        e.kern(buf)
-      } else {
-        ()
-      }
+    Kerx => e.kerx(buf, self.cx.val.state.disable_kern)
+    Kern => if !self.cx.val.state.disable_kern { e.kern(buf) } else { () }
     _ => ()
   }
   let glyph_metrics = self.font_entry.val.metrics.materialize_glyph_metrics(
@@ -792,7 +776,7 @@ fn Shaper::finish(self : Shaper) -> Unit {
     buf.glyphs.set(i, g)
   }
   if buf.has_cursive {
-    if self.direction == Direction::RightToLeft {
+    if self.direction == RightToLeft {
       let mut i = len - 1
       while i >= 0 {
         let g = buf.glyphs[i]

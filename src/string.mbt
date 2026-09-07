@@ -52,32 +52,32 @@ pub(all) enum StringId {
 ///|
 pub fn StringId::from_raw(value : UInt16) -> StringId {
   match value.to_int() {
-    0 => StringId::Copyright
-    1 => StringId::Family
-    2 => StringId::SubFamily
-    3 => StringId::UniqueId
-    4 => StringId::Full
-    5 => StringId::Version
-    6 => StringId::PostScript
-    7 => StringId::Trademark
-    8 => StringId::Manufacturer
-    9 => StringId::Designer
-    10 => StringId::Description
-    11 => StringId::VendorUrl
-    12 => StringId::DesignerUrl
-    13 => StringId::License
-    14 => StringId::LicenseUrl
-    16 => StringId::TypographicFamily
-    17 => StringId::TypographicSubFamily
-    18 => StringId::CompatibleFull
-    19 => StringId::SampleText
-    20 => StringId::PostScriptCid
-    21 => StringId::WwsFamily
-    22 => StringId::WwsSubFamily
-    23 => StringId::LightBackgroundPalette
-    24 => StringId::DarkBackgroundPalette
-    25 => StringId::VariationsPostScriptNamePrefix
-    _ => StringId::Other(value)
+    0 => Copyright
+    1 => Family
+    2 => SubFamily
+    3 => UniqueId
+    4 => Full
+    5 => Version
+    6 => PostScript
+    7 => Trademark
+    8 => Manufacturer
+    9 => Designer
+    10 => Description
+    11 => VendorUrl
+    12 => DesignerUrl
+    13 => License
+    14 => LicenseUrl
+    16 => TypographicFamily
+    17 => TypographicSubFamily
+    18 => CompatibleFull
+    19 => SampleText
+    20 => PostScriptCid
+    21 => WwsFamily
+    22 => WwsSubFamily
+    23 => LightBackgroundPalette
+    24 => DarkBackgroundPalette
+    25 => VariationsPostScriptNamePrefix
+    _ => Other(value)
   }
 }
 
@@ -130,12 +130,12 @@ fn Encoding::from_raw_parts(
   encoding_id : UInt16,
 ) -> Encoding {
   match (platform_id.to_int(), encoding_id.to_int()) {
-    (0, _) => Encoding::Unicode
-    (1, 0) => Encoding::MacRoman
-    (3, 0) => Encoding::Unicode
-    (3, 1) => Encoding::Unicode
-    (3, 10) => Encoding::Unicode
-    _ => Encoding::Other(platform_id, encoding_id)
+    (0, _) => Unicode
+    (1, 0) => MacRoman
+    (3, 0) => Unicode
+    (3, 1) => Unicode
+    (3, 10) => Unicode
+    _ => Other(platform_id, encoding_id)
   }
 }
 
@@ -167,14 +167,14 @@ fn LocalizedStrings::LocalizedStrings(data : BytesView) -> LocalizedStrings {
   let b = @internal.BeBytes::from_view(data)
   let len = b.read_u16(2).unwrap_or(0).reinterpret_as_int()
   let storage = b.read_u16(4).unwrap_or(0).reinterpret_as_int()
-  LocalizedStrings::{ b, len, storage, }
+  { b, len, storage, }
 }
 
 ///|
 pub fn FontRef::localized_strings(self : FontRef) -> LocalizedStrings {
   match self.table_data(NAME) {
-    None => LocalizedStrings::LocalizedStrings(empty_view())
-    Some(v) => LocalizedStrings::LocalizedStrings(v)
+    None => LocalizedStrings(empty_view())
+    Some(v) => LocalizedStrings(v)
   }
 }
 
@@ -195,7 +195,7 @@ fn LocalizedStrings::get(
   if !self.b.ensure_range(off, 12) {
     return None
   }
-  Some(LocalizedString::{ b: self.b, storage: self.storage, offset: off, })
+  Some({ b: self.b, storage: self.storage, offset: off, })
 }
 
 ///|
