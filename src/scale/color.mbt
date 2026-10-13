@@ -19,8 +19,8 @@
 
 ///|
 struct ColorProxy {
-  colr : UInt
-  cpal : UInt
+  colr : UInt32
+  cpal : UInt32
 }
 
 ///|
@@ -85,7 +85,7 @@ pub fn ColorProxy::layers(
 ///|
 struct ColrLayers {
   data : @internal.BeBytes
-  offset : Int
+  offset : Int32
   len : UInt16
 }
 

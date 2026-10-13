@@ -44,7 +44,7 @@ fn selectors_contains(
 }
 
 ///|
-fn first_non_joining_index(buffer : Buffer) -> Int? {
+fn first_non_joining_index(buffer : Buffer) -> Int32? {
   for i in 0..<buffer.glyphs.length() {
     if buffer.glyphs[i].joining_type != (6).to_byte() {
       return Some(i)
@@ -56,7 +56,7 @@ fn first_non_joining_index(buffer : Buffer) -> Int? {
 ///|
 pub fn apply_morx(
   data : Bytes,
-  morx : UInt,
+  morx : UInt32,
   buffer : Buffer,
   selectors : ArrayView[(UInt16, UInt16)],
 ) -> Unit {
@@ -206,8 +206,8 @@ pub fn apply_morx(
 ///|
 pub fn apply_kerx(
   data : Bytes,
-  kerx : UInt,
-  ankr : UInt,
+  kerx : UInt32,
+  ankr : UInt32,
   buffer : Buffer,
   disable_kern : Bool,
 ) -> Unit {
@@ -319,7 +319,7 @@ pub fn apply_kerx(
 }
 
 ///|
-pub fn apply_kern(data : Bytes, kern : UInt, buffer : Buffer) -> Unit {
+pub fn apply_kern(data : Bytes, kern : UInt32, buffer : Buffer) -> Unit {
   for subtable in @internal.kern_subtables(data, kern).iter() {
     let kind = match subtable.kind() {
       None => continue
@@ -397,7 +397,7 @@ pub fn apply_kern(data : Bytes, kern : UInt, buffer : Buffer) -> Unit {
 }
 
 ///|
-fn find_base(buffer : Buffer, reverse : Bool, index : Int) -> Int? {
+fn find_base(buffer : Buffer, reverse : Bool, index : Int32) -> Int32? {
   let cluster = buffer.glyphs[index].cluster
   if reverse {
     for i in (index + 1)..<buffer.len() {

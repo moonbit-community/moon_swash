@@ -14,14 +14,14 @@
 
 ///|
 /// Minimal end-to-end tests for AAT shaping paths (black-box).
-fn push_u16_be(out : Array[Byte], v : Int) -> Unit {
+fn push_u16_be(out : Array[Byte], v : Int32) -> Unit {
   let u = v.reinterpret_as_uint()
   out.push(((u >> 8) & 0xFFU).to_byte())
   out.push((u & 0xFFU).to_byte())
 }
 
 ///|
-fn push_u32_be(out : Array[Byte], v : UInt) -> Unit {
+fn push_u32_be(out : Array[Byte], v : UInt32) -> Unit {
   out.push(((v >> 24) & 0xFFU).to_byte())
   out.push(((v >> 16) & 0xFFU).to_byte())
   out.push(((v >> 8) & 0xFFU).to_byte())
@@ -68,8 +68,8 @@ fn make_kern_format0_data() -> Bytes {
 }
 
 ///|
-fn make_buffer_ab() -> Buffer {
-  let buf = Buffer::Buffer()
+fn make_buffer_ab() -> @shape.Buffer {
+  let buf = @shape.Buffer::Buffer()
   let tokens : Array[@swash.Token] = []
   let mut offset = 0U
   for ch in "ab" {
@@ -99,7 +99,7 @@ fn make_buffer_ab() -> Buffer {
 test "apply_kern format0 pair" {
   let data = make_kern_format0_data()
   let buf = make_buffer_ab()
-  apply_kern(data, 1U, buf)
+  @shape.apply_kern(data, 1U, buf)
   let pos = buf.positions()
   inspect(pos[0].advance, content="-20")
   inspect(pos[1].advance, content="0")

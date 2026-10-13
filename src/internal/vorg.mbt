@@ -20,7 +20,7 @@ pub const VORG : RawTag = 0x564F5247 // "VORG"
 
 ///|
 /// Returns the vertical origin for the specified glyph.
-pub fn origin(data : Bytes, vorg : UInt, glyph_id : UInt) -> Int? {
+pub fn origin(data : Bytes, vorg : UInt32, glyph_id : UInt32) -> Int32? {
   if vorg == 0 {
     return None
   }

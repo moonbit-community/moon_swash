@@ -26,11 +26,11 @@
 /// (e.g. `swash/font.mbt`) can implement it, matching upstream swash.
 pub(open) trait RawFont {
   fn data(Self) -> Bytes
-  fn offset(Self) -> Int
+  fn offset(Self) -> Int32
 }
 
 ///|
-pub fn[T : RawFont] table_range(font : T, tag : RawTag) -> (UInt, UInt)? {
+pub fn[T : RawFont] table_range(font : T, tag : RawTag) -> (UInt32, UInt32)? {
   let base = font.offset()
   let data = font.data()
   let b = BeBytes::BeBytes(data)
@@ -83,7 +83,7 @@ pub fn[T : RawFont] table_range(font : T, tag : RawTag) -> (UInt, UInt)? {
 }
 
 ///|
-pub fn[T : RawFont] table_offset(font : T, tag : RawTag) -> UInt {
+pub fn[T : RawFont] table_offset(font : T, tag : RawTag) -> UInt32 {
   match table_range(font, tag) {
     None => 0
     Some((start, _)) => start

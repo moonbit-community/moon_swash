@@ -32,8 +32,8 @@ const DFLT : Tag = 0x44464C54 // "DFLT"
 ///|
 priv enum Kind {
   Empty
-  At(UInt, UInt)
-  Aat(UInt, Bool)
+  At(UInt32, UInt32)
+  Aat(UInt32, Bool)
 }
 
 ///|
@@ -107,7 +107,7 @@ priv enum WritingSystemKind {
 ///|
 priv struct AatWritingSystem {
   data : Bytes
-  morx : UInt
+  morx : UInt32
   kern : Bool
 }
 
@@ -184,7 +184,7 @@ fn action_for_aat_tag(tag : Tag) -> Action {
 }
 
 ///|
-fn action_for_stage_tag(stage : Int, tag : Tag) -> Action {
+fn action_for_stage_tag(stage : Int32, tag : Tag) -> Action {
   if stage == 0 {
     Substitution
   } else if tag == MARK || tag == MKMK {
@@ -260,7 +260,7 @@ priv enum WritingSystemsKind {
 ///|
 priv struct AatWritingSystems {
   data : Bytes
-  morx : UInt
+  morx : UInt32
   kern : Bool
 }
 

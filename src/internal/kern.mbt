@@ -20,14 +20,14 @@
 ///|
 pub struct KernSubtables {
   b : BeBytes
-  offset : Int
-  len : UInt
-  cur : UInt
+  offset : Int32
+  len : UInt32
+  cur : UInt32
   is_aat : Bool
 }
 
 ///|
-pub fn kern_subtables(data : Bytes, kern : UInt) -> KernSubtables {
+pub fn kern_subtables(data : Bytes, kern : UInt32) -> KernSubtables {
   let view = if kern == 0U {
     aat_empty_view()
   } else {
@@ -47,8 +47,8 @@ pub fn kern_subtables(data : Bytes, kern : UInt) -> KernSubtables {
 ///|
 pub struct KernSubtable {
   b : BeBytes
-  offset : Int
-  size : UInt
+  offset : Int32
+  size : UInt32
   is_horizontal : Bool
   cross_stream : Bool
   format : Byte
@@ -146,12 +146,12 @@ pub fn KernSubtable::kind(self : KernSubtable) -> KernSubtableKind? {
 ///|
 pub struct KernFormat0 {
   b : BeBytes
-  base : Int
-  count : Int
+  base : Int32
+  count : Int32
 }
 
 ///|
-fn KernFormat0::parse(b : BeBytes, offset : Int) -> KernFormat0? {
+fn KernFormat0::parse(b : BeBytes, offset : Int32) -> KernFormat0? {
   let count = match b.read_u16(offset) {
     None => return None
     Some(v) => v.reinterpret_as_int()
@@ -164,7 +164,7 @@ pub fn KernFormat0::get(
   self : KernFormat0,
   left : UInt16,
   right : UInt16,
-) -> Int? {
+) -> Int32? {
   let key = (left.to_int().reinterpret_as_uint() << 16) |
     right.to_int().reinterpret_as_uint()
   let reclen = 6
@@ -192,9 +192,9 @@ pub fn KernFormat0::get(
 ///|
 pub struct KernFormat1State {
   mut state : UInt16
-  stack : Array[Int]
-  mut pos : Int
-  mut cycles : Int
+  stack : Array[Int32]
+  mut pos : Int32
+  mut cycles : Int32
 }
 
 ///|
@@ -214,7 +214,7 @@ pub struct KernFormat1 {
 ///|
 fn KernFormat1::parse(
   b0 : BeBytes,
-  offset : Int,
+  offset : Int32,
   cross_stream : Bool,
 ) -> KernFormat1? {
   let data_view = aat_subview(b0.data(), offset)
@@ -230,10 +230,10 @@ fn KernFormat1::parse(
 pub fn KernFormat1::next(
   self : KernFormat1,
   state : KernFormat1State,
-  index : Int,
+  index : Int32,
   glyph_id : UInt16,
-  f : (Int, Int) -> Unit?,
-) -> Int? {
+  f : (Int32, Int32) -> Unit?,
+) -> Int32? {
   let push_flag : UInt16 = 0x8000
   let dont_advance : UInt16 = 0x4000
   let class = self.state_table.class(glyph_id)

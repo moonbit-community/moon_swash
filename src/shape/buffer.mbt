@@ -51,7 +51,7 @@ pub struct GlyphData {
   mut mask : Byte
   mut skip : Bool
   mut component : Byte
-  mut cluster : UInt
+  mut cluster : UInt32
   data : UserData
 }
 
@@ -88,7 +88,7 @@ pub fn GlyphData::flags(self : GlyphData) -> UInt16 {
 }
 
 ///|
-pub fn GlyphData::cluster(self : GlyphData) -> UInt {
+pub fn GlyphData::cluster(self : GlyphData) -> UInt32 {
   self.cluster
 }
 
@@ -121,24 +121,24 @@ fn Glyph::Glyph(g : GlyphData, p : PositionData) -> Glyph {
 
 ///|
 pub struct IndexRange {
-  start : Int
-  end : Int
+  start : Int32
+  end : Int32
 }
 
 ///|
 
 ///|
-pub fn IndexRange::IndexRange(start : Int, end : Int) -> IndexRange {
+pub fn IndexRange::IndexRange(start : Int32, end : Int32) -> IndexRange {
   { start, end, }
 }
 
 ///|
-pub fn IndexRange::start(self : IndexRange) -> Int {
+pub fn IndexRange::start(self : IndexRange) -> Int32 {
   self.start
 }
 
 ///|
-pub fn IndexRange::end(self : IndexRange) -> Int {
+pub fn IndexRange::end(self : IndexRange) -> Int32 {
   self.end
 }
 
@@ -154,7 +154,7 @@ pub struct Buffer {
   mut has_cursive : Bool
   mut has_marks : Bool
   mut reversed : Bool
-  mut next_cluster : UInt
+  mut next_cluster : UInt32
   mut skip_state : SkipState
   sub_args : Array[UInt16]
   pos_args : Array[UInt16]
@@ -168,7 +168,7 @@ pub struct SkipState {
   mask : Byte
   mark_check : Byte
   mark_class : Byte
-  mark_set : UInt
+  mark_set : UInt32
 }
 
 ///|
@@ -208,7 +208,7 @@ pub fn Buffer::Buffer() -> Buffer {
 }
 
 ///|
-pub fn Buffer::len(self : Buffer) -> Int {
+pub fn Buffer::len(self : Buffer) -> Int32 {
   self.glyphs.length()
 }
 
@@ -332,7 +332,7 @@ pub fn Buffer::push(self : Buffer, cluster : CharCluster) -> IndexRange {
 pub fn Buffer::push_order(
   self : Buffer,
   cluster : CharCluster,
-  order : ArrayView[Int],
+  order : ArrayView[Int32],
 ) -> IndexRange {
   let start = self.glyphs.length()
   let chars = cluster.mapped_chars()
@@ -451,7 +451,7 @@ pub fn Buffer::setup_positions(self : Buffer, was_morx : Bool) -> Unit {
 }
 
 ///|
-pub fn Buffer::substitute(self : Buffer, index : Int, id : GlyphId) -> Unit {
+pub fn Buffer::substitute(self : Buffer, index : Int32, id : GlyphId) -> Unit {
   self.glyphs[index].id = id
   self.glyphs[index].flags = self.glyphs[index].flags | SUBSTITUTED
 }
@@ -459,9 +459,9 @@ pub fn Buffer::substitute(self : Buffer, index : Int, id : GlyphId) -> Unit {
 ///|
 pub fn Buffer::substitute_ligature(
   self : Buffer,
-  index : Int,
+  index : Int32,
   id : GlyphId,
-  components : ArrayView[Int],
+  components : ArrayView[Int32],
 ) -> Unit {
   if components.length() == 0 {
     return
@@ -510,7 +510,7 @@ pub fn Buffer::substitute_ligature(
 ///|
 pub fn Buffer::substitute_multiple(
   self : Buffer,
-  index : Int,
+  index : Int32,
   ids : ArrayView[UInt16],
 ) -> Unit {
   let count = ids.length()
@@ -563,7 +563,7 @@ pub fn Buffer::substitute_multiple(
 }
 
 ///|
-pub fn Buffer::multiply(self : Buffer, index : Int, count : Int) -> Unit {
+pub fn Buffer::multiply(self : Buffer, index : Int32, count : Int32) -> Unit {
   if index < 0 || index >= self.glyphs.length() || count <= 0 {
     return
   }
@@ -587,7 +587,7 @@ pub fn Buffer::multiply(self : Buffer, index : Int, count : Int) -> Unit {
 ///|
 pub fn Buffer::position(
   self : Buffer,
-  index : Int,
+  index : Int32,
   x : Double,
   y : Double,
   xadvance : Double,
@@ -601,8 +601,8 @@ pub fn Buffer::position(
 ///|
 pub fn Buffer::position_cursive(
   self : Buffer,
-  index : Int,
-  next : Int,
+  index : Int32,
+  next : Int32,
   _x : Double,
   y : Double,
 ) -> Unit {
@@ -616,8 +616,8 @@ pub fn Buffer::position_cursive(
 ///|
 pub fn Buffer::position_mark(
   self : Buffer,
-  index : Int,
-  base : Int,
+  index : Int32,
+  base : Int32,
   dx : Double,
   dy : Double,
 ) -> Unit {
@@ -630,7 +630,7 @@ pub fn Buffer::position_mark(
 
 ///|
 pub fn Buffer::set_join_masks(self : Buffer) -> Unit {
-  let mut prev : Int? = None
+  let mut prev : Int32? = None
   let mut state = 0
   let len = self.glyphs.length()
   // Transparent joining type.
@@ -683,7 +683,7 @@ fn reverse_position_data(arr : Array[PositionData]) -> Unit {
 }
 
 ///|
-fn joining_type_index(t : JoiningType) -> Int {
+fn joining_type_index(t : JoiningType) -> Int32 {
   match t {
     U => 0
     L => 1
@@ -698,14 +698,14 @@ fn joining_type_index(t : JoiningType) -> Int {
 ///|
 pub fn reorder_myanmar(
   chars : ArrayView[ClusterChar],
-  order : Array[Int],
+  order : Array[Int32],
 ) -> Unit {
   let ignored : Array[Bool] = Array::makei(MAX_CLUSTER_SIZE, _ => false)
-  let mut base : Int? = None
+  let mut base : Int32? = None
   let mut kinzi : IndexRange? = None
-  let mut medial_ra : Int? = None
+  let mut medial_ra : Int32? = None
   let mut vpre : IndexRange? = None
-  let mut vblw : Int? = None
+  let mut vblw : Int32? = None
   let mut anus : IndexRange? = None
   let mut i = 0
   let mut last_vblw = false
@@ -853,13 +853,13 @@ pub fn reorder_myanmar(
 pub fn reorder_complex(
   glyphs : Array[GlyphData],
   buf : Array[GlyphData],
-  order : Array[Int],
+  order : Array[Int32],
 ) -> Unit {
-  let mut first_base : Int? = None
-  let mut last_base : Int? = None
-  let mut last_halant : Int? = None
-  let mut reph : Int? = None
-  let mut pref : Int? = None
+  let mut first_base : Int32? = None
+  let mut last_base : Int32? = None
+  let mut last_halant : Int32? = None
+  let mut reph : Int32? = None
+  let mut pref : Int32? = None
   let mut vpre : IndexRange? = None
   let mut vmpre : IndexRange? = None
   let ignored : Array[Bool] = Array::makei(64, _ => false)

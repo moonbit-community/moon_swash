@@ -22,9 +22,9 @@
 
 ///|
 struct VariationsProxy {
-  fvar : UInt
-  avar : UInt
-  len : Int
+  fvar : UInt32
+  avar : UInt32
+  len : Int32
 }
 
 ///|
@@ -62,9 +62,9 @@ pub fn VariationsProxy::materialize(
 struct Variations {
   font : FontRef
   fvar : @internal.Fvar
-  avar : UInt
-  len : Int
-  mut pos : Int
+  avar : UInt32
+  len : Int32
+  mut pos : Int32
 }
 
 ///|
@@ -79,7 +79,7 @@ fn Variations::from_font(font : FontRef) -> Variations {
 }
 
 ///|
-fn Variations::get(self : Variations, index : Int) -> Variation? {
+fn Variations::get(self : Variations, index : Int32) -> Variation? {
   if index < 0 || index >= self.len {
     return None
   }
@@ -134,7 +134,7 @@ pub fn Variations::normalized_coords(
 }
 
 ///|
-pub fn Variations::len(self : Variations) -> Int {
+pub fn Variations::len(self : Variations) -> Int32 {
   self.len
 }
 
@@ -158,11 +158,11 @@ pub fn Variations::iter(self : Variations) -> Iter[Variation] {
 struct Variation {
   font : FontRef
   axis : @internal.VarAxis
-  avar : UInt
+  avar : UInt32
 }
 
 ///|
-pub fn Variation::index(self : Variation) -> Int {
+pub fn Variation::index(self : Variation) -> Int32 {
   self.axis.index.reinterpret_as_int()
 }
 
@@ -221,9 +221,9 @@ pub fn Variation::normalize(
 struct Instances {
   font : FontRef
   fvar : @internal.Fvar
-  avar : UInt
-  len : Int
-  mut pos : Int
+  avar : UInt32
+  len : Int32
+  mut pos : Int32
 }
 
 ///|
@@ -238,7 +238,7 @@ fn Instances::from_font(font : FontRef) -> Instances {
 }
 
 ///|
-fn Instances::get(self : Instances, index : Int) -> Instance? {
+fn Instances::get(self : Instances, index : Int32) -> Instance? {
   if index < 0 || index >= self.len {
     return None
   }
@@ -333,7 +333,7 @@ struct Instance {
 }
 
 ///|
-pub fn Instance::index(self : Instance) -> Int {
+pub fn Instance::index(self : Instance) -> Int32 {
   self.inner.index.reinterpret_as_int()
 }
 

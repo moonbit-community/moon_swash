@@ -21,14 +21,14 @@
 /// Alpha blends an 8-bit mask tinted with `color` into a target RGBA buffer.
 pub fn blit(
   mask : Array[Byte],
-  mask_width : UInt,
-  mask_height : UInt,
-  x : Int,
-  y : Int,
+  mask_width : UInt32,
+  mask_height : UInt32,
+  x : Int32,
+  y : Int32,
   color : Array[Byte],
   target : Array[Byte],
-  target_width : UInt,
-  target_height : UInt,
+  target_width : UInt32,
+  target_height : UInt32,
 ) -> Unit {
   if mask_width == 0U ||
     mask_height == 0U ||
@@ -90,8 +90,8 @@ pub fn blit(
 ///|
 fn decode_ebdt_1bpp(
   data : BytesView,
-  width : UInt,
-  height : UInt,
+  width : UInt32,
+  height : UInt32,
   target : Array[Byte],
 ) -> Bool {
   let w = width.reinterpret_as_int()
@@ -141,11 +141,11 @@ fn mitchell(x : Double) -> Double {
 
 ///|
 fn resize_weights(
-  width : UInt,
-  new_width : UInt,
-  outx : UInt,
+  width : UInt32,
+  new_width : UInt32,
+  outx : UInt32,
   weights : Array[Double],
-) -> (Int, Int, Double) {
+) -> (Int32, Int32, Double) {
   // Mirrors upstream swash `sample_dir` weight computation for Mitchell.
   weights.clear()
   let ratio = width.to_double() / new_width.to_double()
@@ -187,11 +187,11 @@ fn resize_weights(
 ///|
 fn resize_mitchell_alpha(
   image : Array[Byte],
-  width : UInt,
-  height : UInt,
+  width : UInt32,
+  height : UInt32,
   target : Array[Byte],
-  target_width : UInt,
-  target_height : UInt,
+  target_width : UInt32,
+  target_height : UInt32,
   scratch : Array[Byte],
 ) -> Bool {
   if target_width == 0U || target_height == 0U {
@@ -261,11 +261,11 @@ fn resize_mitchell_alpha(
 ///|
 fn resize_mitchell_rgba(
   image : Array[Byte],
-  width : UInt,
-  height : UInt,
+  width : UInt32,
+  height : UInt32,
   target : Array[Byte],
-  target_width : UInt,
-  target_height : UInt,
+  target_width : UInt32,
+  target_height : UInt32,
   scratch : Array[Byte],
 ) -> Bool {
   if target_width == 0U || target_height == 0U {

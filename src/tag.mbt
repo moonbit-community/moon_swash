@@ -14,7 +14,7 @@
 
 ///|
 /// Ported from `swash/src/tag.rs` (swash is dual-licensed Apache-2.0 OR MIT).
-pub type Tag = UInt
+pub type Tag = UInt32
 
 ///|
 pub fn tag_from_bytes(bytes : Bytes) -> Tag? {
@@ -41,10 +41,10 @@ pub fn tag_from_bytes(bytes : Bytes) -> Tag? {
 
 ///|
 pub fn tag_from_str_lossy(s : String) -> Tag {
-  let mut b0 : UInt = 32
-  let mut b1 : UInt = 32
-  let mut b2 : UInt = 32
-  let mut b3 : UInt = 32
+  let mut b0 : UInt32 = 32
+  let mut b1 : UInt32 = 32
+  let mut b2 : UInt32 = 32
+  let mut b3 : UInt32 = 32
   let len = s.length()
   if len > 0 {
     b0 = s.code_unit_at(0).to_int().reinterpret_as_uint()

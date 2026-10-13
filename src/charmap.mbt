@@ -20,8 +20,8 @@
 ///|
 /// Proxy for rematerializing a character map.
 pub struct CharmapProxy {
-  offset : UInt
-  format : UInt
+  offset : UInt32
+  format : UInt32
   symbol : Bool
 }
 
@@ -62,7 +62,7 @@ pub fn Charmap::proxy(self : Charmap) -> CharmapProxy {
 }
 
 ///|
-pub fn Charmap::map(self : Charmap, codepoint : UInt) -> GlyphId {
+pub fn Charmap::map(self : Charmap, codepoint : UInt32) -> GlyphId {
   let mut glyph_id_u = @internal.map(
     self.data,
     self.proxy.offset,
@@ -82,7 +82,10 @@ pub fn Charmap::map(self : Charmap, codepoint : UInt) -> GlyphId {
 }
 
 ///|
-pub fn Charmap::enumerate(self : Charmap, f : (UInt, GlyphId) -> Unit) -> Unit {
+pub fn Charmap::enumerate(
+  self : Charmap,
+  f : (UInt32, GlyphId) -> Unit,
+) -> Unit {
   @internal.enumerate(self.data, self.proxy.offset, (cp, gid_u) => {
     f(cp, gid_u.to_uint16())
   })

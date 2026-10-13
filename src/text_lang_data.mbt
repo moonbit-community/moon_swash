@@ -131,7 +131,7 @@ let text_lang_tags : ReadOnlyArray[Tag] = [
 ]
 
 ///|
-let text_lang_by_tag2 : ReadOnlyArray[(UInt, Int)] = [
+let text_lang_by_tag2 : ReadOnlyArray[(UInt32, Int32)] = [
   (0x6161, 6),
   (0x6162, 1),
   (0x6166, 5),
@@ -321,7 +321,7 @@ let text_lang_by_tag2 : ReadOnlyArray[(UInt, Int)] = [
 ]
 
 ///|
-let text_lang_by_tag3 : ReadOnlyArray[(UInt, Int)] = [
+let text_lang_by_tag3 : ReadOnlyArray[(UInt32, Int32)] = [
   (0x616172, 6),
   (0x61626B, 1),
   (0x616271, 0),

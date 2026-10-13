@@ -151,9 +151,9 @@ pub fn feature_bit_to_mask(bit : FeatureBit?) -> FeatureMask {
 ///|
 /// Offsets for a particular layout stage.
 pub struct StageOffsets {
-  base : UInt
-  lang : UInt
-  vars : UInt
+  base : UInt32
+  lang : UInt32
+  vars : UInt32
 }
 
 ///|
@@ -164,10 +164,10 @@ pub fn StageOffsets::default() -> StageOffsets {
 ///|
 pub fn StageOffsets::from_layout(
   data : Bytes,
-  base : UInt,
-  script : UInt,
-  language : UInt?,
-) -> (StageOffsets, (UInt, UInt))? {
+  base : UInt32,
+  script : UInt32,
+  language : UInt32?,
+) -> (StageOffsets, (UInt32, UInt32))? {
   match language_or_default_by_tags(data, base, script, language) {
     None => None
     Some((lang, tags)) => {
@@ -180,10 +180,10 @@ pub fn StageOffsets::from_layout(
 ///|
 fn language_or_default_by_tags(
   data : Bytes,
-  base : UInt,
-  script : UInt,
-  language : UInt?,
-) -> (UInt, (UInt, UInt))? {
+  base : UInt32,
+  script : UInt32,
+  language : UInt32?,
+) -> (UInt32, (UInt32, UInt32))? {
   let script_offset_opt = @internal.script_by_tag(data, base, script)
   let (script_offset, script_tag) = match script_offset_opt {
     Some(off) => (off, script)
@@ -210,7 +210,7 @@ fn language_or_default_by_tags(
 }
 
 ///|
-fn feature_var_offset(data : Bytes, gsubgpos_offset : UInt) -> UInt {
+fn feature_var_offset(data : Bytes, gsubgpos_offset : UInt32) -> UInt32 {
   if gsubgpos_offset == 0U {
     return 0U
   }
@@ -232,15 +232,15 @@ fn feature_var_offset(data : Bytes, gsubgpos_offset : UInt) -> UInt {
 
 ///|
 /// Maximum number of features that are allowed per stage.
-const MAX_CACHED_FEATURES : Int = 256
+const MAX_CACHED_FEATURES : Int32 = 256
 
 // These limits are used by the lookup application engine (ported later).
 
 ///|
-const MAX_NESTED_LOOKUPS : Int = 4
+const MAX_NESTED_LOOKUPS : Int32 = 4
 
 ///|
-const MAX_SEQUENCE : Int = 32
+const MAX_SEQUENCE : Int32 = 32
 
 ///|
 /// Cache of features, lookups and subtables for a particular script/language pair.
@@ -248,13 +248,13 @@ const MAX_SEQUENCE : Int = 32
 /// Only the feature-group plumbing is ported in this step; lookup application
 /// is implemented as part of the AT shaper task.
 pub struct FeatureStore {
-  sub_features : Array[(UInt, FeatureBit)]
-  pos_features : Array[(UInt, FeatureBit)]
+  sub_features : Array[(UInt32, FeatureBit)]
+  pos_features : Array[(UInt32, FeatureBit)]
   lookups : Array[@internal.LookupData]
   subtables : Array[@internal.SubtableData]
   coverage : Array[UInt16]
-  mut pos_start : Int
-  mut sub_count : Int
+  mut pos_start : Int32
+  mut sub_count : Int32
   mut truncated : Bool
   mut groups : FeatureGroups
 }
@@ -341,7 +341,7 @@ fn CoverageBuilder::add(self : CoverageBuilder, glyph_id : UInt16) -> Unit {
 fn CoverageBuilder::add_coverage(
   self : CoverageBuilder,
   data : Bytes,
-  base : Int,
+  base : Int32,
 ) -> Unit? {
   let b = @internal.BeBytes::BeBytes(data)
   let fmt = match b.read_u16(base) {
@@ -386,7 +386,10 @@ fn CoverageBuilder::add_coverage(
 }
 
 ///|
-fn CoverageBuilder::finish(self : CoverageBuilder, out : Array[UInt16]) -> UInt {
+fn CoverageBuilder::finish(
+  self : CoverageBuilder,
+  out : Array[UInt16],
+) -> UInt32 {
   if self.coverage.list.length() == 0 {
     return 0xFFFFFFFFU
   }
@@ -423,7 +426,7 @@ pub fn FeatureStoreBuilder::build(
   self : FeatureStoreBuilder,
   store : Ref[FeatureStore],
   data : Bytes,
-  coords : ArrayView[Int],
+  coords : ArrayView[Int32],
   gdef : @internal.Gdef,
   gsub : StageOffsets,
   gpos : StageOffsets,
@@ -478,7 +481,7 @@ fn FeatureStoreBuilder::build_stage(
   self : FeatureStoreBuilder,
   store : Ref[FeatureStore],
   data : Bytes,
-  coords : ArrayView[Int],
+  coords : ArrayView[Int32],
   gdef : @internal.Gdef,
   offsets : StageOffsets,
   stage : Byte,
@@ -648,7 +651,7 @@ fn FeatureStoreBuilder::collect_subtables(
 pub struct Storage {
   stack : Array[LookupState]
   ids : Array[UInt16]
-  indices : Array[Int]
+  indices : Array[Int32]
 }
 
 ///|
@@ -664,8 +667,8 @@ pub fn Storage::default() -> Storage {
 /// Lookup cursor state for nested lookups.
 struct LookupState {
   mut skip_state : SkipState
-  mut cur : Int
-  mut end : Int
+  mut cur : Int32
+  mut end : Int32
 }
 
 ///|
@@ -689,7 +692,7 @@ fn Pos4::default() -> Pos4 {
 
 ///|
 /// Popcount for u16 formats (used by value record sizing).
-fn popcount_u16(v : UInt16) -> Int {
+fn popcount_u16(v : UInt16) -> Int32 {
   let mut x = v.to_int() & 0xFFFF
   let mut n = 0
   while x != 0 {
@@ -704,16 +707,16 @@ fn popcount_u16(v : UInt16) -> Int {
 priv struct ApplyContext {
   stage : Byte
   data : Bytes
-  gsubgpos : UInt
+  gsubgpos : UInt32
   defs : @internal.Gdef
-  coords : ArrayView[Int]
+  coords : ArrayView[Int32]
   enable_var : Bool
   store : FeatureStore
   storage : Storage
   mut top : Byte
   mut arg : UInt16
-  start : Int
-  mut end : Int
+  start : Int32
+  mut end : Int32
   mut s : LookupState
   buf : Buffer
 }
@@ -724,9 +727,9 @@ priv struct ApplyContext {
 fn ApplyContext::ApplyContext(
   stage : Byte,
   data : Bytes,
-  gsubgpos : UInt,
+  gsubgpos : UInt32,
   defs : @internal.Gdef,
-  coords : ArrayView[Int],
+  coords : ArrayView[Int32],
   store : FeatureStore,
   storage : Storage,
   buffer : Buffer,
@@ -817,8 +820,8 @@ fn ApplyContext::update_glyphs_skip(
 ///|
 fn ApplyContext::update_glyphs(
   self : ApplyContext,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
 ) -> Unit {
   if self.defs.has_mark_classes() {
     for i in start..<end {
@@ -843,7 +846,7 @@ fn ApplyContext::update_glyphs(
 }
 
 ///|
-fn ApplyContext::update_glyph(self : ApplyContext, index : Int) -> Unit {
+fn ApplyContext::update_glyph(self : ApplyContext, index : Int32) -> Unit {
   let ss = self.s.skip_state
   let mask = ss.mask
   let g = self.buf.glyphs[index]
@@ -871,12 +874,12 @@ fn ApplyContext::update_glyph(self : ApplyContext, index : Int) -> Unit {
 }
 
 ///|
-fn ApplyContext::ignored(self : ApplyContext, index : Int) -> Bool {
+fn ApplyContext::ignored(self : ApplyContext, index : Int32) -> Bool {
   self.buf.glyphs[index].skip
 }
 
 ///|
-fn ApplyContext::next(self : ApplyContext, index : Int) -> Int? {
+fn ApplyContext::next(self : ApplyContext, index : Int32) -> Int32? {
   for i in (index + 1)..<self.s.end {
     if !self.ignored(i) {
       return Some(i)
@@ -886,7 +889,7 @@ fn ApplyContext::next(self : ApplyContext, index : Int) -> Int? {
 }
 
 ///|
-fn ApplyContext::previous(self : ApplyContext, index : Int) -> Int? {
+fn ApplyContext::previous(self : ApplyContext, index : Int32) -> Int32? {
   if index > self.start {
     let mut i = index - 1
     while i >= self.start {
@@ -903,7 +906,7 @@ fn ApplyContext::previous(self : ApplyContext, index : Int) -> Int? {
 }
 
 ///|
-fn ApplyContext::previous_base(self : ApplyContext, index : Int) -> Int? {
+fn ApplyContext::previous_base(self : ApplyContext, index : Int32) -> Int32? {
   if index > self.start {
     let mut i = index - 1
     while i >= self.start {
@@ -961,7 +964,7 @@ fn ApplyContext::move_next(self : ApplyContext) -> Bool {
 }
 
 ///|
-fn ApplyContext::move_to(self : ApplyContext, index : Int) -> Bool {
+fn ApplyContext::move_to(self : ApplyContext, index : Int32) -> Bool {
   if !self.move_first() {
     return false
   }
@@ -974,7 +977,7 @@ fn ApplyContext::move_to(self : ApplyContext, index : Int) -> Bool {
 }
 
 ///|
-fn ApplyContext::collect_sequence(self : ApplyContext, len : Int) -> Bool {
+fn ApplyContext::collect_sequence(self : ApplyContext, len : Int32) -> Bool {
   let avail = self.s.end - self.s.cur
   if avail < len + 1 {
     return false
@@ -997,7 +1000,7 @@ fn ApplyContext::collect_sequence(self : ApplyContext, len : Int) -> Bool {
 }
 
 ///|
-fn ApplyContext::extend_range(self : ApplyContext, count : Int) -> Unit {
+fn ApplyContext::extend_range(self : ApplyContext, count : Int32) -> Unit {
   self.end = self.end + count
   self.s.end = self.s.end + count
   self.s.cur = self.s.cur + count
@@ -1013,9 +1016,9 @@ fn ApplyContext::extend_range(self : ApplyContext, count : Int) -> Unit {
 ///|
 fn ApplyContext::match_backtrack(
   self : ApplyContext,
-  start : Int,
-  len : Int,
-  pred : (Int, UInt16) -> Bool,
+  start : Int32,
+  len : Int32,
+  pred : (Int32, UInt16) -> Bool,
 ) -> Bool? {
   let mut idx = start
   for i in 0..<len {
@@ -1035,10 +1038,10 @@ fn ApplyContext::match_backtrack(
 ///|
 fn ApplyContext::match_sequence(
   self : ApplyContext,
-  start : Int,
-  len : Int,
-  pred : (Int, UInt16) -> Bool,
-) -> Int? {
+  start : Int32,
+  len : Int32,
+  pred : (Int32, UInt16) -> Bool,
+) -> Int32? {
   let mut idx = start
   for i in 0..<len {
     match self.next(idx) {
@@ -1058,10 +1061,10 @@ fn ApplyContext::match_sequence(
 fn ApplyContext::apply(
   self : ApplyContext,
   lookup : @internal.LookupData,
-  subtables : (Int, Int),
-  cur : Int,
-  end : Int?,
-  first : Int,
+  subtables : (Int32, Int32),
+  cur : Int32,
+  end : Int32?,
+  first : Int32,
 ) -> Bool? {
   let feature_index = lookup.feature.to_int()
   self.arg = if lookup.stage == (0).to_byte() {
@@ -1148,8 +1151,8 @@ fn ApplyContext::apply(
 fn ApplyContext::apply_subtable(
   self : ApplyContext,
   subtable : @internal.SubtableData,
-  index : Int,
-  cur : Int,
+  index : Int32,
+  cur : Int32,
   g : UInt16,
 ) -> Bool? {
   let b = @internal.BeBytes::BeBytes(self.data)
@@ -2165,9 +2168,9 @@ fn ApplyContext::apply_subtable(
 fn ApplyContext::apply_nested(
   self : ApplyContext,
   index : UInt16,
-  cur : Int,
-  end : Int,
-  first : Int,
+  cur : Int32,
+  end : Int32,
+  first : Int32,
 ) -> Bool? {
   if self.top.to_int() == MAX_NESTED_LOOKUPS {
     return None
@@ -2202,9 +2205,9 @@ fn ApplyContext::apply_nested(
 fn ApplyContext::apply_uncached(
   self : ApplyContext,
   lookup : @internal.LookupData,
-  cur : Int,
-  end : Int,
-  first : Int,
+  cur : Int32,
+  end : Int32,
+  first : Int32,
 ) -> Bool? {
   let b = @internal.BeBytes::BeBytes(self.data)
   let base = lookup.offset.reinterpret_as_int()
@@ -2269,9 +2272,9 @@ fn ApplyContext::apply_uncached(
 fn ApplyContext::apply_contextual(
   self : ApplyContext,
   b : @internal.BeBytes,
-  offset : Int,
-  count : Int,
-  end : Int,
+  offset : Int32,
+  count : Int32,
+  end : Int32,
 ) -> Bool? {
   let mut applied = false
   let mut offset = offset
@@ -2300,7 +2303,7 @@ fn ApplyContext::apply_contextual(
 ///|
 fn ApplyContext::coverage(
   self : ApplyContext,
-  coverage_offset : Int,
+  coverage_offset : Int32,
   glyph_id : UInt16,
 ) -> UInt16? {
   @internal.coverage(self.data, coverage_offset.reinterpret_as_uint(), glyph_id)
@@ -2309,7 +2312,7 @@ fn ApplyContext::coverage(
 ///|
 fn ApplyContext::class(
   self : ApplyContext,
-  classdef_offset : Int,
+  classdef_offset : Int32,
   glyph_id : UInt16,
 ) -> UInt16 {
   @internal.classdef(self.data, classdef_offset.reinterpret_as_uint(), glyph_id)
@@ -2318,8 +2321,8 @@ fn ApplyContext::class(
 ///|
 fn ApplyContext::value_record(
   self : ApplyContext,
-  parent_offset : Int,
-  offset : Int,
+  parent_offset : Int32,
+  offset : Int32,
   format : UInt16,
   pos : Pos4,
 ) -> Unit? {
@@ -2431,7 +2434,7 @@ fn ApplyContext::value_record(
 ///|
 fn ApplyContext::value_delta(
   self : ApplyContext,
-  parent_offset : Int,
+  parent_offset : Int32,
   offset : UInt16,
 ) -> Double? {
   if offset == 0 {
@@ -2458,7 +2461,10 @@ fn ApplyContext::value_delta(
 }
 
 ///|
-fn ApplyContext::anchor(self : ApplyContext, offset : Int) -> (Double, Double)? {
+fn ApplyContext::anchor(
+  self : ApplyContext,
+  offset : Int32,
+) -> (Double, Double)? {
   let b = @internal.BeBytes::BeBytes(self.data)
   let format = match b.read_u16(offset) {
     None => return None
@@ -2504,7 +2510,7 @@ fn ApplyContext::anchor(self : ApplyContext, offset : Int) -> (Double, Double)? 
 ///|
 fn ApplyContext::mark_anchor(
   self : ApplyContext,
-  marks : Int,
+  marks : Int32,
   index : UInt16,
 ) -> (UInt16, (Double, Double))? {
   let b = @internal.BeBytes::BeBytes(self.data)
@@ -2537,8 +2543,8 @@ fn ApplyContext::mark_anchor(
 ///|
 fn read_u16_array(
   b : @internal.BeBytes,
-  offset : Int,
-  count : Int,
+  offset : Int32,
+  count : Int32,
 ) -> Array[UInt16]? {
   if count < 0 {
     return None
@@ -2565,8 +2571,8 @@ fn read_u16_array(
 pub fn apply(
   stage : Byte,
   data : Bytes,
-  base : UInt,
-  coords : ArrayView[Int],
+  base : UInt32,
+  coords : ArrayView[Int32],
   gdef : @internal.Gdef,
   storage : Storage,
   store : FeatureStore,
@@ -2638,7 +2644,7 @@ pub fn FeatureStore::clear(self : FeatureStore) -> Unit {
 ///|
 pub fn FeatureStore::sub_bit(
   self : FeatureStore,
-  feature : UInt,
+  feature : UInt32,
 ) -> FeatureBit? {
   // Binary search by tag.
   let mut l = 0
@@ -2660,7 +2666,7 @@ pub fn FeatureStore::sub_bit(
 ///|
 pub fn FeatureStore::pos_bit(
   self : FeatureStore,
-  feature : UInt,
+  feature : UInt32,
 ) -> FeatureBit? {
   let mut l = 0
   let mut h = self.pos_features.length()
@@ -2716,7 +2722,7 @@ pub fn FeatureStore::custom_masks(
 
 ///|
 fn FeatureStore::custom_masks_for_stage(
-  stage_features : Array[(UInt, FeatureBit)],
+  stage_features : Array[(UInt32, FeatureBit)],
   requested_features : ArrayView[@swash.FeatureSetting],
   mask0 : FeatureMask,
   args : Array[UInt16],
@@ -2889,7 +2895,7 @@ pub fn FeatureStore::groups(
 ///|
 fn FeatureStore::covers(
   self : FeatureStore,
-  key : UInt,
+  key : UInt32,
   glyph_id : UInt16,
 ) -> Bool {
   if key == 0xFFFFFFFFU {
@@ -2919,7 +2925,7 @@ fn feature_masks(
   store : FeatureStore,
   sub_mask : FeatureMask?,
   pos_mask : FeatureMask?,
-  features : ArrayView[UInt],
+  features : ArrayView[UInt32],
 ) -> Unit {
   match sub_mask {
     None => ()

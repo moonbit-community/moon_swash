@@ -42,7 +42,7 @@ pub struct Head {
 ///|
 
 ///|
-pub const HEAD_MAGIC : UInt = 0x5F0F3CF5
+pub const HEAD_MAGIC : UInt32 = 0x5F0F3CF5
 
 ///|
 pub fn Head::Head(data : BytesView) -> Head {
@@ -55,37 +55,37 @@ pub fn[T : RawFont] Head::from_font(font : T) -> Head? {
 }
 
 ///|
-pub fn Head::major_version(self : Head) -> UInt {
+pub fn Head::major_version(self : Head) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(0).unwrap_or(0)
 }
 
 ///|
-pub fn Head::minor_version(self : Head) -> UInt {
+pub fn Head::minor_version(self : Head) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(2).unwrap_or(0)
 }
 
 ///|
-pub fn Head::revision(self : Head) -> UInt {
+pub fn Head::revision(self : Head) -> UInt32 {
   BeBytes::from_view(self.data).read_u32(4).unwrap_or(0)
 }
 
 ///|
-pub fn Head::checksum_adjustment(self : Head) -> UInt {
+pub fn Head::checksum_adjustment(self : Head) -> UInt32 {
   BeBytes::from_view(self.data).read_u32(8).unwrap_or(0)
 }
 
 ///|
-pub fn Head::magic(self : Head) -> UInt {
+pub fn Head::magic(self : Head) -> UInt32 {
   BeBytes::from_view(self.data).read_u32(12).unwrap_or(0)
 }
 
 ///|
-pub fn Head::flags(self : Head) -> UInt {
+pub fn Head::flags(self : Head) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(16).unwrap_or(0)
 }
 
 ///|
-pub fn Head::units_per_em(self : Head) -> UInt {
+pub fn Head::units_per_em(self : Head) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(18).unwrap_or(0)
 }
 
@@ -100,7 +100,7 @@ pub fn Head::modified(self : Head) -> UInt64 {
 }
 
 ///|
-pub fn Head::bounds(self : Head) -> ((Int, Int), (Int, Int)) {
+pub fn Head::bounds(self : Head) -> ((Int32, Int32), (Int32, Int32)) {
   let b = BeBytes::from_view(self.data)
   let x_min = b.read_i16(36).unwrap_or(0)
   let y_min = b.read_i16(38).unwrap_or(0)
@@ -110,27 +110,27 @@ pub fn Head::bounds(self : Head) -> ((Int, Int), (Int, Int)) {
 }
 
 ///|
-pub fn Head::mac_style(self : Head) -> UInt {
+pub fn Head::mac_style(self : Head) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(44).unwrap_or(0)
 }
 
 ///|
-pub fn Head::lowest_recommended_ppem(self : Head) -> UInt {
+pub fn Head::lowest_recommended_ppem(self : Head) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(46).unwrap_or(0)
 }
 
 ///|
-pub fn Head::direction_hint(self : Head) -> UInt {
+pub fn Head::direction_hint(self : Head) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(48).unwrap_or(0)
 }
 
 ///|
-pub fn Head::index_to_location_format(self : Head) -> UInt {
+pub fn Head::index_to_location_format(self : Head) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(50).unwrap_or(0)
 }
 
 ///|
-pub fn Head::glyph_data_format(self : Head) -> Int {
+pub fn Head::glyph_data_format(self : Head) -> Int32 {
   BeBytes::from_view(self.data).read_i16(52).unwrap_or(0)
 }
 
@@ -153,38 +153,38 @@ pub fn[T : RawFont] Os2::from_font(font : T) -> Os2? {
 }
 
 ///|
-pub fn Os2::version(self : Os2) -> UInt {
+pub fn Os2::version(self : Os2) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(0).unwrap_or(0)
 }
 
 ///|
-pub fn Os2::average_char_width(self : Os2) -> Int {
+pub fn Os2::average_char_width(self : Os2) -> Int32 {
   BeBytes::from_view(self.data).read_i16(2).unwrap_or(0)
 }
 
 ///|
-pub fn Os2::weight_class(self : Os2) -> Int {
+pub fn Os2::weight_class(self : Os2) -> Int32 {
   BeBytes::from_view(self.data).read_i16(4).unwrap_or(0)
 }
 
 ///|
-pub fn Os2::width_class(self : Os2) -> Int {
+pub fn Os2::width_class(self : Os2) -> Int32 {
   BeBytes::from_view(self.data).read_i16(6).unwrap_or(0)
 }
 
 ///|
-pub fn Os2::strikeout_position(self : Os2) -> Int {
+pub fn Os2::strikeout_position(self : Os2) -> Int32 {
   BeBytes::from_view(self.data).read_i16(28).unwrap_or(0)
 }
 
 ///|
-pub fn Os2::strikeout_size(self : Os2) -> Int {
+pub fn Os2::strikeout_size(self : Os2) -> Int32 {
   BeBytes::from_view(self.data).read_i16(26).unwrap_or(0)
 }
 
 ///|
 pub struct Os2Flags {
-  value : UInt
+  value : UInt32
 }
 
 ///|
@@ -208,22 +208,22 @@ pub fn Os2::selection_flags(self : Os2) -> Os2Flags {
 }
 
 ///|
-pub fn Os2::typographic_ascender(self : Os2) -> Int {
+pub fn Os2::typographic_ascender(self : Os2) -> Int32 {
   BeBytes::from_view(self.data).read_i16(68).unwrap_or(0)
 }
 
 ///|
-pub fn Os2::typographic_descender(self : Os2) -> Int {
+pub fn Os2::typographic_descender(self : Os2) -> Int32 {
   BeBytes::from_view(self.data).read_i16(70).unwrap_or(0)
 }
 
 ///|
-pub fn Os2::typographic_line_gap(self : Os2) -> Int {
+pub fn Os2::typographic_line_gap(self : Os2) -> Int32 {
   BeBytes::from_view(self.data).read_i16(72).unwrap_or(0)
 }
 
 ///|
-pub fn Os2::x_height(self : Os2) -> Int {
+pub fn Os2::x_height(self : Os2) -> Int32 {
   if self.version() < 2 {
     0
   } else {
@@ -232,7 +232,7 @@ pub fn Os2::x_height(self : Os2) -> Int {
 }
 
 ///|
-pub fn Os2::cap_height(self : Os2) -> Int {
+pub fn Os2::cap_height(self : Os2) -> Int32 {
   if self.version() < 2 {
     0
   } else {
@@ -259,12 +259,12 @@ pub fn[T : RawFont] Post::from_font(font : T) -> Post? {
 }
 
 ///|
-pub fn Post::underline_position(self : Post) -> Int {
+pub fn Post::underline_position(self : Post) -> Int32 {
   BeBytes::from_view(self.data).read_i16(8).unwrap_or(0)
 }
 
 ///|
-pub fn Post::underline_size(self : Post) -> Int {
+pub fn Post::underline_size(self : Post) -> Int32 {
   BeBytes::from_view(self.data).read_i16(10).unwrap_or(0)
 }
 
@@ -279,12 +279,12 @@ pub fn Post::data(self : Post) -> BytesView {
 }
 
 ///|
-pub fn Post::version(self : Post) -> UInt {
+pub fn Post::version(self : Post) -> UInt32 {
   BeBytes::from_view(self.data).read_u32(0).unwrap_or(0)
 }
 
 ///|
-pub fn Post::italic_angle(self : Post) -> UInt {
+pub fn Post::italic_angle(self : Post) -> UInt32 {
   BeBytes::from_view(self.data).read_u32(4).unwrap_or(0)
 }
 
@@ -333,12 +333,12 @@ pub fn[T : RawFont] Maxp::from_font(font : T) -> Maxp? {
 }
 
 ///|
-pub fn Maxp::version(self : Maxp) -> UInt {
+pub fn Maxp::version(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u32(0).unwrap_or(0)
 }
 
 ///|
-pub fn Maxp::glyph_count(self : Maxp) -> UInt {
+pub fn Maxp::glyph_count(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(4).unwrap_or(0)
 }
 
@@ -348,67 +348,67 @@ pub fn Maxp::is_truetype(self : Maxp) -> Bool {
 }
 
 ///|
-pub fn Maxp::max_points(self : Maxp) -> UInt {
+pub fn Maxp::max_points(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(6).unwrap_or(0)
 }
 
 ///|
-pub fn Maxp::max_contours(self : Maxp) -> UInt {
+pub fn Maxp::max_contours(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(8).unwrap_or(0)
 }
 
 ///|
-pub fn Maxp::max_composite_points(self : Maxp) -> UInt {
+pub fn Maxp::max_composite_points(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(10).unwrap_or(0)
 }
 
 ///|
-pub fn Maxp::max_composite_contours(self : Maxp) -> UInt {
+pub fn Maxp::max_composite_contours(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(12).unwrap_or(0)
 }
 
 ///|
-pub fn Maxp::max_zones(self : Maxp) -> UInt {
+pub fn Maxp::max_zones(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(14).unwrap_or(0)
 }
 
 ///|
-pub fn Maxp::max_twilight_points(self : Maxp) -> UInt {
+pub fn Maxp::max_twilight_points(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(16).unwrap_or(0)
 }
 
 ///|
-pub fn Maxp::max_storage(self : Maxp) -> UInt {
+pub fn Maxp::max_storage(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(18).unwrap_or(0)
 }
 
 ///|
-pub fn Maxp::max_function_definitions(self : Maxp) -> UInt {
+pub fn Maxp::max_function_definitions(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(20).unwrap_or(0)
 }
 
 ///|
-pub fn Maxp::max_instruction_definitions(self : Maxp) -> UInt {
+pub fn Maxp::max_instruction_definitions(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(22).unwrap_or(0)
 }
 
 ///|
-pub fn Maxp::max_stack_depth(self : Maxp) -> UInt {
+pub fn Maxp::max_stack_depth(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(24).unwrap_or(0)
 }
 
 ///|
-pub fn Maxp::max_instructions_size(self : Maxp) -> UInt {
+pub fn Maxp::max_instructions_size(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(26).unwrap_or(0)
 }
 
 ///|
-pub fn Maxp::max_component_elements(self : Maxp) -> UInt {
+pub fn Maxp::max_component_elements(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(28).unwrap_or(0)
 }
 
 ///|
-pub fn Maxp::max_component_depth(self : Maxp) -> UInt {
+pub fn Maxp::max_component_depth(self : Maxp) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(30).unwrap_or(0)
 }
 
@@ -431,27 +431,27 @@ pub fn[T : RawFont] Hhea::from_font(font : T) -> Hhea? {
 }
 
 ///|
-pub fn Hhea::ascender(self : Hhea) -> Int {
+pub fn Hhea::ascender(self : Hhea) -> Int32 {
   BeBytes::from_view(self.data).read_i16(4).unwrap_or(0)
 }
 
 ///|
-pub fn Hhea::descender(self : Hhea) -> Int {
+pub fn Hhea::descender(self : Hhea) -> Int32 {
   BeBytes::from_view(self.data).read_i16(6).unwrap_or(0)
 }
 
 ///|
-pub fn Hhea::line_gap(self : Hhea) -> Int {
+pub fn Hhea::line_gap(self : Hhea) -> Int32 {
   BeBytes::from_view(self.data).read_i16(8).unwrap_or(0)
 }
 
 ///|
-pub fn Hhea::max_advance(self : Hhea) -> UInt {
+pub fn Hhea::max_advance(self : Hhea) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(10).unwrap_or(0)
 }
 
 ///|
-pub fn Hhea::num_long_metrics(self : Hhea) -> UInt {
+pub fn Hhea::num_long_metrics(self : Hhea) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(34).unwrap_or(0)
 }
 
@@ -474,27 +474,27 @@ pub fn[T : RawFont] Vhea::from_font(font : T) -> Vhea? {
 }
 
 ///|
-pub fn Vhea::ascender(self : Vhea) -> Int {
+pub fn Vhea::ascender(self : Vhea) -> Int32 {
   BeBytes::from_view(self.data).read_i16(4).unwrap_or(0)
 }
 
 ///|
-pub fn Vhea::descender(self : Vhea) -> Int {
+pub fn Vhea::descender(self : Vhea) -> Int32 {
   BeBytes::from_view(self.data).read_i16(6).unwrap_or(0)
 }
 
 ///|
-pub fn Vhea::line_gap(self : Vhea) -> Int {
+pub fn Vhea::line_gap(self : Vhea) -> Int32 {
   BeBytes::from_view(self.data).read_i16(8).unwrap_or(0)
 }
 
 ///|
-pub fn Vhea::max_advance(self : Vhea) -> UInt {
+pub fn Vhea::max_advance(self : Vhea) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(10).unwrap_or(0)
 }
 
 ///|
-pub fn Vhea::num_long_metrics(self : Vhea) -> UInt {
+pub fn Vhea::num_long_metrics(self : Vhea) -> UInt32 {
   BeBytes::from_view(self.data).read_u16(34).unwrap_or(0)
 }
 

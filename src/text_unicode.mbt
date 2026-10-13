@@ -16,21 +16,21 @@
 /// Unicode character properties.
 ///
 /// Ported from `swash/src/text/unicode.rs` (swash is dual-licensed Apache-2.0 OR MIT).
-const RECORD_MASK : UInt = 0x1FFFU
+const RECORD_MASK : UInt32 = 0x1FFFU
 
 ///|
-const BOUNDARY_SHIFT : Int = 13
+const BOUNDARY_SHIFT : Int32 = 13
 
 ///|
 /// Compact reference to Unicode properties for a character.
 pub struct Properties {
-  bits : UInt
+  bits : UInt32
 }
 
 ///|
 
 ///|
-fn Properties::Properties(cp : Int) -> Properties {
+fn Properties::Properties(cp : Int32) -> Properties {
   { bits: get_record_index(cp).reinterpret_as_uint(), }
 }
 
@@ -56,7 +56,7 @@ pub fn Properties::script(self : Properties) -> Script {
 }
 
 ///|
-pub fn Properties::combining_class(self : Properties) -> UInt {
+pub fn Properties::combining_class(self : Properties) -> UInt32 {
   self.record().combining_class
 }
 
@@ -123,13 +123,13 @@ pub fn Properties::contributes_to_shaping(self : Properties) -> Bool {
 ///|
 pub fn Properties::with_boundary(
   self : Properties,
-  boundary : UInt,
+  boundary : UInt32,
 ) -> Properties {
   { bits: (self.bits & RECORD_MASK) | ((boundary & 0b11U) << BOUNDARY_SHIFT), }
 }
 
 ///|
-pub fn Properties::boundary(self : Properties) -> UInt {
+pub fn Properties::boundary(self : Properties) -> UInt32 {
   self.bits >> BOUNDARY_SHIFT
 }
 
@@ -160,9 +160,9 @@ pub(all) enum BracketType {
 
 ///|
 fn text_unicode_bsearch_first(
-  table : ReadOnlyArray[(UInt, UInt)],
-  key : UInt,
-) -> Int? {
+  table : ReadOnlyArray[(UInt32, UInt32)],
+  key : UInt32,
+) -> Int32? {
   let mut l = 0
   let mut h = table.length()
   while l < h {
@@ -181,9 +181,9 @@ fn text_unicode_bsearch_first(
 
 ///|
 fn text_unicode_bsearch_second(
-  table : ReadOnlyArray[(UInt, UInt)],
-  key : UInt,
-) -> Int? {
+  table : ReadOnlyArray[(UInt32, UInt32)],
+  key : UInt32,
+) -> Int32? {
   let mut l = 0
   let mut h = table.length()
   while l < h {

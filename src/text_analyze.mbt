@@ -75,7 +75,7 @@ pub fn Analyze::iter(self : Analyze) -> Iter[(Properties, Boundary)] {
 struct CharStream {
   iter : Iter[Char]
   mut buf : Array[Char]
-  mut buf_offset : Int
+  mut buf_offset : Int32
   mut done : Bool
 }
 
@@ -87,7 +87,7 @@ fn CharStream::CharStream(iter : Iter[Char]) -> CharStream {
 }
 
 ///|
-fn CharStream::fill_to(self : CharStream, n : Int) -> Unit {
+fn CharStream::fill_to(self : CharStream, n : Int32) -> Unit {
   while !self.done && self.buf_offset + n >= self.buf.length() {
     match self.iter.next() {
       None => {
@@ -100,7 +100,7 @@ fn CharStream::fill_to(self : CharStream, n : Int) -> Unit {
 }
 
 ///|
-fn CharStream::peek(self : CharStream, n : Int) -> Char? {
+fn CharStream::peek(self : CharStream, n : Int32) -> Char? {
   self.fill_to(n)
   let ix = self.buf_offset + n
   if ix >= 0 && ix < self.buf.length() {
@@ -135,10 +135,10 @@ struct BoundaryState {
   mut strength : WordBreakStrength
   mut prev : WordBreak
   mut prevent_next : Bool
-  mut ri_count : UInt
+  mut ri_count : UInt32
   mut emoji : Bool
   mut next_emoji : Bool
-  mut line_state : (UInt, LineBreak?)
+  mut line_state : (UInt32, LineBreak?)
   mut first : Bool
   mut needs_bidi : Bool
 }
@@ -407,19 +407,20 @@ fn BoundaryState::next(
 }
 
 ///|
-const ALLOWED_BREAK_BIT : UInt = 0x80U
+const ALLOWED_BREAK_BIT : UInt32 = 0x80U
 
 ///|
-const MANDATORY_BREAK_BIT : UInt = 0x40U
+const MANDATORY_BREAK_BIT : UInt32 = 0x40U
 
 ///|
-const LINE_STATE_MASK : UInt = 0xFFU ^ (ALLOWED_BREAK_BIT | MANDATORY_BREAK_BIT)
+const LINE_STATE_MASK : UInt32 = 0xFFU ^
+  (ALLOWED_BREAK_BIT | MANDATORY_BREAK_BIT)
 
 ///|
-const SOT : UInt = 44U
+const SOT : UInt32 = 44U
 
 ///|
-const LINEBREAK_ID : Int = 20
+const LINEBREAK_ID : Int32 = 20
 
 ///|
 fn is_break_all_class(lb : LineBreak) -> Bool {
@@ -451,7 +452,7 @@ fn line_break_eq(a : LineBreak, b : LineBreak) -> Bool {
 }
 
 ///|
-fn line_break_index(lb : LineBreak) -> Int {
+fn line_break_index(lb : LineBreak) -> Int32 {
   match lb {
     AI => 0
     AL => 1
@@ -505,12 +506,12 @@ fn word_break_eq(a : WordBreak, b : WordBreak) -> Bool {
 }
 
 ///|
-fn WordBreak::mask(self : WordBreak) -> UInt {
+fn WordBreak::mask(self : WordBreak) -> UInt32 {
   1U << word_break_index(self)
 }
 
 ///|
-fn word_break_index(wb : WordBreak) -> Int {
+fn word_break_index(wb : WordBreak) -> Int32 {
   match wb {
     CR => 0
     DQ => 1
@@ -535,32 +536,32 @@ fn word_break_index(wb : WordBreak) -> Int {
 }
 
 ///|
-let wb_ah_letter : UInt = WordBreak::LE.mask() | WordBreak::HL.mask()
+let wb_ah_letter : UInt32 = WordBreak::LE.mask() | WordBreak::HL.mask()
 
 ///|
-let wb_mid_num_let_q : UInt = WordBreak::MB.mask() | WordBreak::SQ.mask()
+let wb_mid_num_let_q : UInt32 = WordBreak::MB.mask() | WordBreak::SQ.mask()
 
 ///|
-let wb3_a : UInt = WordBreak::NL.mask() |
+let wb3_a : UInt32 = WordBreak::NL.mask() |
   WordBreak::CR.mask() |
   WordBreak::LF.mask()
 
 ///|
-let wb_4 : UInt = WordBreak::Extend.mask() |
+let wb_4 : UInt32 = WordBreak::Extend.mask() |
   WordBreak::FO.mask() |
   WordBreak::ZWJ.mask()
 
 ///|
-let wb13_a : UInt = wb_ah_letter |
+let wb13_a : UInt32 = wb_ah_letter |
   WordBreak::NU.mask() |
   WordBreak::KA.mask() |
   WordBreak::EX.mask()
 
 ///|
-let wb13_b : UInt = wb_ah_letter | WordBreak::NU.mask() | WordBreak::KA.mask()
+let wb13_b : UInt32 = wb_ah_letter | WordBreak::NU.mask() | WordBreak::KA.mask()
 
 ///|
-let pair_table : ReadOnlyArray[ReadOnlyArray[UInt]] = [
+let pair_table : ReadOnlyArray[ReadOnlyArray[UInt32]] = [
   [
     1, 1, 130, 3, 132, 5, 134, 28, 8, 1, 10, 11, 140, 141, 14, 15, 144, 145, 18,
     19, 148, 21, 22, 151, 152, 153, 26, 27, 28, 29, 30, 31, 32, 33, 162, 1, 1, 37,

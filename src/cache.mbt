@@ -47,7 +47,7 @@ pub fn CacheKey::value(self : CacheKey) -> UInt64 {
 /// Ported from `swash/src/cache.rs` (`FontCache<T>`).
 pub struct FontCache[T] {
   entries : Array[Entry[T]]
-  max_entries : Int
+  max_entries : Int32
   mut epoch : UInt64
 }
 
@@ -62,7 +62,7 @@ struct Entry[T] {
 }
 
 ///|
-pub fn[T] FontCache::FontCache(max_entries : Int) -> FontCache[T] {
+pub fn[T] FontCache::FontCache(max_entries : Int32) -> FontCache[T] {
   let max_entries = if max_entries < 1 { 1 } else { max_entries }
   { entries: [], max_entries, epoch: 0, }
 }
@@ -72,7 +72,7 @@ fn[T] FontCache::find(
   self : FontCache[T],
   id0 : UInt64,
   id1 : UInt64,
-) -> (Bool, Int) {
+) -> (Bool, Int32) {
   let mut lowest = 0
   let mut lowest_epoch = self.epoch
   for i in 0..<self.entries.length() {
@@ -140,9 +140,9 @@ test "FontCache caches and evicts by max_entries" {
   let data = Bytes::from_array([0, 1, 0, 0])
   let f0 = FontRef::from_offset(data, 0).unwrap()
   let f1 = FontRef::from_offset(data, 0).unwrap()
-  let cache : FontCache[Int] = FontCache(1)
+  let cache : FontCache[Int32] = FontCache(1)
   let calls = Ref(0)
-  fn mk(calls : Ref[Int], v : Int) -> (FontRef) -> Int {
+  fn mk(calls : Ref[Int32], v : Int32) -> (FontRef) -> Int32 {
     fn(font) {
       calls.val = calls.val + 1
       // ensure the font value is used to avoid unused warnings

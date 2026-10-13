@@ -18,25 +18,25 @@
 /// Ported from `swash/src/strike.rs` (swash is dual-licensed Apache-2.0 OR MIT).
 
 ///|
-const EBLC : UInt = 0x45424C43 // "EBLC"
+const EBLC : UInt32 = 0x45424C43 // "EBLC"
 
 ///|
-const EBDT : UInt = 0x45424454 // "EBDT"
+const EBDT : UInt32 = 0x45424454 // "EBDT"
 
 ///|
-const SBIX : UInt = 0x73626978 // "sbix"
+const SBIX : UInt32 = 0x73626978 // "sbix"
 
 ///|
-const CBLC : UInt = 0x43424C43 // "CBLC"
+const CBLC : UInt32 = 0x43424C43 // "CBLC"
 
 ///|
-const CBDT : UInt = 0x43424454 // "CBDT"
+const CBDT : UInt32 = 0x43424454 // "CBDT"
 
 ///|
-const DUPE : UInt = 0x64757065 // "dupe"
+const DUPE : UInt32 = 0x64757065 // "dupe"
 
 ///|
-const PNG : UInt = 0x706E6720 // "png "
+const PNG : UInt32 = 0x706E6720 // "png "
 
 ///|
 fn strike_empty_bytes_view() -> BytesView {
@@ -44,7 +44,7 @@ fn strike_empty_bytes_view() -> BytesView {
 }
 
 ///|
-fn slice_from(data : Bytes, start : UInt) -> BytesView {
+fn slice_from(data : Bytes, start : UInt32) -> BytesView {
   let s = start.reinterpret_as_int()
   if s < 0 || s > data.length() {
     strike_empty_bytes_view()
@@ -56,9 +56,9 @@ fn slice_from(data : Bytes, start : UInt) -> BytesView {
 ///|
 /// Proxy for rematerializing strike collections.
 pub struct BitmapStrikesProxy {
-  bitmaps : (UInt, UInt)
-  color_bitmaps : (UInt, UInt)
-  upem : UInt
+  bitmaps : (UInt32, UInt32)
+  color_bitmaps : (UInt32, UInt32)
+  upem : UInt32
   is_apple : Bool
 }
 
@@ -145,9 +145,9 @@ pub fn BitmapStrikesProxy::materialize_color(
 ///|
 fn materialize_impl(
   data : Bytes,
-  loc : UInt,
-  dat : UInt,
-  upem : UInt,
+  loc : UInt32,
+  dat : UInt32,
+  upem : UInt32,
   is_sbix : Bool,
   is_apple : Bool,
 ) -> BitmapStrikes {
@@ -180,8 +180,8 @@ pub struct BitmapStrikes {
   bitmap_data : BytesView
   is_sbix : Bool
   is_apple : Bool
-  upem : UInt
-  len : Int
+  upem : UInt32
+  len : Int32
 }
 
 ///|
@@ -190,7 +190,7 @@ pub struct BitmapStrikes {
 fn BitmapStrikes::BitmapStrikes(
   data : BytesView,
   bitmap_data : BytesView,
-  upem : UInt,
+  upem : UInt32,
   is_sbix : Bool,
   is_apple : Bool,
 ) -> BitmapStrikes {
@@ -201,7 +201,7 @@ fn BitmapStrikes::BitmapStrikes(
 
 ///|
 /// Returns the number of strikes in the collection.
-pub fn BitmapStrikes::len(self : BitmapStrikes) -> Int {
+pub fn BitmapStrikes::len(self : BitmapStrikes) -> Int32 {
   self.len
 }
 
@@ -221,7 +221,7 @@ pub fn BitmapStrikes::iter(self : BitmapStrikes) -> Iter[BitmapStrike] {
 }
 
 ///|
-fn BitmapStrikes::get(self : BitmapStrikes, index : Int) -> BitmapStrike? {
+fn BitmapStrikes::get(self : BitmapStrikes, index : Int32) -> BitmapStrike? {
   if index < 0 || index >= self.len {
     return None
   }
@@ -349,8 +349,8 @@ pub fn BitmapStrikes::find_by_largest_ppem(
 pub struct BitmapStrike {
   b : @internal.BeBytes
   bitmap_data : BytesView
-  offset : Int
-  upem : UInt
+  offset : Int32
+  upem : UInt32
   is_sbix : Bool
   is_apple : Bool
 }
@@ -396,7 +396,7 @@ pub fn BitmapStrike::contains(self : BitmapStrike, glyph_id : GlyphId) -> Bool {
 ///|
 fn get_coverage(
   table : BytesView,
-  strike_base : Int,
+  strike_base : Int32,
   is_sbix : Bool,
   glyph_id : GlyphId,
 ) -> Bool? {
@@ -453,10 +453,10 @@ fn get_coverage(
 ///|
 fn sbix_range(
   table : BytesView,
-  strike_base : Int,
+  strike_base : Int32,
   glyph_id : GlyphId,
-  recurse : Int,
-) -> (UInt, UInt)? {
+  recurse : Int32,
+) -> (UInt32, UInt32)? {
   if recurse > 1 || strike_base < 0 {
     return None
   }

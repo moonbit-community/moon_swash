@@ -14,16 +14,16 @@
 
 ///|
 test "Language parse basic tags" {
-  let en = Language::parse("en").unwrap()
+  let en = @moon_swash.Language::parse("en").unwrap()
   inspect(en.language(), content="en")
   inspect(en.script() is None, content="true")
   inspect(en.region() is None, content="true")
-  let zh = Language::parse("zh-Hans").unwrap()
+  let zh = @moon_swash.Language::parse("zh-Hans").unwrap()
   inspect(zh.language(), content="zh")
   inspect(zh.script().unwrap(), content="Hans")
-  let zhs = tag_from_str_lossy("ZHS ")
+  let zhs = @moon_swash.tag_from_str_lossy("ZHS ")
   inspect(zh.to_opentype().unwrap().to_string(), content=zhs.to_string())
-  let ja = Language::parse("ja").unwrap()
+  let ja = @moon_swash.Language::parse("ja").unwrap()
   inspect(
     match ja.cjk() {
       Japanese => true
@@ -35,18 +35,18 @@ test "Language parse basic tags" {
 
 ///|
 test "Language from_opentype handles ZHT/ZHS" {
-  let zht = tag_from_str_lossy("ZHT ")
-  let zhs = tag_from_str_lossy("ZHS ")
-  let zht0 = Language::from_opentype(zht).unwrap()
+  let zht = @moon_swash.tag_from_str_lossy("ZHT ")
+  let zhs = @moon_swash.tag_from_str_lossy("ZHS ")
+  let zht0 = @moon_swash.Language::from_opentype(zht).unwrap()
   inspect(zht0.script().unwrap(), content="Hant")
-  let zhs0 = Language::from_opentype(zhs).unwrap()
+  let zhs0 = @moon_swash.Language::from_opentype(zhs).unwrap()
   inspect(zhs0.script().unwrap(), content="Hans")
 }
 
 ///|
 test "Script from_opentype maps common scripts" {
-  let latn = tag_from_str_lossy("latn")
-  let s0 = Script::from_opentype(latn).unwrap()
+  let latn = @moon_swash.tag_from_str_lossy("latn")
+  let s0 = @moon_swash.Script::from_opentype(latn).unwrap()
   inspect(
     match s0 {
       Latin => true

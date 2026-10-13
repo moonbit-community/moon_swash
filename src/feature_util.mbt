@@ -20,7 +20,7 @@
 ///|
 /// Bitset for feature de-duplication.
 pub struct SeenFeatures {
-  bits : Array[UInt]
+  bits : Array[UInt32]
 }
 
 ///|
@@ -31,7 +31,7 @@ pub fn SeenFeatures::SeenFeatures() -> SeenFeatures {
 }
 
 ///|
-pub fn SeenFeatures::mark(self : SeenFeatures, feature_index : Int) -> Bool {
+pub fn SeenFeatures::mark(self : SeenFeatures, feature_index : Int32) -> Bool {
   if feature_index < 0 {
     return false
   }
@@ -197,7 +197,7 @@ let at_features : ReadOnlyArray[(Tag, String)] = [
 
 ///|
 /// Returns a feature description for the specified tag.
-pub fn desc_from_at(tag : Tag) -> (Int, String)? {
+pub fn desc_from_at(tag : Tag) -> (Int32, String)? {
   let mut l = 0
   let mut h = at_features.length()
   while l < h {
@@ -215,7 +215,7 @@ pub fn desc_from_at(tag : Tag) -> (Int, String)? {
 }
 
 ///|
-let aat_to_at : ReadOnlyArray[(UInt, UInt)] = [
+let aat_to_at : ReadOnlyArray[(UInt32, UInt32)] = [
   (0x0100, 0x0056),
   (0x0102, 0x0035),
   (0x0104, 0x0017),
@@ -300,7 +300,7 @@ let aat_to_at : ReadOnlyArray[(UInt, UInt)] = [
 pub fn desc_from_aat(
   feature : UInt16,
   selector : UInt16,
-) -> (Int, Tag, String)? {
+) -> (Int32, Tag, String)? {
   let key = (
       (feature.to_int().reinterpret_as_uint() << 8) |
       selector.to_int().reinterpret_as_uint()

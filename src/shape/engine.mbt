@@ -70,13 +70,13 @@ pub impl Eq for PosMode with fn equal(self, other) {
 ///|
 /// Metadata for creating a shaping engine.
 pub struct EngineMetadata {
-  gdef : UInt
-  gsub : UInt
-  gpos : UInt
-  morx : UInt
-  kerx : UInt
-  ankr : UInt
-  kern : UInt
+  gdef : UInt32
+  gsub : UInt32
+  gpos : UInt32
+  morx : UInt32
+  kerx : UInt32
+  ankr : UInt32
+  kern : UInt32
   sub_mode : SubMode
   pos_mode : PosMode
 }
@@ -113,14 +113,14 @@ pub struct Engine {
   gdef : @internal.Gdef
   gsub : StageOffsets
   gpos : StageOffsets
-  morx : UInt
-  kerx : UInt
-  ankr : UInt
-  kern : UInt
+  morx : UInt32
+  kerx : UInt32
+  ankr : UInt32
+  kern : UInt32
   storage : Storage
-  coords : ArrayView[Int]
+  coords : ArrayView[Int32]
   script : @swash.Script
-  tags : (UInt, UInt, UInt, UInt)
+  tags : (UInt32, UInt32, UInt32, UInt32)
   sub_mode : SubMode
   pos_mode : PosMode
   use_ot : Bool
@@ -133,7 +133,7 @@ pub struct Engine {
 pub fn Engine::Engine(
   metadata : EngineMetadata,
   font_data : Bytes,
-  coords : ArrayView[Int],
+  coords : ArrayView[Int32],
   script : @swash.Script,
   language : @swash.Language?,
 ) -> Engine {
@@ -142,7 +142,7 @@ pub fn Engine::Engine(
     Some(g) => g
   }
   let script_tag = script.to_opentype()
-  let lang_tag : UInt? = match language {
+  let lang_tag : UInt32? = match language {
     None => None
     Some(l) => l.to_opentype()
   }
@@ -164,7 +164,12 @@ pub fn Engine::Engine(
   } else {
     (StageOffsets::default(), (0U, 0U))
   }
-  let tags : (UInt, UInt, UInt, UInt) = (stags.0, stags.1, ptags.0, ptags.1)
+  let tags : (UInt32, UInt32, UInt32, UInt32) = (
+    stags.0,
+    stags.1,
+    ptags.0,
+    ptags.1,
+  )
   let use_ot = gsub.lang != 0U || gpos.lang != 0U
   let mode = if gsub.lang != 0U && script.is_complex() {
     if script is Myanmar {
@@ -207,7 +212,7 @@ pub fn Engine::Engine(
 
 ///|
 /// OpenType shaping.
-pub fn Engine::tags(self : Engine) -> (UInt, UInt, UInt, UInt) {
+pub fn Engine::tags(self : Engine) -> (UInt32, UInt32, UInt32, UInt32) {
   self.tags
 }
 

@@ -14,7 +14,7 @@
 
 ///|
 test "Char::properties provides basic Unicode properties" {
-  let p = Codepoint::properties('A')
+  let p = @moon_swash.Codepoint::properties('A')
   inspect(
     match p.script() {
       Latin => true
@@ -33,15 +33,15 @@ test "Char::properties provides basic Unicode properties" {
 
 ///|
 test "compose_pair + decompose roundtrip for Å (U+00C5)" {
-  let d = decompose('Å').to_array()
+  let d = @moon_swash.decompose('Å').to_array()
   inspect(d.length(), content="2")
   inspect(String::from_array(d[:]), content="A\u{030A}")
-  inspect(compose_pair('A', d[1]).unwrap(), content="Å")
+  inspect(@moon_swash.compose_pair('A', d[1]).unwrap(), content="Å")
 }
 
 ///|
 test "Char::opening_bracket / mirror for parenthesis" {
-  inspect(Codepoint::opening_bracket(')').unwrap(), content="(")
-  inspect(Codepoint::closing_bracket('(').unwrap(), content=")")
-  inspect(Codepoint::mirror('(').unwrap(), content=")")
+  inspect(@moon_swash.Codepoint::opening_bracket(')').unwrap(), content="(")
+  inspect(@moon_swash.Codepoint::closing_bracket('(').unwrap(), content=")")
+  inspect(@moon_swash.Codepoint::mirror('(').unwrap(), content=")")
 }

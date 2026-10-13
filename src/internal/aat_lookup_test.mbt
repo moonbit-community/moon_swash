@@ -14,14 +14,14 @@
 
 ///|
 /// Tests for AAT lookup table parsing.
-fn push_u16_be(out : Array[Byte], v : Int) -> Unit {
+fn push_u16_be(out : Array[Byte], v : Int32) -> Unit {
   let u = v.reinterpret_as_uint()
   out.push(((u >> 8) & 0xFFU).to_byte())
   out.push((u & 0xFFU).to_byte())
 }
 
 ///|
-fn push_u32_be(out : Array[Byte], v : UInt) -> Unit {
+fn push_u32_be(out : Array[Byte], v : UInt32) -> Unit {
   out.push(((v >> 24) & 0xFFU).to_byte())
   out.push(((v >> 16) & 0xFFU).to_byte())
   out.push(((v >> 8) & 0xFFU).to_byte())
@@ -35,9 +35,15 @@ test "aat_lookup_u16 format0" {
   push_u16_be(bytes, 10)
   push_u16_be(bytes, 11)
   push_u16_be(bytes, 12)
-  let b = BeBytes::BeBytes(Bytes::from_array(bytes))
-  debug_inspect(aat_lookup_u16(b, 0, (0).to_uint16()), content="Some(10)")
-  debug_inspect(aat_lookup_u16(b, 0, (2).to_uint16()), content="Some(12)")
+  let b = @internal.BeBytes::BeBytes(Bytes::from_array(bytes))
+  debug_inspect(
+    @internal.aat_lookup_u16(b, 0, (0).to_uint16()),
+    content="Some(10)",
+  )
+  debug_inspect(
+    @internal.aat_lookup_u16(b, 0, (2).to_uint16()),
+    content="Some(12)",
+  )
 }
 
 ///|
@@ -53,10 +59,16 @@ test "aat_lookup_u16 format6" {
   push_u16_be(bytes, 9)
   push_u16_be(bytes, 10)
   push_u16_be(bytes, 7)
-  let b = BeBytes::BeBytes(Bytes::from_array(bytes))
-  debug_inspect(aat_lookup_u16(b, 0, (3).to_uint16()), content="Some(9)")
-  debug_inspect(aat_lookup_u16(b, 0, (10).to_uint16()), content="Some(7)")
-  debug_inspect(aat_lookup_u16(b, 0, (4).to_uint16()), content="None")
+  let b = @internal.BeBytes::BeBytes(Bytes::from_array(bytes))
+  debug_inspect(
+    @internal.aat_lookup_u16(b, 0, (3).to_uint16()),
+    content="Some(9)",
+  )
+  debug_inspect(
+    @internal.aat_lookup_u16(b, 0, (10).to_uint16()),
+    content="Some(7)",
+  )
+  debug_inspect(@internal.aat_lookup_u16(b, 0, (4).to_uint16()), content="None")
 }
 
 ///|
@@ -68,8 +80,14 @@ test "aat_lookup_u16 format8" {
   push_u16_be(bytes, 100)
   push_u16_be(bytes, 101)
   push_u16_be(bytes, 102)
-  let b = BeBytes::BeBytes(Bytes::from_array(bytes))
-  debug_inspect(aat_lookup_u16(b, 0, (5).to_uint16()), content="Some(100)")
-  debug_inspect(aat_lookup_u16(b, 0, (7).to_uint16()), content="Some(102)")
-  debug_inspect(aat_lookup_u16(b, 0, (8).to_uint16()), content="None")
+  let b = @internal.BeBytes::BeBytes(Bytes::from_array(bytes))
+  debug_inspect(
+    @internal.aat_lookup_u16(b, 0, (5).to_uint16()),
+    content="Some(100)",
+  )
+  debug_inspect(
+    @internal.aat_lookup_u16(b, 0, (7).to_uint16()),
+    content="Some(102)",
+  )
+  debug_inspect(@internal.aat_lookup_u16(b, 0, (8).to_uint16()), content="None")
 }

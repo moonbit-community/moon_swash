@@ -20,7 +20,7 @@
 ///|
 /// Arbitrary user data that can be associated with a character throughout
 /// the shaping pipeline.
-pub type UserData = UInt
+pub type UserData = UInt32
 
 ///|
 /// Boundary type of a character or cluster.
@@ -32,7 +32,7 @@ pub(all) enum Boundary {
 }
 
 ///|
-fn boundary_from_raw(raw : UInt) -> Boundary {
+fn boundary_from_raw(raw : UInt32) -> Boundary {
   match raw & 0b11U {
     0U => None
     1U => Word
@@ -42,7 +42,7 @@ fn boundary_from_raw(raw : UInt) -> Boundary {
 }
 
 ///|
-fn boundary_to_raw(boundary : Boundary) -> UInt {
+fn boundary_to_raw(boundary : Boundary) -> UInt32 {
   match boundary {
     None => 0U
     Word => 1U
@@ -77,7 +77,7 @@ pub fn CharInfo::boundary(self : CharInfo) -> Boundary {
 }
 
 ///|
-fn CharInfo::boundary_raw(self : CharInfo) -> UInt {
+fn CharInfo::boundary_raw(self : CharInfo) -> UInt32 {
   self.props.boundary()
 }
 
@@ -142,36 +142,36 @@ pub fn CharInfo::default() -> CharInfo {
 }
 
 ///|
-const BOUND_SHIFT : Int = 14
+const BOUND_SHIFT : Int32 = 14
 
 ///|
-const SPACE_SHIFT : Int = 1
+const SPACE_SHIFT : Int32 = 1
 
 ///|
-const EMOJI_SHIFT : Int = 8
+const EMOJI_SHIFT : Int32 = 8
 
 ///|
-const INFO_MASK_ALL : UInt = 0xFFFFU
+const INFO_MASK_ALL : UInt32 = 0xFFFFU
 
 ///|
-const INFO_LO_MASK : UInt = 0x3FFFU
+const INFO_LO_MASK : UInt32 = 0x3FFFU
 
 ///|
-const SPACE_MASK : UInt = 0b111U
+const SPACE_MASK : UInt32 = 0b111U
 
 ///|
-const EMOJI_MASK : UInt = 0b11U
+const EMOJI_MASK : UInt32 = 0b11U
 
 ///|
 /// Information about a cluster including content properties and boundary analysis.
 struct ClusterInfo {
-  bits : UInt
+  bits : UInt32
 }
 
 ///|
 
 ///|
-fn ClusterInfo::ClusterInfo(bits : UInt) -> ClusterInfo {
+fn ClusterInfo::ClusterInfo(bits : UInt32) -> ClusterInfo {
   { bits, }
 }
 
@@ -220,7 +220,7 @@ pub(all) enum Emoji {
 }
 
 ///|
-fn emoji_from_raw(bits : UInt) -> Emoji {
+fn emoji_from_raw(bits : UInt32) -> Emoji {
   match bits & 0b11U {
     0U => None
     1U => Default
@@ -230,7 +230,7 @@ fn emoji_from_raw(bits : UInt) -> Emoji {
 }
 
 ///|
-fn emoji_to_raw(e : Emoji) -> UInt {
+fn emoji_to_raw(e : Emoji) -> UInt32 {
   match e {
     None => 0U
     Default => 1U
@@ -260,7 +260,7 @@ pub fn Whitespace::is_space_or_nbsp(self : Whitespace) -> Bool {
 }
 
 ///|
-fn whitespace_from_raw(bits : UInt) -> Whitespace {
+fn whitespace_from_raw(bits : UInt32) -> Whitespace {
   match bits & 0b111U {
     0U => None
     1U => Space
@@ -273,7 +273,7 @@ fn whitespace_from_raw(bits : UInt) -> Whitespace {
 }
 
 ///|
-fn whitespace_to_raw(space : Whitespace) -> UInt {
+fn whitespace_to_raw(space : Whitespace) -> UInt32 {
   match space {
     None => 0U
     Space => 1U
@@ -288,8 +288,8 @@ fn whitespace_to_raw(space : Whitespace) -> UInt {
 /// Character input to the cluster parser.
 struct Token {
   ch : Char
-  offset : UInt
-  len : UInt
+  offset : UInt32
+  len : UInt32
   info : CharInfo
   data : UserData
 }
@@ -297,8 +297,8 @@ struct Token {
 ///|
 pub fn Token::Token(
   ch : Char,
-  offset : UInt,
-  len : UInt,
+  offset : UInt32,
+  len : UInt32,
   info : CharInfo,
   data : UserData,
 ) -> Token {
@@ -316,12 +316,12 @@ pub fn Token::ch(self : Token) -> Char {
 }
 
 ///|
-pub fn Token::offset(self : Token) -> UInt {
+pub fn Token::offset(self : Token) -> UInt32 {
   self.offset
 }
 
 ///|
-pub fn Token::len(self : Token) -> UInt {
+pub fn Token::len(self : Token) -> UInt32 {
   self.len
 }
 
@@ -360,7 +360,7 @@ pub(all) enum ShapeClass {
 /// Character output from the cluster parser.
 struct ClusterChar {
   mut ch : Char
-  offset : UInt
+  offset : UInt32
   shape_class : ShapeClass
   joining_type : JoiningType
   ignorable : Bool
@@ -372,7 +372,7 @@ struct ClusterChar {
 ///|
 pub fn ClusterChar::ClusterChar(
   ch : Char,
-  offset : UInt,
+  offset : UInt32,
   shape_class : ShapeClass,
   joining_type : JoiningType,
   ignorable : Bool,
@@ -398,7 +398,7 @@ pub fn ClusterChar::ch(self : ClusterChar) -> Char {
 }
 
 ///|
-pub fn ClusterChar::offset(self : ClusterChar) -> UInt {
+pub fn ClusterChar::offset(self : ClusterChar) -> UInt32 {
   self.offset
 }
 
@@ -443,28 +443,28 @@ pub(all) enum Status {
 ///|
 /// Source range of a cluster in code units.
 struct SourceRange {
-  start : UInt
-  end : UInt
+  start : UInt32
+  end : UInt32
 }
 
 ///|
-pub fn SourceRange::SourceRange(start : UInt, end : UInt) -> SourceRange {
+pub fn SourceRange::SourceRange(start : UInt32, end : UInt32) -> SourceRange {
   { start, end, }
 }
 
 ///|
-pub fn SourceRange::start(self : SourceRange) -> UInt {
+pub fn SourceRange::start(self : SourceRange) -> UInt32 {
   self.start
 }
 
 ///|
-pub fn SourceRange::end(self : SourceRange) -> UInt {
+pub fn SourceRange::end(self : SourceRange) -> UInt32 {
   self.end
 }
 
 ///|
 /// The maximum number of characters in a single cluster.
-pub const MAX_CLUSTER_SIZE : Int = 32
+pub const MAX_CLUSTER_SIZE : Int32 = 32
 
 ///|
 priv enum FormKind {
@@ -483,7 +483,7 @@ priv enum FormState {
 ///|
 priv struct Form {
   chars : Array[ClusterChar]
-  mut map_len : Int
+  mut map_len : Int32
   mut state : FormState
 }
 
@@ -516,7 +516,7 @@ fn Form::setup(self : Form) -> Unit {
 ///|
 fn mapper_map(
   chars : Array[ClusterChar],
-  map_len : Int,
+  map_len : Int32,
   f : (Char) -> GlyphId,
   glyphs : Array[GlyphId],
   best_ratio : Double,
@@ -564,11 +564,11 @@ fn Form::map(
 ///|
 /// Character cluster; output from the parser and input to the shaper.
 struct CharCluster {
-  mut info_bits : UInt
+  mut info_bits : UInt32
   chars : Array[ClusterChar]
-  mut map_len : Int
-  mut start : UInt
-  mut end : UInt
+  mut map_len : Int32
+  mut start : UInt32
+  mut end : UInt32
   mut force_normalize : Bool
   comp : Form
   decomp : Form
@@ -745,7 +745,7 @@ fn CharCluster::set_space_from_char(self : CharCluster, ch : Char) -> Unit {
 }
 
 ///|
-fn CharCluster::merge_boundary(self : CharCluster, boundary : UInt) -> Unit {
+fn CharCluster::merge_boundary(self : CharCluster, boundary : UInt32) -> Unit {
   let cur = self.info_bits >> BOUND_SHIFT
   let merged = if cur > boundary { cur } else { boundary }
   self.info_bits = (self.info_bits & INFO_LO_MASK) | (merged << BOUND_SHIFT)
@@ -872,7 +872,7 @@ fn CharCluster::composed(self : CharCluster) -> ArrayView[ClusterChar]? {
 priv struct TokenStream {
   iter : Iter[Token]
   mut buf : Array[Token]
-  mut buf_offset : Int
+  mut buf_offset : Int32
   mut done : Bool
 }
 
@@ -884,7 +884,7 @@ fn TokenStream::TokenStream(iter : Iter[Token]) -> TokenStream {
 }
 
 ///|
-fn TokenStream::fill_to(self : TokenStream, n : Int) -> Unit {
+fn TokenStream::fill_to(self : TokenStream, n : Int32) -> Unit {
   while !self.done && self.buf_offset + n >= self.buf.length() {
     match self.iter.next() {
       None => {
@@ -897,7 +897,7 @@ fn TokenStream::fill_to(self : TokenStream, n : Int) -> Unit {
 }
 
 ///|
-fn TokenStream::peek(self : TokenStream, n : Int) -> Token? {
+fn TokenStream::peek(self : TokenStream, n : Int32) -> Token? {
   self.fill_to(n)
   let ix = self.buf_offset + n
   if ix >= 0 && ix < self.buf.length() {
@@ -973,7 +973,7 @@ fn SimpleState::next(self : SimpleState, cluster : CharCluster) -> Bool {
 }
 
 ///|
-fn cluster_break_index(kind : ClusterBreak) -> Int {
+fn cluster_break_index(kind : ClusterBreak) -> Int32 {
   match kind {
     CN => 0
     CR => 1
@@ -1339,7 +1339,7 @@ fn UseClass::to_shape_class(self : UseClass) -> ShapeClass {
 priv struct ComplexTokens {
   stream : TokenStream
   decomp : Array[(Token, UseClass)]
-  mut decomp_offset : Int
+  mut decomp_offset : Int32
   script : Script
 }
 
@@ -1534,7 +1534,7 @@ fn ComplexState::next(self : ComplexState, cluster : CharCluster) -> Bool {
 }
 
 ///|
-fn use_class_index(kind : UseClass) -> Int {
+fn use_class_index(kind : UseClass) -> Int32 {
   match kind {
     B => 0
     CGJ => 1
@@ -2239,7 +2239,7 @@ fn MyanmarState::next(self : MyanmarState, cluster : CharCluster) -> Bool {
 }
 
 ///|
-fn myanmar_class_index(kind : MyanmarClass) -> Int {
+fn myanmar_class_index(kind : MyanmarClass) -> Int32 {
   match kind {
     A => 0
     As => 1

@@ -15,7 +15,7 @@
 ///|
 struct TestFont {
   data : Bytes
-  offset : Int
+  offset : Int32
 }
 
 ///|
@@ -90,9 +90,9 @@ fn mk_min_font() -> Bytes {
 test "RawFont.table_range/table_data reads the table directory" {
   let data = mk_min_font()
   let font = TestFont::{ data, offset: 0, }
-  let head_tag : RawTag = 0x68656164 // "head"
-  debug_inspect(table_range(font, head_tag), content="Some((32, 36))")
-  let view_opt = table_data(font, head_tag)
+  let head_tag : @internal.RawTag = 0x68656164 // "head"
+  debug_inspect(@internal.table_range(font, head_tag), content="Some((32, 36))")
+  let view_opt = @internal.table_data(font, head_tag)
   if view_opt is Some(view) {
     inspect(view.length(), content="4")
     inspect(view[0], content="b'\\xDE'")

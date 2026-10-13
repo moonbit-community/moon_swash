@@ -16,7 +16,7 @@
 /// Localized names and other metadata.
 ///
 /// Ported from `swash/src/string.rs` (swash is dual-licensed Apache-2.0 OR MIT).
-const NAME : UInt = 0x6E616D65 // "name"
+const NAME : UInt32 = 0x6E616D65 // "name"
 
 ///|
 /// Identifier for well-known localized strings in a font.
@@ -151,8 +151,8 @@ pub fn Encoding::is_decodable(self : Encoding) -> Bool {
 /// Iterator over a collection of localized strings.
 pub struct LocalizedStrings {
   b : @internal.BeBytes
-  len : Int
-  storage : Int
+  len : Int32
+  storage : Int32
 }
 
 ///|
@@ -179,14 +179,14 @@ pub fn FontRef::localized_strings(self : FontRef) -> LocalizedStrings {
 }
 
 ///|
-pub fn LocalizedStrings::len(self : LocalizedStrings) -> Int {
+pub fn LocalizedStrings::len(self : LocalizedStrings) -> Int32 {
   self.len
 }
 
 ///|
 fn LocalizedStrings::get(
   self : LocalizedStrings,
-  index : Int,
+  index : Int32,
 ) -> LocalizedString? {
   if index < 0 || index >= self.len {
     return None
@@ -265,8 +265,8 @@ pub fn LocalizedStrings::find_by_id(
 /// Represents a single localized string in a font.
 pub struct LocalizedString {
   b : @internal.BeBytes
-  storage : Int
-  offset : Int
+  storage : Int32
+  offset : Int32
 }
 
 ///|
@@ -304,7 +304,7 @@ pub fn LocalizedString::chars(self : LocalizedString) -> Iter[Char] {
     .reinterpret_as_int()
   let base = self.b.read_u16(self.offset + 10).unwrap_or(0).reinterpret_as_int() +
     self.storage
-  let rep : Char = (0xFFFD : Int).unsafe_to_char()
+  let rep : Char = (0xFFFD : Int32).unsafe_to_char()
   match encoding {
     Unicode => {
       let mut cur = 0
@@ -418,7 +418,7 @@ fn LocalizedString::bytes(self : LocalizedString) -> BytesView? {
 }
 
 ///|
-let mac_roman : ReadOnlyArray[Int] = [
+let mac_roman : ReadOnlyArray[Int32] = [
   196, 197, 199, 201, 209, 214, 220, 225, 224, 226, 228, 227, 229, 231, 233, 232,
   234, 235, 237, 236, 238, 239, 241, 243, 242, 244, 246, 245, 250, 249, 251, 252,
   8224, 176, 162, 163, 167, 8226, 182, 223, 174, 169, 8482, 180, 168, 8800, 198,
@@ -431,7 +431,7 @@ let mac_roman : ReadOnlyArray[Int] = [
 ]
 
 ///|
-let languages : ReadOnlyArray[(UInt, String)] = [
+let languages : ReadOnlyArray[(UInt32, String)] = [
   (0x10000, "en"),
   (0x10001, "fr"),
   (0x10002, "de"),
@@ -769,7 +769,7 @@ let languages : ReadOnlyArray[(UInt, String)] = [
 ]
 
 ///|
-fn language_lookup(key : UInt) -> String? {
+fn language_lookup(key : UInt32) -> String? {
   let mut l = 0
   let mut h = languages.length()
   while l < h {

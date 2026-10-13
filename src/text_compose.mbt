@@ -34,39 +34,39 @@ fn decompose_single(c : Char) -> Iter[Char] {
 }
 
 ///|
-const LBASE : Int = 0x1100
+const LBASE : Int32 = 0x1100
 
 ///|
-const VBASE : Int = 0x1161
+const VBASE : Int32 = 0x1161
 
 ///|
-const TBASE : Int = 0x11A7
+const TBASE : Int32 = 0x11A7
 
 ///|
-const LCOUNT : Int = 19
+const LCOUNT : Int32 = 19
 
 ///|
-const VCOUNT : Int = 21
+const VCOUNT : Int32 = 21
 
 ///|
-const TCOUNT : Int = 28
+const TCOUNT : Int32 = 28
 
 ///|
-const SBASE : Int = 0xAC00
+const SBASE : Int32 = 0xAC00
 
 ///|
-const NCOUNT : Int = VCOUNT * TCOUNT
+const NCOUNT : Int32 = VCOUNT * TCOUNT
 
 ///|
-const SCOUNT : Int = LCOUNT * NCOUNT
+const SCOUNT : Int32 = LCOUNT * NCOUNT
 
 ///|
-fn is_hangul_syllable(c : Int) -> Bool {
+fn is_hangul_syllable(c : Int32) -> Bool {
   c >= SBASE && c < SBASE + SCOUNT
 }
 
 ///|
-fn compose_hangul(a : Int, b : Int) -> Int? {
+fn compose_hangul(a : Int32, b : Int32) -> Int32? {
   if b < VBASE || b >= TBASE + TCOUNT {
     return None
   }
@@ -87,7 +87,10 @@ fn compose_hangul(a : Int, b : Int) -> Int? {
 }
 
 ///|
-fn pair_index(c : Int, table : ReadOnlyArray[(UInt, UInt, UInt)]) -> Int? {
+fn pair_index(
+  c : Int32,
+  table : ReadOnlyArray[(UInt32, UInt32, UInt32)],
+) -> Int32? {
   for entry in table.iter() {
     let (start_u, len_u, base_u) = entry
     let start = start_u.reinterpret_as_int()
@@ -128,7 +131,7 @@ pub fn compose_pair(a : Char, b : Char) -> Char? {
 }
 
 ///|
-fn decompose_hangul(c : Int) -> Iter[Char] {
+fn decompose_hangul(c : Int32) -> Iter[Char] {
   let si = c - SBASE
   let li = si / NCOUNT
   let vi = si % NCOUNT / TCOUNT

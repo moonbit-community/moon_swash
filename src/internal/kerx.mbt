@@ -21,14 +21,18 @@
 pub struct KerxSubtables {
   b : BeBytes
   version : UInt16
-  offset : Int
-  len : UInt
-  cur : UInt
+  offset : Int32
+  len : UInt32
+  cur : UInt32
   ankr : BytesView
 }
 
 ///|
-pub fn kerx_subtables(data : Bytes, kerx : UInt, ankr : UInt) -> KerxSubtables {
+pub fn kerx_subtables(
+  data : Bytes,
+  kerx : UInt32,
+  ankr : UInt32,
+) -> KerxSubtables {
   let view = if kerx == 0U {
     aat_empty_view()
   } else {
@@ -49,9 +53,9 @@ pub fn kerx_subtables(data : Bytes, kerx : UInt, ankr : UInt) -> KerxSubtables {
 pub struct KerxSubtable {
   b : BeBytes
   version : UInt16
-  size : UInt
-  coverage : UInt
-  tuple_count : UInt
+  size : UInt32
+  coverage : UInt32
+  tuple_count : UInt32
   ankr : BytesView
 }
 
@@ -136,7 +140,7 @@ pub fn KerxSubtable::kind(self : KerxSubtable) -> KerxSubtableKind? {
 ///|
 pub struct KerxFormat0 {
   b : BeBytes
-  count : Int
+  count : Int32
 }
 
 ///|
@@ -153,7 +157,7 @@ pub fn KerxFormat0::get(
   self : KerxFormat0,
   left : UInt16,
   right : UInt16,
-) -> Int? {
+) -> Int32? {
   let key = (left.to_int().reinterpret_as_uint() << 16) |
     right.to_int().reinterpret_as_uint()
   let base = 28
@@ -182,9 +186,9 @@ pub fn KerxFormat0::get(
 ///|
 pub struct KerxContextualState {
   mut state : UInt16
-  stack : Array[Int]
-  mut pos : Int
-  mut cycles : Int
+  stack : Array[Int32]
+  mut pos : Int32
+  mut cycles : Int32
 }
 
 ///|
@@ -198,13 +202,13 @@ pub fn KerxContextualState::KerxContextualState() -> KerxContextualState {
 pub struct KerxFormat1 {
   b : BeBytes
   state_table : ExtendedStateTable
-  value : Int
-  tuple_count : UInt
-  tuple_size : Int
+  value : Int32
+  tuple_count : UInt32
+  tuple_size : Int32
 }
 
 ///|
-fn KerxFormat1::parse(b0 : BeBytes, tuple_count : UInt) -> KerxFormat1? {
+fn KerxFormat1::parse(b0 : BeBytes, tuple_count : UInt32) -> KerxFormat1? {
   // Start of extended state table is at offset 12.
   let data_view = aat_subview(b0.data(), 12)
   let b = BeBytes::from_view(data_view)
@@ -228,10 +232,10 @@ fn KerxFormat1::parse(b0 : BeBytes, tuple_count : UInt) -> KerxFormat1? {
 pub fn KerxFormat1::next(
   self : KerxFormat1,
   state : KerxContextualState,
-  index : Int,
+  index : Int32,
   glyph_id : UInt16,
-  f : (Int, Int) -> Unit?,
-) -> Int? {
+  f : (Int32, Int32) -> Unit?,
+) -> Int32? {
   let push_flag : UInt16 = 0x8000
   let dont_advance : UInt16 = 0x4000
   let reset_flag : UInt16 = 0x2000
@@ -288,9 +292,9 @@ pub fn KerxFormat1::next(
 ///|
 pub struct KerxFormat2 {
   b : BeBytes
-  l_table : Int
-  r_table : Int
-  array : Int
+  l_table : Int32
+  r_table : Int32
+  array : Int32
 }
 
 ///|
@@ -315,7 +319,7 @@ pub fn KerxFormat2::get(
   self : KerxFormat2,
   left : UInt16,
   right : UInt16,
-) -> Int? {
+) -> Int32? {
   let row = match aat_lookup_u16(self.b, self.l_table, left) {
     None => return None
     Some(v) => v.to_int()
@@ -332,9 +336,9 @@ pub fn KerxFormat2::get(
 ///|
 pub struct KerxFormat4State {
   mut state : UInt16
-  mut mark : Int
+  mut mark : Int32
   mut mark_id : UInt16
-  mut cycles : Int
+  mut cycles : Int32
 }
 
 ///|
@@ -348,8 +352,8 @@ pub fn KerxFormat4State::KerxFormat4State() -> KerxFormat4State {
 pub struct KerxFormat4 {
   b : BeBytes
   state_table : ExtendedStateTable
-  action_type : UInt
-  control_table : Int
+  action_type : UInt32
+  control_table : Int32
   ankr : BytesView
 }
 
@@ -374,10 +378,10 @@ fn KerxFormat4::parse(b0 : BeBytes, ankr : BytesView) -> KerxFormat4? {
 pub fn KerxFormat4::next(
   self : KerxFormat4,
   state : KerxFormat4State,
-  index : Int,
+  index : Int32,
   glyph_id : UInt16,
-  f : (Int, Int, Double, Double) -> Unit?,
-) -> Int? {
+  f : (Int32, Int32, Double, Double) -> Unit?,
+) -> Int32? {
   let mark_flag : UInt16 = 0x8000
   let dont_advance : UInt16 = 0x4000
   let class = self.state_table.class(glyph_id)
@@ -464,8 +468,8 @@ fn KerxFormat4::anchor_offset(
 ///|
 pub struct KerxAnchorPoints {
   b : BeBytes
-  offset : Int
-  len : UInt
+  offset : Int32
+  len : UInt32
 }
 
 ///|
@@ -501,7 +505,7 @@ pub fn kerx_anchor_points(
 pub fn KerxAnchorPoints::get(
   self : KerxAnchorPoints,
   index : UInt16,
-) -> (Int, Int)? {
+) -> (Int32, Int32)? {
   let ix = index.to_int()
   if ix.reinterpret_as_uint() >= self.len {
     return None

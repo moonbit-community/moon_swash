@@ -25,13 +25,13 @@ pub impl Selector for TestSelector with fn select_font(self, cluster) {
   let ch0 = chars[0].ch()
   if ch0 >= 'A' && ch0 <= 'Z' {
     Some(
-      SelectedFont::SelectedFont(self.font_b).with_id_override(
+      @shape.SelectedFont::SelectedFont(self.font_b).with_id_override(
         ((3).to_uint64(), (4).to_uint64()),
       ),
     )
   } else {
     Some(
-      SelectedFont::SelectedFont(self.font_a).with_id_override(
+      @shape.SelectedFont::SelectedFont(self.font_a).with_id_override(
         ((1).to_uint64(), (2).to_uint64()),
       ),
     )
@@ -44,15 +44,15 @@ test "shape.partition selects and partitions fonts by cluster" {
   let font_a = @swash.FontRef::from_offset(data, 0).unwrap()
   let font_b = @swash.FontRef::from_offset(data, 0).unwrap()
   let selector = TestSelector::{ font_a, font_b, }
-  let opts = SimpleShapeOptions::default()
+  let opts = @shape.SimpleShapeOptions::default()
   let tokens : Array[@swash.Token] = [
     Token('a', 0U, 1U, @swash.CharInfo::default(), 0U),
     Token('B', 1U, 1U, @swash.CharInfo::default(), 0U),
     Token('c', 2U, 1U, @swash.CharInfo::default(), 0U),
   ]
   let ids : Array[UInt64] = []
-  let cx = ShapeContext::ShapeContext()
-  shape(cx, selector, opts, tokens.iter(), (font, _shaper) => {
+  let cx = @shape.ShapeContext::ShapeContext()
+  @shape.shape(cx, selector, opts, tokens.iter(), (font, _shaper) => {
     ids.push(font.id_override().unwrap().0)
   })
   inspect(ids.length(), content="3")

@@ -35,7 +35,7 @@ const ITAL : Tag = 0x6974616C // "ital"
 ///
 /// This struct is created by the `attributes()` method on `FontRef`.
 pub struct Attributes {
-  value : UInt
+  value : UInt32
 }
 
 ///|
@@ -56,7 +56,7 @@ pub fn Attributes::Attributes(
 /// Extracts the attributes from the specified font.
 pub fn Attributes::from_font(font : FontRef) -> Attributes {
   let attrs = Attributes::from_os2(font.os2())
-  let mut var_bits : UInt = 0
+  let mut var_bits : UInt32 = 0
   for v in font.variations().iter() {
     match v.tag() {
       WDTH => var_bits = var_bits | 1
@@ -170,7 +170,7 @@ pub fn Attributes::synthesize(
   }
   let style = self.style()
   let req_style = requested.style()
-  let mut skew : Int = 0
+  let mut skew : Int32 = 0
   if style != req_style {
     match req_style {
       Normal => ()
@@ -261,12 +261,12 @@ fn clamp_double(x : Double, lo : Double, hi : Double) -> Double {
 }
 
 ///|
-fn slice_or_none(s : StringView, start : Int, end : Int) -> StringView? {
+fn slice_or_none(s : StringView, start : Int32, end : Int32) -> StringView? {
   Some(s[start:end])
 }
 
 ///|
-fn slice_from_or_none(s : StringView, start : Int) -> StringView? {
+fn slice_from_or_none(s : StringView, start : Int32) -> StringView? {
   Some(s[start:])
 }
 
@@ -396,7 +396,7 @@ pub fn Style::to_degrees(self : Style) -> Double {
 }
 
 ///|
-fn Style::unpack(bits : UInt) -> Style {
+fn Style::unpack(bits : UInt32) -> Style {
   if (bits & 1) != 0 {
     Oblique({ value: (bits >> 1).to_uint16(), })
   } else if bits == 0b110 {
@@ -407,7 +407,7 @@ fn Style::unpack(bits : UInt) -> Style {
 }
 
 ///|
-fn Style::pack(self : Style) -> UInt {
+fn Style::pack(self : Style) -> UInt32 {
   match self {
     Normal => 0b10
     Italic => 0b110
@@ -729,7 +729,7 @@ pub impl Compare for Stretch with fn compare(self, other) {
 pub struct Synthesis {
   vars : Array[VariationSetting]
   embolden : Bool
-  skew : Int
+  skew : Int32
 }
 
 ///|

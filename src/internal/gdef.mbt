@@ -18,15 +18,15 @@
 /// Ported from `upstream swash/src/internal/at.rs` (`Gdef`).
 pub struct Gdef {
   data : Bytes
-  base : Int
+  base : Int32
   classes : UInt16
   mark_classes : UInt16
   mark_sets : UInt16
-  var_store : UInt
+  var_store : UInt32
 }
 
 ///|
-pub fn Gdef::from_base(data : Bytes, base : Int) -> Gdef? {
+pub fn Gdef::from_base(data : Bytes, base : Int32) -> Gdef? {
   let b = BeBytes::BeBytes(data)
   let major = b.read_u16(base).unwrap_or(0).to_uint16()
   let minor = b.read_u16(base + 2).unwrap_or(0).to_uint16()
@@ -52,7 +52,7 @@ pub fn Gdef::from_base(data : Bytes, base : Int) -> Gdef? {
 }
 
 ///|
-pub fn Gdef::from_offset(data : Bytes, offset : UInt) -> Gdef? {
+pub fn Gdef::from_offset(data : Bytes, offset : UInt32) -> Gdef? {
   if offset == 0U {
     return None
   }
@@ -119,14 +119,14 @@ pub fn Gdef::mark_class(self : Gdef, glyph_id : UInt16) -> UInt16 {
 ///|
 pub fn Gdef::mark_set_coverage(
   self : Gdef,
-  set_offset : UInt,
+  set_offset : UInt32,
   glyph_id : UInt16,
 ) -> UInt16? {
   coverage(self.data, set_offset, glyph_id)
 }
 
 ///|
-pub fn Gdef::mark_set_offset(self : Gdef, set_index : UInt16) -> UInt? {
+pub fn Gdef::mark_set_offset(self : Gdef, set_index : UInt16) -> UInt32? {
   if self.mark_sets == 0 {
     return None
   }
@@ -165,7 +165,7 @@ pub fn Gdef::delta(
   self : Gdef,
   outer : UInt16,
   inner : UInt16,
-  coords : ArrayView[Int],
+  coords : ArrayView[Int32],
 ) -> Double {
   if self.var_store == 0U {
     return 0.0
@@ -185,7 +185,7 @@ pub fn Gdef::delta(
 }
 
 ///|
-pub fn validate_coverage(b : Bytes, coverage_offset : UInt) -> Bool {
+pub fn validate_coverage(b : Bytes, coverage_offset : UInt32) -> Bool {
   if coverage_offset == 0U {
     return false
   }
@@ -212,7 +212,7 @@ pub fn validate_coverage(b : Bytes, coverage_offset : UInt) -> Bool {
 ///|
 pub fn coverage(
   b : Bytes,
-  coverage_offset : UInt,
+  coverage_offset : UInt32,
   glyph_id : UInt16,
 ) -> UInt16? {
   if coverage_offset == 0U {
@@ -289,7 +289,11 @@ pub fn coverage(
 }
 
 ///|
-pub fn classdef(b : Bytes, classdef_offset : UInt, glyph_id : UInt16) -> UInt16 {
+pub fn classdef(
+  b : Bytes,
+  classdef_offset : UInt32,
+  glyph_id : UInt16,
+) -> UInt16 {
   if classdef_offset == 0U {
     return (0).to_uint16()
   }

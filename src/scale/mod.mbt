@@ -21,7 +21,7 @@
 pub type PaletteIndex = UInt16
 
 ///|
-pub type StrikeIndex = UInt
+pub type StrikeIndex = UInt32
 
 ///|
 /// Bitmap strike selection mode.

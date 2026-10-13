@@ -45,57 +45,57 @@ pub fn inflate_zlib(data : Bytes) -> Array[Byte] raise @yazi.YaziError {
 // ---- Internal PNG decoder (ported from upstream swash) --------------------
 
 ///|
-const PNG_IHDR_LEN : Int = 13
+const PNG_IHDR_LEN : Int32 = 13
 
 ///|
-const CHUNK_IHDR : UInt = 0x49484452 // "IHDR"
+const CHUNK_IHDR : UInt32 = 0x49484452 // "IHDR"
 
 ///|
-const CHUNK_PLTE : UInt = 0x504c5445 // "PLTE"
+const CHUNK_PLTE : UInt32 = 0x504c5445 // "PLTE"
 
 ///|
-const CHUNK_TRNS : UInt = 0x74524e53 // "tRNS"
+const CHUNK_TRNS : UInt32 = 0x74524e53 // "tRNS"
 
 ///|
-const CHUNK_IDAT : UInt = 0x49444154 // "IDAT"
+const CHUNK_IDAT : UInt32 = 0x49444154 // "IDAT"
 
 ///|
-const CHUNK_GAMA : UInt = 0x67414d41 // "gAMA"
+const CHUNK_GAMA : UInt32 = 0x67414d41 // "gAMA"
 
 ///|
-const CHUNK_IEND : UInt = 0x49454e44 // "IEND"
+const CHUNK_IEND : UInt32 = 0x49454e44 // "IEND"
 
 // Color types.
 
 ///|
-const COLOR_GREYSCALE : UInt = 0
+const COLOR_GREYSCALE : UInt32 = 0
 
 ///|
-const COLOR_TRUECOLOR : UInt = 2
+const COLOR_TRUECOLOR : UInt32 = 2
 
 ///|
-const COLOR_INDEXED : UInt = 3
+const COLOR_INDEXED : UInt32 = 3
 
 ///|
-const COLOR_GREYSCALE_ALPHA : UInt = 4
+const COLOR_GREYSCALE_ALPHA : UInt32 = 4
 
 ///|
-const COLOR_TRUECOLOR_ALPHA : UInt = 6
+const COLOR_TRUECOLOR_ALPHA : UInt32 = 6
 
 ///|
-let adam7_row_start : Array[Int] = [0, 0, 4, 0, 2, 0, 1]
+let adam7_row_start : Array[Int32] = [0, 0, 4, 0, 2, 0, 1]
 
 ///|
-let adam7_row_inc : Array[Int] = [8, 8, 8, 4, 4, 2, 2]
+let adam7_row_inc : Array[Int32] = [8, 8, 8, 4, 4, 2, 2]
 
 ///|
-let adam7_col_start : Array[Int] = [0, 4, 0, 2, 0, 1, 0]
+let adam7_col_start : Array[Int32] = [0, 4, 0, 2, 0, 1, 0]
 
 ///|
-let adam7_col_inc : Array[Int] = [8, 8, 4, 4, 2, 2, 1]
+let adam7_col_inc : Array[Int32] = [8, 8, 4, 4, 2, 2, 1]
 
 ///|
-fn get_u32be(buf : Bytes, offset : Int) -> UInt? {
+fn get_u32be(buf : Bytes, offset : Int32) -> UInt32? {
   let b = buf
   guard offset >= 0 && b.length() - offset >= 4 else { None }
   match
@@ -112,7 +112,7 @@ fn get_u32be(buf : Bytes, offset : Int) -> UInt? {
 }
 
 ///|
-fn paeth(a : UInt, b : UInt, c : UInt) -> UInt {
+fn paeth(a : UInt32, b : UInt32, c : UInt32) -> UInt32 {
   let pa = (b.reinterpret_as_int() - c.reinterpret_as_int()).abs()
   let pb = (a.reinterpret_as_int() - c.reinterpret_as_int()).abs()
   let pc = (a.reinterpret_as_int() +
@@ -130,11 +130,11 @@ fn paeth(a : UInt, b : UInt, c : UInt) -> UInt {
 
 ///|
 fn defilter(
-  ty : UInt,
+  ty : UInt32,
   source : Array[Byte],
   dest : Array[Byte],
   last : Array[Byte],
-  bwidth : Int,
+  bwidth : Int32,
 ) -> Bool {
   let len = source.length()
   if dest.length() < len || last.length() < len {
@@ -199,9 +199,9 @@ fn defilter(
 fn normalize(
   source : Array[Byte],
   dest : Array[Byte],
-  depth : UInt,
+  depth : UInt32,
   palette : Bool,
-  width : Int,
+  width : Int32,
   trunc_16 : Bool,
 ) -> Bool {
   match depth {
@@ -273,16 +273,16 @@ fn normalize(
 
 ///|
 fn emit_rgba8(
-  color_type : UInt,
+  color_type : UInt32,
   palette : Array[Byte],
   trans : Array[Byte],
   source : Array[Byte],
   image : Array[Byte],
-  x : Int,
-  y : Int,
-  width : Int,
-  inc : Int,
-  len : Int,
+  x : Int32,
+  y : Int32,
+  width : Int32,
+  inc : Int32,
+  len : Int32,
 ) -> Bool {
   let mut out = y * width * 4 + x * 4
   let mut i = 0
@@ -354,7 +354,7 @@ fn decode_png(
   data : Bytes,
   scratch : Array[Byte],
   target : Array[Byte],
-) -> (UInt, UInt)? {
+) -> (UInt32, UInt32)? {
   if data.length() < 33 || !is_png(data) {
     return None
   }

@@ -18,7 +18,7 @@
 /// Ported from upstream `swash/src/scale/hinting_cache.rs` (Apache-2.0 OR MIT).
 
 ///|
-const MAX_CACHED_HINT_INSTANCES : Int = 8
+const MAX_CACHED_HINT_INSTANCES : Int32 = 8
 
 ///|
 fn hinting_options() -> @skrifa_outline.HintingOptions {
@@ -30,7 +30,7 @@ priv struct HintingEntry {
   id0 : UInt64
   id1 : UInt64
   size : @skrifa.Size
-  coords : Array[Int]
+  coords : Array[Int32]
   instance : @skrifa_outline.HintingInstance
   serial : UInt64
 }
@@ -45,7 +45,7 @@ fn size_eq(a : @skrifa.Size, b : @skrifa.Size) -> Bool {
 }
 
 ///|
-fn coords_eq(a : ArrayView[Int], b : ArrayView[Int]) -> Bool {
+fn coords_eq(a : ArrayView[Int32], b : ArrayView[Int32]) -> Bool {
   if a.length() != b.length() {
     return false
   }
@@ -58,8 +58,8 @@ fn coords_eq(a : ArrayView[Int], b : ArrayView[Int]) -> Bool {
 }
 
 ///|
-fn effective_coords(loc : @skrifa.LocationRef) -> Array[Int] {
-  let out : Array[Int] = []
+fn effective_coords(loc : @skrifa.LocationRef) -> Array[Int32] {
+  let out : Array[Int32] = []
   for c in loc.effective_coords().iter() {
     out.push(c)
   }
@@ -86,8 +86,8 @@ fn find_hinting_entry(
   id0 : UInt64,
   id1 : UInt64,
   size : @skrifa.Size,
-  coords : ArrayView[Int],
-) -> (Int, Bool)? {
+  coords : ArrayView[Int32],
+) -> (Int32, Bool)? {
   let mut found_serial : UInt64 = 0xFFFFFFFFFFFFFFFF
   let mut found_index = 0
   for i in 0..<entries.length() {

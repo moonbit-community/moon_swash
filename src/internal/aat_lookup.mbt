@@ -18,7 +18,7 @@
 /// Ported from `upstream swash/src/internal/aat.rs` (`lookup<T>`).
 
 ///|
-pub fn aat_lookup_u16(b : BeBytes, offset : Int, id : UInt16) -> UInt16? {
+pub fn aat_lookup_u16(b : BeBytes, offset : Int32, id : UInt16) -> UInt16? {
   let element_size = 2
   let fmt = match b.read_u16(offset) {
     None => return None
@@ -155,7 +155,11 @@ pub fn aat_lookup_u16(b : BeBytes, offset : Int, id : UInt16) -> UInt16? {
 }
 
 ///|
-fn aat_read_u16_array(b : BeBytes, offset : Int, len : Int) -> Array[UInt16]? {
+fn aat_read_u16_array(
+  b : BeBytes,
+  offset : Int32,
+  len : Int32,
+) -> Array[UInt16]? {
   if len < 0 {
     return None
   }

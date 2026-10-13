@@ -29,7 +29,7 @@ pub struct Render {
 ///|
 
 ///|
-fn ensure_zeroed(buf : Array[Byte], len : Int) -> Array[Byte] {
+fn ensure_zeroed(buf : Array[Byte], len : Int32) -> Array[Byte] {
   if len <= 0 {
     buf.clear()
     return buf

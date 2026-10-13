@@ -38,12 +38,12 @@ pub impl Eq for Direction with fn equal(self, other) {
 }
 
 ///|
-const DEFAULT_SIZE : Int = 16
+const DEFAULT_SIZE : Int32 = 16
 
 ///|
 priv struct State {
   buffer : Buffer
-  order : Array[Int]
+  order : Array[Int32]
   glyphs : Array[GlyphData]
   store_builder : FeatureStoreBuilder
   mut disable_kern : Bool
@@ -78,14 +78,14 @@ fn State::reset(self : State) -> Unit {
 struct ContextState {
   font_cache : @swash.FontCache[FontEntry]
   feature_cache : FeatureCache
-  coords : Array[Int]
+  coords : Array[Int32]
   state : State
 }
 
 ///|
 
 ///|
-fn ContextState::ContextState(max_entries : Int) -> ContextState {
+fn ContextState::ContextState(max_entries : Int32) -> ContextState {
   {
     font_cache: FontCache(max_entries),
     feature_cache: FeatureCache(max_entries),
@@ -113,7 +113,7 @@ pub fn ShapeContext::ShapeContext() -> ShapeContext {
 
 ///|
 /// Creates a new shaping context with the specified maximum number of cache entries.
-pub fn ShapeContext::with_max_entries(max_entries : Int) -> ShapeContext {
+pub fn ShapeContext::with_max_entries(max_entries : Int32) -> ShapeContext {
   let mut max_entries0 = max_entries
   if max_entries0 < 1 {
     max_entries0 = 1
@@ -588,7 +588,7 @@ pub fn Shaper::add_str(self : Shaper, s : String) -> Unit {
 
 ///|
 /// Returns the current normalized variation coordinates in use by the shaper.
-pub fn Shaper::normalized_coords(self : Shaper) -> ArrayView[Int] {
+pub fn Shaper::normalized_coords(self : Shaper) -> ArrayView[Int32] {
   self.engine.coords
 }
 

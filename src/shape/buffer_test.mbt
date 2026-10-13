@@ -28,7 +28,7 @@ test "shape buffer: push cluster records range and glyphs" {
   let tokens = tokens_from_string("ab")
   let parser = @swash.Parser::Parser(Latin, tokens.iter())
   let cluster = @swash.CharCluster::CharCluster()
-  let buf = Buffer::Buffer()
+  let buf = @shape.Buffer::Buffer()
   inspect(parser.next(cluster), content="true")
   cluster.map(fn(_ch) { (1).to_uint16() }) |> ignore
   let r = buf.push(cluster)

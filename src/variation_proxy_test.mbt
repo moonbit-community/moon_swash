@@ -13,16 +13,16 @@
 // limitations under the License.
 
 ///|
-fn variation_test_push_u16_be(out : Array[Byte], v : Int) -> Unit {
+fn variation_test_push_u16_be(out : Array[Byte], v : Int32) -> Unit {
   let u = v.reinterpret_as_uint()
-  let mask = 255 |> Int::reinterpret_as_uint
+  let mask = 255 |> Int32::reinterpret_as_uint
   out.push(((u >> 8) & mask).to_byte())
   out.push((u & mask).to_byte())
 }
 
 ///|
-fn variation_test_push_u32_be(out : Array[Byte], v : UInt) -> Unit {
-  let mask = 255 |> Int::reinterpret_as_uint
+fn variation_test_push_u32_be(out : Array[Byte], v : UInt32) -> Unit {
+  let mask = 255 |> Int32::reinterpret_as_uint
   out.push(((v >> 24) & mask).to_byte())
   out.push(((v >> 16) & mask).to_byte())
   out.push(((v >> 8) & mask).to_byte())
@@ -30,22 +30,26 @@ fn variation_test_push_u32_be(out : Array[Byte], v : UInt) -> Unit {
 }
 
 ///|
-fn variation_test_set_u16_be(buf : Array[Byte], off : Int, v : Int) -> Unit {
+fn variation_test_set_u16_be(buf : Array[Byte], off : Int32, v : Int32) -> Unit {
   let u = v.reinterpret_as_uint()
-  let mask = 255 |> Int::reinterpret_as_uint
+  let mask = 255 |> Int32::reinterpret_as_uint
   buf[off] = ((u >> 8) & mask).to_byte()
   buf[off + 1] = (u & mask).to_byte()
 }
 
 ///|
-fn variation_test_set_i16_be(buf : Array[Byte], off : Int, v : Int) -> Unit {
+fn variation_test_set_i16_be(buf : Array[Byte], off : Int32, v : Int32) -> Unit {
   let u = if v < 0 { v + 0x10000 } else { v }
   variation_test_set_u16_be(buf, off, u)
 }
 
 ///|
-fn variation_test_set_u32_be(buf : Array[Byte], off : Int, v : UInt) -> Unit {
-  let mask = 255 |> Int::reinterpret_as_uint
+fn variation_test_set_u32_be(
+  buf : Array[Byte],
+  off : Int32,
+  v : UInt32,
+) -> Unit {
+  let mask = 255 |> Int32::reinterpret_as_uint
   buf[off] = ((v >> 24) & mask).to_byte()
   buf[off + 1] = ((v >> 16) & mask).to_byte()
   buf[off + 2] = ((v >> 8) & mask).to_byte()
@@ -53,12 +57,12 @@ fn variation_test_set_u32_be(buf : Array[Byte], off : Int, v : UInt) -> Unit {
 }
 
 ///|
-fn variation_test_fixed_16_16(x : Int) -> UInt {
+fn variation_test_fixed_16_16(x : Int32) -> UInt32 {
   x.reinterpret_as_uint() << 16
 }
 
 ///|
-fn variation_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
+fn variation_test_build_sfnt(tables : Array[(UInt32, Bytes)]) -> Bytes {
   // Caller must provide tags in sorted order for internal table_range binary search.
   let num_tables = tables.length()
   let header_len = 12 + num_tables * 16
@@ -152,12 +156,14 @@ test "VariationsProxy: materialize + find_by_tag + normalized_coords" {
       (0x66766172, fvar),
     ], // "fvar"
   )
-  let font = FontRef::from_offset(font_data, 0).unwrap()
-  let proxy = VariationsProxy::from_font(font)
+  let font = @moon_swash.FontRef::from_offset(font_data, 0).unwrap()
+  let proxy = @moon_swash.VariationsProxy::from_font(font)
   let vars = proxy.materialize(font)
   let axis = vars.find_by_tag(0x77676874).unwrap()
   debug_inspect(axis.normalize(650.0), content="8192")
-  let settings : Array[VariationSetting] = [Setting(0x77676874, 650.0)]
+  let settings : Array[@moon_swash.VariationSetting] = [
+    Setting(0x77676874, 650.0),
+  ]
   debug_inspect(
     vars.normalized_coords(settings.iter()).to_array(),
     content="[8192]",
@@ -172,7 +178,7 @@ test "AVAR remapping affects Variation.normalize" {
     (0x61766172, avar), // "avar"
     (0x66766172, fvar), // "fvar"
   ])
-  let font = FontRef::from_offset(font_data, 0).unwrap()
+  let font = @moon_swash.FontRef::from_offset(font_data, 0).unwrap()
   let axis = font.variations().find_by_tag(0x77676874).unwrap()
   // 650 maps to 0.5; avar remaps 0.5 -> 0.25.
   debug_inspect(axis.normalize(650.0), content="4096")

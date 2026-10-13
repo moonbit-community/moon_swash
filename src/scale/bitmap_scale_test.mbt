@@ -13,16 +13,16 @@
 // limitations under the License.
 
 ///|
-fn bitmap_test_push_u16_be(out : Array[Byte], v : Int) -> Unit {
+fn bitmap_test_push_u16_be(out : Array[Byte], v : Int32) -> Unit {
   let u = v.reinterpret_as_uint()
-  let mask = 255 |> Int::reinterpret_as_uint
+  let mask = 255 |> Int32::reinterpret_as_uint
   out.push(((u >> 8) & mask).to_byte())
   out.push((u & mask).to_byte())
 }
 
 ///|
-fn bitmap_test_push_u32_be(out : Array[Byte], v : UInt) -> Unit {
-  let mask = 255 |> Int::reinterpret_as_uint
+fn bitmap_test_push_u32_be(out : Array[Byte], v : UInt32) -> Unit {
+  let mask = 255 |> Int32::reinterpret_as_uint
   out.push(((v >> 24) & mask).to_byte())
   out.push(((v >> 16) & mask).to_byte())
   out.push(((v >> 8) & mask).to_byte())
@@ -30,12 +30,12 @@ fn bitmap_test_push_u32_be(out : Array[Byte], v : UInt) -> Unit {
 }
 
 ///|
-fn bitmap_test_u32(x : Int) -> UInt {
+fn bitmap_test_u32(x : Int32) -> UInt32 {
   x.reinterpret_as_uint()
 }
 
 ///|
-fn bitmap_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
+fn bitmap_test_build_sfnt(tables : Array[(UInt32, Bytes)]) -> Bytes {
   let num_tables = tables.length()
   let header_len = 12 + num_tables * 16
   let out : Array[Byte] = []
@@ -63,7 +63,7 @@ fn bitmap_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
 }
 
 ///|
-fn bitmap_test_build_maxp(num_glyphs : Int) -> Bytes {
+fn bitmap_test_build_maxp(num_glyphs : Int32) -> Bytes {
   let out : Array[Byte] = []
   bitmap_test_push_u32_be(out, bitmap_test_u32(0x00010000))
   bitmap_test_push_u16_be(out, num_glyphs)
@@ -72,10 +72,10 @@ fn bitmap_test_build_maxp(num_glyphs : Int) -> Bytes {
 
 ///|
 fn bitmap_test_build_sbix_with_glyph(
-  ppem : Int,
-  origin_x : Int,
-  origin_y : Int,
-  graphic_type : UInt,
+  ppem : Int32,
+  origin_x : Int32,
+  origin_y : Int32,
+  graphic_type : UInt32,
   payload : Bytes,
 ) -> Bytes {
   let data_len = payload.length()
@@ -105,14 +105,14 @@ fn bitmap_test_build_sbix_with_glyph(
 
 ///|
 fn bitmap_test_build_cblc_index1(
-  ppem_x : Int,
-  ppem_y : Int,
-  glyph_id : Int,
-  image_format : Int,
-  image_data_offset : Int,
-  glyph_data_len : Int,
-  bit_depth : Int,
-  major : Int,
+  ppem_x : Int32,
+  ppem_y : Int32,
+  glyph_id : Int32,
+  image_format : Int32,
+  image_data_offset : Int32,
+  glyph_data_len : Int32,
+  bit_depth : Int32,
+  major : Int32,
 ) -> Bytes {
   let out : Array[Byte] = []
   // major/minor
@@ -126,14 +126,14 @@ fn bitmap_test_build_cblc_index1(
   bitmap_test_push_u32_be(out, bitmap_test_u32(1)) // numberOfIndexSubTables
   bitmap_test_push_u32_be(out, bitmap_test_u32(0)) // colorRef
   for _ in 0..<24 {
-    out.push(0 |> Int::to_byte)
+    out.push(0 |> Int32::to_byte)
   }
   bitmap_test_push_u16_be(out, glyph_id)
   bitmap_test_push_u16_be(out, glyph_id)
-  out.push(ppem_x |> Int::to_byte)
-  out.push(ppem_y |> Int::to_byte)
-  out.push(bit_depth |> Int::to_byte)
-  out.push(0 |> Int::to_byte)
+  out.push(ppem_x |> Int32::to_byte)
+  out.push(ppem_y |> Int32::to_byte)
+  out.push(bit_depth |> Int32::to_byte)
+  out.push(0 |> Int32::to_byte)
   // IndexSubTableArray at offset 56
   bitmap_test_push_u16_be(out, glyph_id)
   bitmap_test_push_u16_be(out, glyph_id)
@@ -168,76 +168,76 @@ fn bitmap_test_build_ebdt_format1() -> Bytes {
 test "Scaler.scale_color_bitmap decodes sbix PNG glyph into RGBA" {
   let png = Bytes::from_array(
     Array::from_fixed_array([
-      137 |> Int::to_byte,
-      80 |> Int::to_byte,
-      78 |> Int::to_byte,
-      71 |> Int::to_byte,
-      13 |> Int::to_byte,
-      10 |> Int::to_byte,
-      26 |> Int::to_byte,
-      10 |> Int::to_byte,
-      0 |> Int::to_byte,
-      0 |> Int::to_byte,
-      0 |> Int::to_byte,
-      13 |> Int::to_byte,
-      73 |> Int::to_byte,
-      72 |> Int::to_byte,
-      68 |> Int::to_byte,
-      82 |> Int::to_byte,
-      0 |> Int::to_byte,
-      0 |> Int::to_byte,
-      0 |> Int::to_byte,
-      1 |> Int::to_byte,
-      0 |> Int::to_byte,
-      0 |> Int::to_byte,
-      0 |> Int::to_byte,
-      1 |> Int::to_byte,
-      8 |> Int::to_byte,
-      6 |> Int::to_byte,
-      0 |> Int::to_byte,
-      0 |> Int::to_byte,
-      0 |> Int::to_byte,
-      31 |> Int::to_byte,
-      21 |> Int::to_byte,
-      196 |> Int::to_byte,
-      137 |> Int::to_byte,
-      0 |> Int::to_byte,
-      0 |> Int::to_byte,
-      0 |> Int::to_byte,
-      13 |> Int::to_byte,
-      73 |> Int::to_byte,
-      68 |> Int::to_byte,
-      65 |> Int::to_byte,
-      84 |> Int::to_byte,
-      120 |> Int::to_byte,
-      156 |> Int::to_byte,
-      99 |> Int::to_byte,
-      248 |> Int::to_byte,
-      207 |> Int::to_byte,
-      192 |> Int::to_byte,
-      240 |> Int::to_byte,
-      31 |> Int::to_byte,
-      0 |> Int::to_byte,
-      5 |> Int::to_byte,
-      0 |> Int::to_byte,
-      1 |> Int::to_byte,
-      255 |> Int::to_byte,
-      137 |> Int::to_byte,
-      153 |> Int::to_byte,
-      61 |> Int::to_byte,
-      29 |> Int::to_byte,
-      0 |> Int::to_byte,
-      0 |> Int::to_byte,
-      0 |> Int::to_byte,
-      0 |> Int::to_byte,
-      73 |> Int::to_byte,
-      69 |> Int::to_byte,
-      78 |> Int::to_byte,
-      68 |> Int::to_byte,
-      174 |> Int::to_byte,
-      66 |> Int::to_byte,
-      96 |> Int::to_byte,
-      130 |> Int::to_byte,
+      137 |> Int32::to_byte,
+      80 |> Int32::to_byte,
+      78 |> Int32::to_byte,
+      71 |> Int32::to_byte,
+      13 |> Int32::to_byte,
+      10 |> Int32::to_byte,
+      26 |> Int32::to_byte,
+      10 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      13 |> Int32::to_byte,
+      73 |> Int32::to_byte,
+      72 |> Int32::to_byte,
+      68 |> Int32::to_byte,
+      82 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      1 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      1 |> Int32::to_byte,
+      8 |> Int32::to_byte,
+      6 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      31 |> Int32::to_byte,
+      21 |> Int32::to_byte,
+      196 |> Int32::to_byte,
+      137 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      13 |> Int32::to_byte,
+      73 |> Int32::to_byte,
+      68 |> Int32::to_byte,
+      65 |> Int32::to_byte,
+      84 |> Int32::to_byte,
+      120 |> Int32::to_byte,
+      156 |> Int32::to_byte,
+      99 |> Int32::to_byte,
+      248 |> Int32::to_byte,
+      207 |> Int32::to_byte,
+      192 |> Int32::to_byte,
+      240 |> Int32::to_byte,
+      31 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      5 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      1 |> Int32::to_byte,
+      255 |> Int32::to_byte,
+      137 |> Int32::to_byte,
+      153 |> Int32::to_byte,
+      61 |> Int32::to_byte,
+      29 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      0 |> Int32::to_byte,
+      73 |> Int32::to_byte,
+      69 |> Int32::to_byte,
+      78 |> Int32::to_byte,
+      68 |> Int32::to_byte,
+      174 |> Int32::to_byte,
+      66 |> Int32::to_byte,
+      96 |> Int32::to_byte,
+      130 |> Int32::to_byte,
     ])[:],
   )
   let maxp = bitmap_test_build_maxp(1)
@@ -247,7 +247,7 @@ test "Scaler.scale_color_bitmap decodes sbix PNG glyph into RGBA" {
     Array::from_fixed_array([(0x6D617870, maxp), (0x73626978, sbix)]),
   )
   let font = @swash.FontRef::from_offset(sfnt, 0).unwrap()
-  let cx = ScaleContext::ScaleContext()
+  let cx = @scale.ScaleContext::ScaleContext()
   let scaler = cx.builder(font).size(16.0).build()
   let img = scaler.scale_color_bitmap((0).to_uint16(), ExactSize).unwrap()
   inspect(
@@ -293,7 +293,7 @@ test "Scaler.scale_bitmap decodes EBDT 1bpp glyph into alpha mask" {
     ]),
   )
   let font = @swash.FontRef::from_offset(sfnt, 0).unwrap()
-  let cx = ScaleContext::ScaleContext()
+  let cx = @scale.ScaleContext::ScaleContext()
   let scaler = cx.builder(font).size(12.0).build()
   let img = scaler.scale_bitmap((0).to_uint16(), ExactSize).unwrap()
   inspect(

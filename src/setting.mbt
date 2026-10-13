@@ -39,7 +39,7 @@ pub type FeatureSetting = Setting[UInt16]
 pub type VariationSetting = Setting[Double]
 
 ///|
-fn is_ascii_whitespace(code : Int) -> Bool {
+fn is_ascii_whitespace(code : Int32) -> Bool {
   code == 0x20 || code == 0x09 || code == 0x0A || code == 0x0D || code == 0x0C
 }
 
@@ -47,7 +47,7 @@ fn is_ascii_whitespace(code : Int) -> Bool {
 // Returns (tag, next_pos) where next_pos points after the closing quote.
 
 ///|
-fn parse_tag_token(s : String, pos0 : Int) -> (Tag, Int)? {
+fn parse_tag_token(s : String, pos0 : Int32) -> (Tag, Int32)? {
   let len = s.length()
   if pos0 >= len {
     return None
@@ -59,10 +59,10 @@ fn parse_tag_token(s : String, pos0 : Int) -> (Tag, Int)? {
   }
   let mut pos = pos0 + 1
   let mut n = 0
-  let mut b0 : UInt = 0
-  let mut b1 : UInt = 0
-  let mut b2 : UInt = 0
-  let mut b3 : UInt = 0
+  let mut b0 : UInt32 = 0
+  let mut b1 : UInt32 = 0
+  let mut b2 : UInt32 = 0
+  let mut b3 : UInt32 = 0
   while pos < len {
     let c = s.code_unit_at(pos).to_int()
     if c == quote {
@@ -97,7 +97,7 @@ fn parse_tag_token(s : String, pos0 : Int) -> (Tag, Int)? {
 // Returns a trimmed (start,end) slice inside [start0,end0].
 
 ///|
-fn trim_range(s : String, start0 : Int, end0 : Int) -> (Int, Int) {
+fn trim_range(s : String, start0 : Int32, end0 : Int32) -> (Int32, Int32) {
   let mut start = start0
   let mut end = end0
   while start < end && is_ascii_whitespace(s.code_unit_at(start).to_int()) {

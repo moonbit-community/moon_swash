@@ -18,14 +18,14 @@
 /// Ported from `swash/src/palette.rs` (swash is dual-licensed Apache-2.0 OR MIT).
 
 ///|
-const CPAL : UInt = 0x4350414c // "CPAL"
+const CPAL : UInt32 = 0x4350414c // "CPAL"
 
 ///|
 /// Iterator over a collection of color palettes.
 pub struct ColorPalettes {
   font : FontRef
   b : @internal.BeBytes
-  len : Int
+  len : Int32
 }
 
 ///|
@@ -42,7 +42,7 @@ pub fn ColorPalettes::from_font(font : FontRef) -> ColorPalettes {
 }
 
 ///|
-pub fn ColorPalettes::len(self : ColorPalettes) -> Int {
+pub fn ColorPalettes::len(self : ColorPalettes) -> Int32 {
   self.len
 }
 
@@ -61,7 +61,7 @@ pub fn ColorPalettes::iter(self : ColorPalettes) -> Iter[ColorPalette] {
 }
 
 ///|
-fn ColorPalettes::get(self : ColorPalettes, index : Int) -> ColorPalette? {
+fn ColorPalettes::get(self : ColorPalettes, index : Int32) -> ColorPalette? {
   if index < 0 || index >= self.len {
     return None
   }
@@ -101,7 +101,7 @@ pub struct ColorPalette {
   version : UInt16
   index : UInt16
   num_entries : UInt16
-  offset : Int
+  offset : Int32
 }
 
 ///|
@@ -188,7 +188,7 @@ pub fn ColorPalette::get(
 }
 
 ///|
-fn ColorPalette::flags(self : ColorPalette) -> UInt? {
+fn ColorPalette::flags(self : ColorPalette) -> UInt32? {
   if self.version == 0 {
     return None
   }

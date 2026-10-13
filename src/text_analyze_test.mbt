@@ -15,7 +15,7 @@
 ///|
 test "analyze marks word boundary at start" {
   let chars : ReadOnlyArray[Char] = ['a']
-  let a = analyze(chars.iter())
+  let a = @moon_swash.analyze(chars.iter())
   let (_, boundary) = a.next().unwrap()
   inspect(
     match boundary {
@@ -29,7 +29,7 @@ test "analyze marks word boundary at start" {
 ///|
 test "analyze tracks bidi resolution need" {
   let chars : ReadOnlyArray[Char] = ['\u{0627}']
-  let a = analyze(chars.iter())
+  let a = @moon_swash.analyze(chars.iter())
   a.next().unwrap() |> ignore
   inspect(a.needs_bidi_resolution(), content="true")
 }
@@ -37,7 +37,7 @@ test "analyze tracks bidi resolution need" {
 ///|
 test "analyze: ZWJ x emoji has no word boundary" {
   let chars : ReadOnlyArray[Char] = ['\u{200D}', '\u{1F600}']
-  let a = analyze(chars.iter())
+  let a = @moon_swash.analyze(chars.iter())
   a.next().unwrap() |> ignore
   let (_, boundary) = a.next().unwrap()
   inspect(

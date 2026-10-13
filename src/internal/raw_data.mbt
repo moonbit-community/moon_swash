@@ -18,7 +18,7 @@
 /// Ported from `swash/src/internal/mod.rs` (module `raw_data`).
 ///
 /// swash is dual-licensed Apache-2.0 OR MIT.
-pub type RawTag = UInt
+pub type RawTag = UInt32
 
 ///|
 pub fn raw_tag(bytes : Bytes) -> RawTag? {
@@ -62,13 +62,13 @@ pub fn is_collection(data : Bytes) -> Bool {
 }
 
 ///|
-pub fn is_font(data : Bytes, offset : Int) -> Bool {
+pub fn is_font(data : Bytes, offset : Int32) -> Bool {
   let tag = BeBytes::BeBytes(data).read_u32(offset).unwrap_or(0)
   tag == FONT || tag == OTTO || tag == TRUE
 }
 
 ///|
-pub fn count(data : Bytes) -> Int {
+pub fn count(data : Bytes) -> Int32 {
   if is_collection(data) {
     BeBytes::BeBytes(data).read_u32(8).unwrap_or(0).reinterpret_as_int()
   } else if is_font(data, 0) {
@@ -79,7 +79,7 @@ pub fn count(data : Bytes) -> Int {
 }
 
 ///|
-pub fn offset(data : Bytes, index : Int) -> Int? {
+pub fn offset(data : Bytes, index : Int32) -> Int32? {
   let total = count(data)
   if index < 0 || index >= total {
     return None

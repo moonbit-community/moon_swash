@@ -13,11 +13,11 @@
 // limitations under the License.
 
 ///|
-fn tokens_from_string(s : String) -> Array[Token] {
-  let tokens : Array[Token] = []
+fn tokens_from_string(s : String) -> Array[@moon_swash.Token] {
+  let tokens : Array[@moon_swash.Token] = []
   let mut offset = 0U
   for ch in s {
-    tokens.push(Token(ch, offset, 1U, CharInfo::from_char(ch), 0U))
+    tokens.push(Token(ch, offset, 1U, @moon_swash.CharInfo::from_char(ch), 0U))
     offset = offset + 1U
   }
   tokens
@@ -26,8 +26,8 @@ fn tokens_from_string(s : String) -> Array[Token] {
 ///|
 test "text cluster: CRLF clusters as newline" {
   let tokens = tokens_from_string("\r\n")
-  let parser = Parser::Parser(Latin, tokens.iter())
-  let cluster = CharCluster::CharCluster()
+  let parser = @moon_swash.Parser::Parser(Latin, tokens.iter())
+  let cluster = @moon_swash.CharCluster::CharCluster()
   inspect(parser.next(cluster), content="true")
   inspect(cluster.chars().length(), content="2")
   inspect(
@@ -60,8 +60,8 @@ test "text cluster: CRLF clusters as newline" {
 test "text cluster: emoji VS16 excluded from shaping chars but included in range" {
   // U+263A WHITE SMILING FACE + U+FE0F VARIATION SELECTOR-16
   let tokens = tokens_from_string("\u{263A}\u{FE0F}")
-  let parser = Parser::Parser(Latin, tokens.iter())
-  let cluster = CharCluster::CharCluster()
+  let parser = @moon_swash.Parser::Parser(Latin, tokens.iter())
+  let cluster = @moon_swash.CharCluster::CharCluster()
   inspect(parser.next(cluster), content="true")
   inspect(cluster.chars().length(), content="1")
   inspect(cluster.range().start(), content="0")
@@ -79,8 +79,8 @@ test "text cluster: emoji VS16 excluded from shaping chars but included in range
 ///|
 test "text cluster: force-normalize prefers composed mapping" {
   let tokens = tokens_from_string("A\u{030A}")
-  let parser = Parser::Parser(Latin, tokens.iter())
-  let cluster = CharCluster::CharCluster()
+  let parser = @moon_swash.Parser::Parser(Latin, tokens.iter())
+  let cluster = @moon_swash.CharCluster::CharCluster()
   inspect(parser.next(cluster), content="true")
   inspect(
     match
@@ -104,8 +104,8 @@ test "text cluster: force-normalize prefers composed mapping" {
 test "text cluster: Myanmar kinzi prefix is classified" {
   // 1004 + 103A + 1039 + 1000
   let tokens = tokens_from_string("\u{1004}\u{103A}\u{1039}\u{1000}")
-  let parser = Parser::Parser(Myanmar, tokens.iter())
-  let cluster = CharCluster::CharCluster()
+  let parser = @moon_swash.Parser::Parser(Myanmar, tokens.iter())
+  let cluster = @moon_swash.CharCluster::CharCluster()
   inspect(parser.next(cluster), content="true")
   inspect(cluster.chars().length(), content="4")
   for i in 0..<3 {

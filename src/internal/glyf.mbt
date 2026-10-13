@@ -37,7 +37,7 @@ pub const CVAR : RawTag = 0x63766172 // "cvar"
 pub const GVAR : RawTag = 0x67766172 // "gvar"
 
 ///|
-fn u32_to_int_checked(u : UInt) -> Int? {
+fn u32_to_int_checked(u : UInt32) -> Int32? {
   if u > 0x7FFFFFFF {
     None
   } else {
@@ -49,10 +49,10 @@ fn u32_to_int_checked(u : UInt) -> Int? {
 /// Returns the data for the specified glyph.
 pub fn get(
   data : Bytes,
-  loca_fmt : UInt,
-  loca : UInt,
-  glyf : UInt,
-  glyph_id : UInt,
+  loca_fmt : UInt32,
+  loca : UInt32,
+  glyf : UInt32,
+  glyph_id : UInt32,
 ) -> BytesView? {
   let loca_i = match u32_to_int_checked(loca) {
     None => return None
@@ -66,7 +66,7 @@ pub fn get(
     None => return None
     Some(v) => v
   }
-  let (start, end) : (Int, Int) = if loca_fmt == 0 {
+  let (start, end) : (Int32, Int32) = if loca_fmt == 0 {
     let offset = glyph_id.reinterpret_as_int() * 2
     let start_u = match b.read_u16(offset) {
       None => return None
@@ -108,11 +108,11 @@ pub fn get(
 /// `glyf` table.
 pub fn ymax(
   data : Bytes,
-  loca_fmt : UInt,
-  loca : UInt,
-  glyf : UInt,
-  glyph_id : UInt,
-) -> Int? {
+  loca_fmt : UInt32,
+  loca : UInt32,
+  glyf : UInt32,
+  glyph_id : UInt32,
+) -> Int32? {
   let glyph_data = match get(data, loca_fmt, loca, glyf, glyph_id) {
     None => return None
     Some(v) => v

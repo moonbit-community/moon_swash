@@ -18,13 +18,13 @@
 /// Ported from `swash/src/metrics.rs` (swash is dual-licensed Apache-2.0 OR MIT).
 
 ///|
-const VERTICAL_KIND_VMTX_GLYF : UInt = 0
+const VERTICAL_KIND_VMTX_GLYF : UInt32 = 0
 
 ///|
-const VERTICAL_KIND_VMTX_VORG : UInt = 1
+const VERTICAL_KIND_VMTX_VORG : UInt32 = 1
 
 ///|
-const VERTICAL_KIND_SYNTHESIZED : UInt = 2
+const VERTICAL_KIND_SYNTHESIZED : UInt32 = 2
 
 ///|
 /// Proxy for rematerializing metrics.
@@ -33,33 +33,33 @@ struct MetricsProxy {
   mut glyph_count : UInt16
   mut is_monospace : Bool
   mut has_vertical_metrics : Bool
-  mut ascent : Int
-  mut descent : Int
-  mut leading : Int
-  mut vertical_ascent : Int
-  mut vertical_descent : Int
-  mut vertical_leading : Int
-  mut cap_height : Int
-  mut x_height : Int
+  mut ascent : Int32
+  mut descent : Int32
+  mut leading : Int32
+  mut vertical_ascent : Int32
+  mut vertical_descent : Int32
+  mut vertical_leading : Int32
+  mut cap_height : Int32
+  mut x_height : Int32
   mut average_width : UInt16
   mut max_width : UInt16
-  mut underline_offset : Int
-  mut strikeout_offset : Int
-  mut stroke_size : Int
-  mut mvar : UInt
-  mut hmtx : UInt
-  mut hvar : UInt
-  mut hmtx_count : UInt
+  mut underline_offset : Int32
+  mut strikeout_offset : Int32
+  mut stroke_size : Int32
+  mut mvar : UInt32
+  mut hmtx : UInt32
+  mut hvar : UInt32
+  mut hmtx_count : UInt32
   mut has_vvar : Bool
-  mut vertical_kind : UInt
-  mut vertical_loca_fmt : UInt
-  mut vertical_long_count : UInt
-  mut vertical_vmtx : UInt
-  mut vertical_vvar : UInt
-  mut vertical_glyf : UInt
-  mut vertical_loca : UInt
-  mut vertical_vorg : UInt
-  mut vertical_synth_mvar : UInt
+  mut vertical_kind : UInt32
+  mut vertical_loca_fmt : UInt32
+  mut vertical_long_count : UInt32
+  mut vertical_vmtx : UInt32
+  mut vertical_vvar : UInt32
+  mut vertical_glyf : UInt32
+  mut vertical_loca : UInt32
+  mut vertical_vorg : UInt32
+  mut vertical_synth_mvar : UInt32
   mut vertical_synth_advance : Double
   mut vertical_synth_origin : Double
 }
@@ -295,7 +295,7 @@ fn MetricsProxy::fill(self : MetricsProxy, font : FontRef) -> Unit? {
   }
   self.hmtx = font.table_offset(@internal.HMTX)
   self.hvar = font.table_offset(@internal.HVAR)
-  let mut vmtx : UInt = 0
+  let mut vmtx : UInt32 = 0
   if vhea is Some(_) {
     vmtx = font.table_offset(@internal.VMTX)
   }
@@ -414,18 +414,18 @@ struct GlyphMetrics {
   coords : ArrayView[NormalizedCoord]
   units_per_em : UInt16
   glyph_count : UInt16
-  hmtx : UInt
-  hvar : UInt
-  hmtx_count : UInt
+  hmtx : UInt32
+  hvar : UInt32
+  hmtx_count : UInt32
   has_vvar : Bool
-  vertical_kind : UInt
-  vertical_loca_fmt : UInt
-  vertical_long_count : UInt
-  vertical_vmtx : UInt
-  vertical_vvar : UInt
-  vertical_glyf : UInt
-  vertical_loca : UInt
-  vertical_vorg : UInt
+  vertical_kind : UInt32
+  vertical_loca_fmt : UInt32
+  vertical_long_count : UInt32
+  vertical_vmtx : UInt32
+  vertical_vvar : UInt32
+  vertical_glyf : UInt32
+  vertical_loca : UInt32
+  vertical_vorg : UInt32
   vertical_synth_advance : Double
   vertical_synth_origin : Double
   mut scale : Double

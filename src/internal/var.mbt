@@ -36,11 +36,11 @@ pub const MVAR : RawTag = 0x4D564152 // "MVAR"
 /// Font variations table.
 pub struct Fvar {
   data : BytesView
-  axis_offset : UInt
-  axis_count : UInt
-  axis_size : UInt
-  inst_count : UInt
-  inst_size : UInt
+  axis_offset : UInt32
+  axis_count : UInt32
+  axis_size : UInt32
+  inst_count : UInt32
+  inst_size : UInt32
 }
 
 ///|
@@ -64,27 +64,27 @@ pub fn[T : RawFont] Fvar::from_font(font : T) -> Fvar? {
 }
 
 ///|
-pub fn Fvar::axis_count(self : Fvar) -> UInt {
+pub fn Fvar::axis_count(self : Fvar) -> UInt32 {
   self.axis_count
 }
 
 ///|
-pub fn Fvar::instance_count(self : Fvar) -> UInt {
+pub fn Fvar::instance_count(self : Fvar) -> UInt32 {
   self.inst_count
 }
 
 ///|
-fn fvar_fixed_at(b : BeBytes, offset : Int) -> Fixed? {
+fn fvar_fixed_at(b : BeBytes, offset : Int32) -> Fixed? {
   b.read_i32(offset).map(Fixed::from_raw)
 }
 
 ///|
 /// Axis of variation in a variable font.
 pub struct VarAxis {
-  index : UInt
+  index : UInt32
   tag : RawTag
-  name_id : UInt
-  flags : UInt
+  name_id : UInt32
+  flags : UInt32
   min : Fixed
   default : Fixed
   max : Fixed
@@ -113,8 +113,8 @@ pub fn VarAxis::is_hidden(self : VarAxis) -> Bool {
 pub fn VarAxis::normalized_coord(
   self : VarAxis,
   value0 : Fixed,
-  avar : (Bytes, UInt)?,
-) -> Int {
+  avar : (Bytes, UInt32)?,
+) -> Int32 {
   let mut value = value0
   if fixed_raw(value) < fixed_raw(self.min) {
     value = self.min
@@ -143,14 +143,14 @@ pub fn VarAxis::normalized_coord(
 ///|
 /// Named instance in a variable font.
 pub struct VarInstance {
-  index : UInt
-  name_id : UInt
-  postscript_name_id : UInt?
+  index : UInt32
+  name_id : UInt32
+  postscript_name_id : UInt32?
   values : Array[Fixed]
 }
 
 ///|
-pub fn Fvar::get_axis(self : Fvar, index : UInt) -> VarAxis? {
+pub fn Fvar::get_axis(self : Fvar, index : UInt32) -> VarAxis? {
   if index >= self.axis_count {
     return None
   }
@@ -201,7 +201,7 @@ pub fn Fvar::get_axis_by_tag(self : Fvar, tag : RawTag) -> VarAxis? {
 }
 
 ///|
-pub fn Fvar::get_instance(self : Fvar, index : UInt) -> VarInstance? {
+pub fn Fvar::get_instance(self : Fvar, index : UInt32) -> VarInstance? {
   if index >= self.inst_count {
     return None
   }
@@ -238,8 +238,8 @@ pub fn Fvar::get_instance(self : Fvar, index : UInt) -> VarInstance? {
 /// Applies adjustments to a coordinate according to the optional axis variation table.
 pub fn adjust_axis(
   data : Bytes,
-  avar : UInt,
-  axis : UInt,
+  avar : UInt32,
+  axis : UInt32,
   coord0 : Fixed,
 ) -> Fixed? {
   if avar == 0 {
@@ -320,18 +320,18 @@ pub fn adjust_axis(
 /// Metrics variation table wrapper.
 pub struct Mvar {
   data : Bytes
-  coords : ArrayView[Int]
-  base : Int
-  rec_size : Int
-  rec_count : Int
-  store : UInt
+  coords : ArrayView[Int32]
+  base : Int32
+  rec_size : Int32
+  rec_count : Int32
+  store : UInt32
 }
 
 ///|
 pub fn Mvar::from_data(
   data : Bytes,
-  mvar : UInt,
-  coords : ArrayView[Int],
+  mvar : UInt32,
+  coords : ArrayView[Int32],
 ) -> Mvar? {
   let base = mvar.reinterpret_as_int()
   let b = match BeBytes::with_offset(data, base) {
@@ -401,9 +401,9 @@ fn Mvar::read_delta(self : Mvar, metric : RawTag) -> Fixed? {
 /// Returns the advance delta for the specified glyph.
 pub fn advance_delta(
   data : Bytes,
-  xvar : UInt,
-  glyph_id : UInt,
-  coords : ArrayView[Int],
+  xvar : UInt32,
+  glyph_id : UInt32,
+  coords : ArrayView[Int32],
 ) -> Double {
   match metric_delta(data, xvar, 8, glyph_id, coords) {
     None => 0.0
@@ -415,9 +415,9 @@ pub fn advance_delta(
 /// Returns the side bearing delta for the specified glyph.
 pub fn sb_delta(
   data : Bytes,
-  xvar : UInt,
-  glyph_id : UInt,
-  coords : ArrayView[Int],
+  xvar : UInt32,
+  glyph_id : UInt32,
+  coords : ArrayView[Int32],
 ) -> Double {
   match metric_delta(data, xvar, 12, glyph_id, coords) {
     None => 0.0
@@ -426,7 +426,7 @@ pub fn sb_delta(
 }
 
 ///|
-fn read_i8(data : Bytes, offset : Int) -> Int? {
+fn read_i8(data : Bytes, offset : Int32) -> Int32? {
   match BeBytes::BeBytes(data).read_u8(offset) {
     None => None
     Some(b) => {
@@ -441,7 +441,7 @@ fn read_i8(data : Bytes, offset : Int) -> Int? {
 }
 
 ///|
-fn fixed_raw(f : Fixed) -> Int {
+fn fixed_raw(f : Fixed) -> Int32 {
   f.raw()
 }
 
@@ -449,10 +449,10 @@ fn fixed_raw(f : Fixed) -> Int {
 /// Returns a delta from an item variation store.
 pub fn item_delta(
   data : Bytes,
-  offset : UInt,
-  outer : UInt,
-  inner : UInt,
-  coords : ArrayView[Int],
+  offset : UInt32,
+  outer : UInt32,
+  inner : UInt32,
+  coords : ArrayView[Int32],
 ) -> Fixed? {
   if offset == 0 {
     return None
@@ -547,7 +547,7 @@ pub fn item_delta(
         scalar = scalar * (end - coord) / (end - peak)
       }
     }
-    let val : Int = if idx >= short_count {
+    let val : Int32 = if idx >= short_count {
       delta_base = delta_base + 1
       match read_i8(data, delta_base - 1) {
         None => return None
@@ -569,10 +569,10 @@ pub fn item_delta(
 ///|
 fn metric_delta(
   data : Bytes,
-  base : UInt,
-  which : Int,
-  glyph_id : UInt,
-  coords : ArrayView[Int],
+  base : UInt32,
+  which : Int32,
+  glyph_id : UInt32,
+  coords : ArrayView[Int32],
 ) -> Fixed? {
   if base == 0 {
     return None
@@ -614,7 +614,7 @@ fn metric_delta(
   let entry_size = (((format & 0x30) >> 4) + 1).reinterpret_as_int()
   let base = offset + 4
   let index = (if glyph_id >= count { count - 1 } else { glyph_id }).reinterpret_as_int()
-  let entry : UInt = match entry_size {
+  let entry : UInt32 = match entry_size {
     1 =>
       match b.read_u8(base + index) {
         None => return None

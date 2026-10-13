@@ -33,16 +33,16 @@ pub struct Language {
   language : Array[Byte]
   script : Array[Byte]
   region : Array[Byte]
-  lang_len : Int
-  script_len : Int
-  region_len : Int
+  lang_len : Int32
+  script_len : Int32
+  region_len : Int32
   cjk : Cjk
-  name_index : Int
+  name_index : Int32
   tag : Tag?
 }
 
 ///|
-fn text_lang_ascii_lower(u : Int) -> Byte? {
+fn text_lang_ascii_lower(u : Int32) -> Byte? {
   if u < 0 || u > 255 {
     return None
   }
@@ -52,7 +52,7 @@ fn text_lang_ascii_lower(u : Int) -> Byte? {
 }
 
 ///|
-fn text_lang_ascii_upper(u : Int) -> Byte? {
+fn text_lang_ascii_upper(u : Int32) -> Byte? {
   if u < 0 || u > 255 {
     return None
   }
@@ -62,19 +62,19 @@ fn text_lang_ascii_upper(u : Int) -> Byte? {
 }
 
 ///|
-fn text_lang_tag2(a : Byte, b : Byte) -> UInt {
+fn text_lang_tag2(a : Byte, b : Byte) -> UInt32 {
   (a.to_int().reinterpret_as_uint() << 8) | b.to_int().reinterpret_as_uint()
 }
 
 ///|
-fn text_lang_tag3(a : Byte, b : Byte, c : Byte) -> UInt {
+fn text_lang_tag3(a : Byte, b : Byte, c : Byte) -> UInt32 {
   (a.to_int().reinterpret_as_uint() << 16) |
   (b.to_int().reinterpret_as_uint() << 8) |
   c.to_int().reinterpret_as_uint()
 }
 
 ///|
-fn text_lang_find_dash(s : String, start : Int) -> Int {
+fn text_lang_find_dash(s : String, start : Int32) -> Int32 {
   let n = s.length()
   let mut i = start
   while i < n {
@@ -87,7 +87,7 @@ fn text_lang_find_dash(s : String, start : Int) -> Int {
 }
 
 ///|
-fn text_lang_lookup_tag(tag : Tag) -> Int? {
+fn text_lang_lookup_tag(tag : Tag) -> Int32? {
   let mut l = 0
   let mut h = text_lang_tags.length()
   while l < h {
@@ -105,7 +105,7 @@ fn text_lang_lookup_tag(tag : Tag) -> Int? {
 }
 
 ///|
-fn text_lang_lookup_by_tag2(key : UInt) -> Int? {
+fn text_lang_lookup_by_tag2(key : UInt32) -> Int32? {
   let mut l = 0
   let mut h = text_lang_by_tag2.length()
   while l < h {
@@ -123,7 +123,7 @@ fn text_lang_lookup_by_tag2(key : UInt) -> Int? {
 }
 
 ///|
-fn text_lang_lookup_by_tag3(key : UInt) -> Int? {
+fn text_lang_lookup_by_tag3(key : UInt32) -> Int32? {
   let mut l = 0
   let mut h = text_lang_by_tag3.length()
   while l < h {
@@ -141,7 +141,7 @@ fn text_lang_lookup_by_tag3(key : UInt) -> Int? {
 }
 
 ///|
-fn text_lang_bytes_prefix_to_string(bytes : Array[Byte], len : Int) -> String {
+fn text_lang_bytes_prefix_to_string(bytes : Array[Byte], len : Int32) -> String {
   let len = if len < 0 {
     0
   } else if len > bytes.length() {

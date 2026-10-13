@@ -45,11 +45,11 @@ pub struct LookupData {
   mask : Byte
   ignored : Byte
   is_ext : Bool
-  offset : UInt
-  mut coverage : UInt
+  offset : UInt32
+  mut coverage : UInt32
   count : UInt16
   mut subtables : (UInt16, UInt16)
-  mark_set : UInt
+  mark_set : UInt32
   mark_check : Byte
   mark_class : Byte
 }
@@ -60,7 +60,7 @@ pub fn LookupData::set_feature(self : LookupData, feature : UInt16) -> Unit {
 }
 
 ///|
-pub fn LookupData::set_coverage(self : LookupData, coverage : UInt) -> Unit {
+pub fn LookupData::set_coverage(self : LookupData, coverage : UInt32) -> Unit {
   self.coverage = coverage
 }
 
@@ -127,7 +127,7 @@ pub(all) enum SubtableKind {
 ///|
 /// Data associated with a lookup subtable.
 pub struct SubtableData {
-  offset : UInt
+  offset : UInt32
   kind : SubtableKind
   coverage : UInt16
 }
@@ -148,14 +148,14 @@ pub fn SubtableData::coverage(
 ///|
 /// Feature substitutions for variable fonts.
 pub struct FeatureSubsts {
-  offset : UInt
+  offset : UInt32
 }
 
 ///|
 pub fn FeatureSubsts::from_data(
   data : Bytes,
-  offset : UInt,
-  coords : ArrayView[Int],
+  offset : UInt32,
+  coords : ArrayView[Int32],
 ) -> FeatureSubsts? {
   if offset == 0U || coords.length() == 0 {
     return None
@@ -229,7 +229,7 @@ pub fn FeatureSubsts::apply(
   self : FeatureSubsts,
   data : Bytes,
   index : UInt16,
-) -> UInt? {
+) -> UInt32? {
   let b = BeBytes::BeBytes(data)
   let mut base = self.offset.reinterpret_as_int()
   let count = match b.read_u16(base + 4) {
@@ -266,7 +266,7 @@ pub fn FeatureSubsts::apply(
 pub fn lookup_data(
   data : Bytes,
   stage : Byte,
-  list_base : UInt,
+  list_base : UInt32,
   index : UInt16,
   mask : Byte,
   gdef : Gdef?,
@@ -298,7 +298,7 @@ pub fn lookup_data(
   let mark_class = ((flag >> 8) & 0xFF).to_byte()
   let ignore_marks = (f & ((1).to_byte() << 3)) != 0
   let mut mark_check : Byte = 0
-  let mut mark_set : UInt = 0U
+  let mut mark_set : UInt32 = 0U
   if !ignore_marks {
     match gdef {
       None => ()
@@ -374,13 +374,13 @@ pub fn lookup_data(
 ///|
 pub fn subtable_data(
   data : Bytes,
-  offset : UInt,
+  offset : UInt32,
   kind : LookupKind,
   fmt : UInt16,
 ) -> SubtableData? {
   let b = BeBytes::BeBytes(data)
   let base = offset.reinterpret_as_int()
-  fn cov(data : Bytes, b : BeBytes, base : Int, rel : Int) -> UInt16? {
+  fn cov(data : Bytes, b : BeBytes, base : Int32, rel : Int32) -> UInt16? {
     let c = match b.read_u16(base + rel) {
       None => return None
       Some(v) => v.to_uint16()

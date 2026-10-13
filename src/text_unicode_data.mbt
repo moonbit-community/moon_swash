@@ -19,21 +19,21 @@
 
 ///|
 /// The version of the Unicode Character Database used to generate properties.
-pub const UNICODE_VERSION_MAJOR : Int = 13
+pub const UNICODE_VERSION_MAJOR : Int32 = 13
 
 ///|
-pub const UNICODE_VERSION_MINOR : Int = 0
+pub const UNICODE_VERSION_MINOR : Int32 = 0
 
 ///|
-pub const UNICODE_VERSION_PATCH : Int = 0
+pub const UNICODE_VERSION_PATCH : Int32 = 0
 
 ///|
-pub fn unicode_version() -> (Int, Int, Int) {
+pub fn unicode_version() -> (Int32, Int32, Int32) {
   (UNICODE_VERSION_MAJOR, UNICODE_VERSION_MINOR, UNICODE_VERSION_PATCH)
 }
 
 ///|
-pub const COMPOSE1_COUNT : Int = 63
+pub const COMPOSE1_COUNT : Int32 = 63
 
 ///|
 pub(all) enum Category {
@@ -652,7 +652,7 @@ pub(all) enum MyanmarClass {
 
 ///|
 priv struct Flags {
-  bits : UInt
+  bits : UInt32
 }
 
 ///|
@@ -701,7 +701,7 @@ priv struct Record {
   category : Category
   block : Block
   script : Script
-  combining_class : UInt
+  combining_class : UInt32
   bidi_class : BidiClass
   joining_type : JoiningType
   cluster_break : ClusterBreak
@@ -713,11 +713,11 @@ priv struct Record {
 
 ///|
 fn r(
-  flags : UInt,
+  flags : UInt32,
   category : Category,
   block : Block,
   script : Script,
-  combining_class : UInt,
+  combining_class : UInt32,
   bidi_class : BidiClass,
   joining_type : JoiningType,
   cluster_break : ClusterBreak,
@@ -743,7 +743,7 @@ fn r(
 }
 
 ///|
-let brackets : ReadOnlyArray[(UInt, UInt)] = [
+let brackets : ReadOnlyArray[(UInt32, UInt32)] = [
   (0x0028, 0x0029),
   (0x005B, 0x005D),
   (0x007B, 0x007D),
@@ -807,7 +807,7 @@ let brackets : ReadOnlyArray[(UInt, UInt)] = [
 ]
 
 ///|
-let mirrors : ReadOnlyArray[(UInt, UInt)] = [
+let mirrors : ReadOnlyArray[(UInt32, UInt32)] = [
   (0x0028, 0x0029),
   (0x0029, 0x0028),
   (0x003C, 0x003E),
@@ -1231,7 +1231,7 @@ let mirrors : ReadOnlyArray[(UInt, UInt)] = [
 ]
 
 ///|
-let record_index0 : ReadOnlyArray[UInt] = [
+let record_index0 : ReadOnlyArray[UInt32] = [
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
   23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
   43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52,
@@ -1504,7 +1504,7 @@ let record_index0 : ReadOnlyArray[UInt] = [
 ]
 
 ///|
-let record_index1 : ReadOnlyArray[UInt] = [
+let record_index1 : ReadOnlyArray[UInt32] = [
   0, 1, 0, 2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 13, 14, 14, 14, 15, 16, 17,
   18, 19, 19, 20, 21, 22, 22, 23, 22, 24, 24, 24, 24, 24, 24, 24, 25, 25, 26, 24,
   24, 24, 24, 24, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 40, 41,
@@ -1930,7 +1930,7 @@ let record_index1 : ReadOnlyArray[UInt] = [
 ]
 
 ///|
-let record_index2 : ReadOnlyArray[UInt] = [
+let record_index2 : ReadOnlyArray[UInt32] = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 6, 6, 6, 7, 8, 9, 10,
   11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 24, 24, 24, 24, 24, 24,
   24, 24, 24, 25, 26, 27, 27, 27, 9, 14, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28,
@@ -12781,7 +12781,7 @@ fn unicode_records_2() -> ReadOnlyArray[Record] {
 }
 
 ///|
-let compose0 : ReadOnlyArray[(UInt, UInt, UInt)] = [
+let compose0 : ReadOnlyArray[(UInt32, UInt32, UInt32)] = [
   (60, 2, 0),
   (65, 15, 3),
   (82, 8, 19),
@@ -12997,7 +12997,7 @@ let compose0 : ReadOnlyArray[(UInt, UInt, UInt)] = [
 ]
 
 ///|
-let compose1 : ReadOnlyArray[(UInt, UInt, UInt)] = [
+let compose1 : ReadOnlyArray[(UInt32, UInt32, UInt32)] = [
   (768, 4, 0),
   (774, 6, 5),
   (783, 0, 12),
@@ -13042,7 +13042,7 @@ let compose1 : ReadOnlyArray[(UInt, UInt, UInt)] = [
 ]
 
 ///|
-let compose_index0 : ReadOnlyArray[UInt] = [
+let compose_index0 : ReadOnlyArray[UInt32] = [
   0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 4, 5, 6, 7,
   0, 0, 0, 0, 0, 8, 9, 10, 0, 0, 0, 0, 11, 12, 0, 13, 0, 0, 0, 0, 0, 14, 15, 16,
   0, 0, 0, 0, 17, 18, 19, 20, 0, 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0, 22, 23, 24, 0,
@@ -13169,7 +13169,7 @@ let compose_index0 : ReadOnlyArray[UInt] = [
 ]
 
 ///|
-let compose_index1 : ReadOnlyArray[UInt] = [
+let compose_index1 : ReadOnlyArray[UInt32] = [
   0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 3, 0, 0, 0, 0, 0, 4, 5, 6, 7, 8, 9, 10, 11,
   0, 12, 13, 14, 0, 0, 0, 15, 0, 0, 0, 0, 16, 0, 0, 0, 0, 17, 0, 0, 18, 0, 19, 0,
   0, 20, 21, 0, 0, 0, 22, 0, 23, 0, 0, 24, 0, 25, 26, 0, 27, 0, 28, 29, 30, 31, 32,
@@ -13278,7 +13278,7 @@ let compose_index1 : ReadOnlyArray[UInt] = [
 ]
 
 ///|
-let compose_index2 : ReadOnlyArray[UInt] = [
+let compose_index2 : ReadOnlyArray[UInt32] = [
   0, 0, 0, 8814, 8800, 0, 0, 8815, 0, 192, 193, 194, 195, 256, 258, 550, 196, 7842,
   197, 0, 461, 512, 514, 0, 7840, 0, 7680, 0, 0, 260, 7682, 0, 0, 7684, 7686, 0,
   262, 264, 0, 266, 268, 0, 199, 0, 7690, 0, 0, 270, 0, 7692, 0, 7696, 0, 7698, 7694,
@@ -13374,7 +13374,7 @@ let compose_index2 : ReadOnlyArray[UInt] = [
 ]
 
 ///|
-let decompose_index0 : ReadOnlyArray[UInt] = [
+let decompose_index0 : ReadOnlyArray[UInt32] = [
   0, 1, 2, 3, 4, 5, 6, 7, 8, 5, 9, 5, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
   5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
   5, 5, 5, 5, 5, 5, 5, 5, 5, 11, 5, 5, 5, 5, 5, 12, 13, 14, 5, 5, 5, 5, 5, 5, 5,
@@ -13419,7 +13419,7 @@ let decompose_index0 : ReadOnlyArray[UInt] = [
 ]
 
 ///|
-let decompose_index1 : ReadOnlyArray[UInt] = [
+let decompose_index1 : ReadOnlyArray[UInt32] = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0,
   13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 23, 0, 0, 24, 25, 26, 27, 28, 29, 30, 0, 0, 31, 32, 0, 33, 0, 34, 0, 35,
@@ -13468,7 +13468,7 @@ let decompose_index1 : ReadOnlyArray[UInt] = [
 ]
 
 ///|
-let decompose_index2 : ReadOnlyArray[UInt] = [
+let decompose_index2 : ReadOnlyArray[UInt32] = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 5, 8, 11, 14, 17, 0, 20, 23,
   26, 29, 32, 35, 38, 41, 44, 0, 47, 50, 53, 56, 59, 62, 0, 0, 65, 68, 71, 74, 77,
   0, 0, 80, 83, 86, 89, 92, 95, 0, 98, 101, 104, 107, 110, 113, 116, 119, 122, 0,
@@ -13663,7 +13663,7 @@ let decompose_index2 : ReadOnlyArray[UInt] = [
 ]
 
 ///|
-let decompose_compat_index0 : ReadOnlyArray[UInt] = [
+let decompose_compat_index0 : ReadOnlyArray[UInt32] = [
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
   5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 13, 14, 5, 5, 5, 5, 5, 5, 5, 5, 5,
   5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 15, 16, 5, 5, 5, 5, 17, 18, 19, 5, 5, 5, 5, 5, 5,
@@ -13708,7 +13708,7 @@ let decompose_compat_index0 : ReadOnlyArray[UInt] = [
 ]
 
 ///|
-let decompose_compat_index1 : ReadOnlyArray[UInt] = [
+let decompose_compat_index1 : ReadOnlyArray[UInt32] = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 3, 5, 6, 7, 8, 9, 10, 11, 8, 12, 0, 0,
   13, 14, 15, 16, 17, 18, 6, 19, 20, 21, 0, 0, 0, 0, 0, 0, 0, 22, 0, 23, 24, 0, 0,
   0, 0, 0, 25, 0, 0, 26, 27, 14, 28, 14, 29, 30, 0, 31, 32, 33, 0, 33, 0, 32, 0,
@@ -13783,7 +13783,7 @@ let decompose_compat_index1 : ReadOnlyArray[UInt] = [
 ]
 
 ///|
-let decompose_compat_index2 : ReadOnlyArray[UInt] = [
+let decompose_compat_index2 : ReadOnlyArray[UInt32] = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 4, 0, 7,
   0, 0, 0, 0, 9, 0, 0, 12, 14, 16, 19, 0, 0, 21, 24, 26, 0, 28, 32, 36, 0, 1, 1,
   1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1,
@@ -14133,7 +14133,7 @@ let decompose_compat_index2 : ReadOnlyArray[UInt] = [
 ]
 
 ///|
-let decompose_data : ReadOnlyArray[UInt] = [
+let decompose_data : ReadOnlyArray[UInt32] = [
   0, 255, 2, 65, 768, 2, 65, 769, 2, 65, 770, 2, 65, 771, 2, 65, 776, 2, 65, 778,
   2, 67, 807, 2, 69, 768, 2, 69, 769, 2, 69, 770, 2, 69, 776, 2, 73, 768, 2, 73,
   769, 2, 73, 770, 2, 73, 776, 2, 78, 771, 2, 79, 768, 2, 79, 769, 2, 79, 770, 2,
@@ -14455,7 +14455,7 @@ let decompose_data : ReadOnlyArray[UInt] = [
 ]
 
 ///|
-let decompose_compat_data : ReadOnlyArray[UInt] = [
+let decompose_compat_data : ReadOnlyArray[UInt32] = [
   0, 255, 1, 32, 2, 32, 776, 1, 97, 2, 32, 772, 1, 50, 1, 51, 2, 32, 769, 1, 956,
   2, 32, 807, 1, 49, 1, 111, 3, 49, 8260, 52, 3, 49, 8260, 50, 3, 51, 8260, 52, 2,
   73, 74, 2, 105, 106, 2, 76, 183, 2, 108, 183, 2, 700, 110, 1, 115, 3, 68, 90, 780,
@@ -14971,9 +14971,9 @@ let decompose_compat_data : ReadOnlyArray[UInt] = [
 ]
 
 ///|
-fn get_record_index(x : Int) -> Int {
-  let shift1 : Int = 5
-  let shift2 : Int = 3
+fn get_record_index(x : Int32) -> Int32 {
+  let shift1 : Int32 = 5
+  let shift2 : Int32 = 3
   if x < 0 || x >= 1114112 {
     return 0
   }
@@ -14987,9 +14987,9 @@ fn get_record_index(x : Int) -> Int {
 }
 
 ///|
-fn compose_index(x : Int) -> Int {
-  let shift1 : Int = 2
-  let shift2 : Int = 1
+fn compose_index(x : Int32) -> Int32 {
+  let shift1 : Int32 = 2
+  let shift2 : Int32 = 1
   if x < 0 || x >= 23751 {
     return 0
   }
@@ -15003,9 +15003,9 @@ fn compose_index(x : Int) -> Int {
 }
 
 ///|
-fn decompose_index(x : Int) -> Int {
-  let shift1 : Int = 6
-  let shift2 : Int = 4
+fn decompose_index(x : Int32) -> Int32 {
+  let shift1 : Int32 = 6
+  let shift2 : Int32 = 4
   if x < 0 || x >= 1114112 {
     return 0
   }
@@ -15019,9 +15019,9 @@ fn decompose_index(x : Int) -> Int {
 }
 
 ///|
-fn decompose_compat_index(x : Int) -> Int {
-  let shift1 : Int = 6
-  let shift2 : Int = 4
+fn decompose_compat_index(x : Int32) -> Int32 {
+  let shift1 : Int32 = 6
+  let shift2 : Int32 = 4
   if x < 0 || x >= 1114112 {
     return 0
   }

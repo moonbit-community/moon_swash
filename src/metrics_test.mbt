@@ -13,16 +13,16 @@
 // limitations under the License.
 
 ///|
-fn metrics_test_push_u16_be(out : Array[Byte], v : Int) -> Unit {
+fn metrics_test_push_u16_be(out : Array[Byte], v : Int32) -> Unit {
   let u = v.reinterpret_as_uint()
-  let mask = 255 |> Int::reinterpret_as_uint
+  let mask = 255 |> Int32::reinterpret_as_uint
   out.push(((u >> 8) & mask).to_byte())
   out.push((u & mask).to_byte())
 }
 
 ///|
-fn metrics_test_push_u32_be(out : Array[Byte], v : UInt) -> Unit {
-  let mask = 255 |> Int::reinterpret_as_uint
+fn metrics_test_push_u32_be(out : Array[Byte], v : UInt32) -> Unit {
+  let mask = 255 |> Int32::reinterpret_as_uint
   out.push(((v >> 24) & mask).to_byte())
   out.push(((v >> 16) & mask).to_byte())
   out.push(((v >> 8) & mask).to_byte())
@@ -30,21 +30,21 @@ fn metrics_test_push_u32_be(out : Array[Byte], v : UInt) -> Unit {
 }
 
 ///|
-fn metrics_test_u32(x : Int) -> UInt {
+fn metrics_test_u32(x : Int32) -> UInt32 {
   x.reinterpret_as_uint()
 }
 
 ///|
-fn metrics_test_set_u16_be(buf : Array[Byte], off : Int, v : Int) -> Unit {
+fn metrics_test_set_u16_be(buf : Array[Byte], off : Int32, v : Int32) -> Unit {
   let u = v.reinterpret_as_uint()
-  let mask = 255 |> Int::reinterpret_as_uint
+  let mask = 255 |> Int32::reinterpret_as_uint
   buf[off] = ((u >> 8) & mask).to_byte()
   buf[off + 1] = (u & mask).to_byte()
 }
 
 ///|
-fn metrics_test_set_u32_be(buf : Array[Byte], off : Int, v : UInt) -> Unit {
-  let mask = 255 |> Int::reinterpret_as_uint
+fn metrics_test_set_u32_be(buf : Array[Byte], off : Int32, v : UInt32) -> Unit {
+  let mask = 255 |> Int32::reinterpret_as_uint
   buf[off] = ((v >> 24) & mask).to_byte()
   buf[off + 1] = ((v >> 16) & mask).to_byte()
   buf[off + 2] = ((v >> 8) & mask).to_byte()
@@ -52,7 +52,7 @@ fn metrics_test_set_u32_be(buf : Array[Byte], off : Int, v : UInt) -> Unit {
 }
 
 ///|
-fn metrics_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
+fn metrics_test_build_sfnt(tables : Array[(UInt32, Bytes)]) -> Bytes {
   // Caller must provide tags in sorted order for internal table_range binary search.
   let num_tables = tables.length()
   let header_len = 12 + num_tables * 16
@@ -81,7 +81,7 @@ fn metrics_test_build_sfnt(tables : Array[(UInt, Bytes)]) -> Bytes {
 }
 
 ///|
-fn metrics_test_make_head(units_per_em : Int, loca_fmt : Int) -> Bytes {
+fn metrics_test_make_head(units_per_em : Int32, loca_fmt : Int32) -> Bytes {
   let buf : Array[Byte] = Array::makei(54, _ => b'\x00')
   metrics_test_set_u16_be(buf, 18, units_per_em)
   metrics_test_set_u16_be(buf, 50, loca_fmt)
@@ -89,7 +89,7 @@ fn metrics_test_make_head(units_per_em : Int, loca_fmt : Int) -> Bytes {
 }
 
 ///|
-fn metrics_test_make_maxp(num_glyphs : Int) -> Bytes {
+fn metrics_test_make_maxp(num_glyphs : Int32) -> Bytes {
   let out : Array[Byte] = []
   metrics_test_push_u32_be(out, metrics_test_u32(0x00010000))
   metrics_test_push_u16_be(out, num_glyphs)
@@ -98,11 +98,11 @@ fn metrics_test_make_maxp(num_glyphs : Int) -> Bytes {
 
 ///|
 fn metrics_test_make_hhea(
-  ascender : Int,
-  descender : Int,
-  line_gap : Int,
-  max_advance : Int,
-  num_long : Int,
+  ascender : Int32,
+  descender : Int32,
+  line_gap : Int32,
+  max_advance : Int32,
+  num_long : Int32,
 ) -> Bytes {
   let buf : Array[Byte] = Array::makei(36, _ => b'\x00')
   metrics_test_set_u16_be(buf, 4, ascender)
@@ -115,17 +115,17 @@ fn metrics_test_make_hhea(
 
 ///|
 fn metrics_test_make_vhea(
-  ascender : Int,
-  descender : Int,
-  line_gap : Int,
-  max_advance : Int,
-  num_long : Int,
+  ascender : Int32,
+  descender : Int32,
+  line_gap : Int32,
+  max_advance : Int32,
+  num_long : Int32,
 ) -> Bytes {
   metrics_test_make_hhea(ascender, descender, line_gap, max_advance, num_long)
 }
 
 ///|
-fn metrics_test_make_hmtx(advance : Int, lsb : Int) -> Bytes {
+fn metrics_test_make_hmtx(advance : Int32, lsb : Int32) -> Bytes {
   let out : Array[Byte] = []
   metrics_test_push_u16_be(out, advance)
   metrics_test_push_u16_be(out, lsb)
@@ -133,14 +133,14 @@ fn metrics_test_make_hmtx(advance : Int, lsb : Int) -> Bytes {
 }
 
 ///|
-fn metrics_test_make_vmtx(advance : Int, tsb : Int) -> Bytes {
+fn metrics_test_make_vmtx(advance : Int32, tsb : Int32) -> Bytes {
   metrics_test_make_hmtx(advance, tsb)
 }
 
 ///|
 fn metrics_test_make_post(
-  underline_pos : Int,
-  underline_size : Int,
+  underline_pos : Int32,
+  underline_size : Int32,
   fixed_pitch : Bool,
 ) -> Bytes {
   let buf : Array[Byte] = Array::makei(16, _ => b'\x00')
@@ -156,14 +156,14 @@ fn metrics_test_make_post(
 
 ///|
 fn metrics_test_make_os2_typo(
-  avg_width : Int,
-  strikeout_pos : Int,
-  strikeout_size : Int,
-  typo_asc : Int,
-  typo_desc : Int,
-  typo_gap : Int,
-  x_height : Int,
-  cap_height : Int,
+  avg_width : Int32,
+  strikeout_pos : Int32,
+  strikeout_size : Int32,
+  typo_asc : Int32,
+  typo_desc : Int32,
+  typo_gap : Int32,
+  x_height : Int32,
+  cap_height : Int32,
 ) -> Bytes {
   let buf : Array[Byte] = Array::makei(96, _ => b'\x00')
   // version=2
@@ -262,7 +262,10 @@ fn metrics_test_make_mvar_hasc_delta_10() -> Bytes {
 }
 
 ///|
-fn metrics_test_make_vorg(default_origin : Int, glyph0_origin : Int) -> Bytes {
+fn metrics_test_make_vorg(
+  default_origin : Int32,
+  glyph0_origin : Int32,
+) -> Bytes {
   let out : Array[Byte] = []
   metrics_test_push_u16_be(out, 1) // major
   metrics_test_push_u16_be(out, 0) // minor
@@ -288,9 +291,9 @@ test "MetricsProxy materialize_metrics reads OS/2/post and synthesizes vertical 
       (@internal.POST, metrics_test_make_post(-100, 20, true)),
     ]),
   )
-  let font = FontRef::from_offset(sfnt, 0).unwrap()
-  let proxy = MetricsProxy::from_font(font)
-  let m = proxy.materialize_metrics(font, ([] : Array[Int])[:])
+  let font = @moon_swash.FontRef::from_offset(sfnt, 0).unwrap()
+  let proxy = @moon_swash.MetricsProxy::from_font(font)
+  let m = proxy.materialize_metrics(font, ([] : Array[Int32])[:])
   inspect(m.units_per_em, content="1000")
   inspect(m.glyph_count, content="2")
   inspect(m.is_monospace, content="true")
@@ -316,8 +319,8 @@ test "GlyphMetrics applies HVAR deltas when coords are non-zero" {
       (@internal.MAXP, metrics_test_make_maxp(1)),
     ]),
   )
-  let font = FontRef::from_offset(sfnt, 0).unwrap()
-  let gm0 = font.glyph_metrics(([] : Array[Int])[:])
+  let font = @moon_swash.FontRef::from_offset(sfnt, 0).unwrap()
+  let gm0 = font.glyph_metrics(([] : Array[Int32])[:])
   inspect(gm0.advance_width((0).to_uint16()).to_int(), content="500")
   inspect(gm0.lsb((0).to_uint16()).to_int(), content="10")
   let coords = Array::from_fixed_array([16384])
@@ -338,8 +341,8 @@ test "MetricsProxy applies MVAR deltas to ascent" {
       (@internal.MAXP, metrics_test_make_maxp(1)),
     ]),
   )
-  let font = FontRef::from_offset(sfnt, 0).unwrap()
-  let proxy = MetricsProxy::from_font(font)
+  let font = @moon_swash.FontRef::from_offset(sfnt, 0).unwrap()
+  let proxy = @moon_swash.MetricsProxy::from_font(font)
   let coords = Array::from_fixed_array([16384])
   let m = proxy.materialize_metrics(font, coords[:])
   inspect(m.ascent.to_int(), content="810")
@@ -358,8 +361,8 @@ test "GlyphMetrics uses VMTX+VORG for vertical metrics when present" {
       (@internal.VMTX, metrics_test_make_vmtx(800, 20)),
     ]),
   )
-  let font = FontRef::from_offset(sfnt, 0).unwrap()
-  let gm = font.glyph_metrics(([] : Array[Int])[:])
+  let font = @moon_swash.FontRef::from_offset(sfnt, 0).unwrap()
+  let gm = font.glyph_metrics(([] : Array[Int32])[:])
   inspect(gm.has_vertical_metrics(), content="true")
   inspect(gm.advance_height((0).to_uint16()).to_int(), content="800")
   inspect(gm.tsb((0).to_uint16()).to_int(), content="20")

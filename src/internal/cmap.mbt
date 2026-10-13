@@ -19,7 +19,7 @@
 const CMAP : RawTag = 0x636D6170 // "cmap"
 
 ///|
-fn uint_to_int_checked(u : UInt) -> Int? {
+fn uint_to_int_checked(u : UInt32) -> Int32? {
   if u > 0x7FFFFFFF {
     None
   } else {
@@ -29,7 +29,7 @@ fn uint_to_int_checked(u : UInt) -> Int? {
 
 ///|
 /// Finds a suitable character map subtable for the specified font.
-pub fn[T : RawFont] subtable(font : T) -> (UInt, UInt, Bool)? {
+pub fn[T : RawFont] subtable(font : T) -> (UInt32, UInt32, Bool)? {
   let cmap_off = table_offset(font, CMAP)
   if cmap_off == 0 {
     return None
@@ -51,7 +51,7 @@ pub fn[T : RawFont] subtable(font : T) -> (UInt, UInt, Bool)? {
   }
   let len = len_u.reinterpret_as_int()
   let b = BeBytes::from_view(s.data())
-  let mut best : (UInt, UInt, Bool)? = None
+  let mut best : (UInt32, UInt32, Bool)? = None
   for _ in 0..<len {
     let platform = match s.read_u16() {
       None => return best
@@ -92,10 +92,10 @@ pub fn[T : RawFont] subtable(font : T) -> (UInt, UInt, Bool)? {
 /// Maps a codepoint to a glyph identifier.
 pub fn map(
   data : Bytes,
-  subtable : UInt,
-  format : UInt,
-  codepoint : UInt,
-) -> UInt? {
+  subtable : UInt32,
+  format : UInt32,
+  codepoint : UInt32,
+) -> UInt32? {
   if subtable == 0 {
     return None
   }
@@ -219,8 +219,8 @@ pub fn map(
 /// Enumerates all codepoint/glyph pairs in the table.
 pub fn enumerate(
   data : Bytes,
-  subtable : UInt,
-  f : (UInt, UInt) -> Unit,
+  subtable : UInt32,
+  f : (UInt32, UInt32) -> Unit,
 ) -> Unit {
   if subtable == 0 {
     return
@@ -305,11 +305,11 @@ pub fn enumerate(
 }
 
 ///|
-fn is_unicode(platform : UInt, encoding : UInt) -> Bool {
+fn is_unicode(platform : UInt32, encoding : UInt32) -> Bool {
   platform == 0 || (platform == 3 && (encoding == 1 || encoding == 10))
 }
 
 ///|
-fn is_symbol(platform : UInt, encoding : UInt) -> Bool {
+fn is_symbol(platform : UInt32, encoding : UInt32) -> Bool {
   platform == 3 && encoding == 0
 }

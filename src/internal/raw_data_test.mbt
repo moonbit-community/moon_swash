@@ -14,10 +14,10 @@
 
 ///|
 test "raw_data is_font detects font headers" {
-  debug_inspect(is_font(b"\x00\x01\x00\x00", 0), content="true")
-  debug_inspect(is_font(b"OTTO", 0), content="true")
-  debug_inspect(is_font(b"true", 0), content="true")
-  debug_inspect(is_font(b"xxxx", 0), content="false")
+  debug_inspect(@internal.is_font(b"\x00\x01\x00\x00", 0), content="true")
+  debug_inspect(@internal.is_font(b"OTTO", 0), content="true")
+  debug_inspect(@internal.is_font(b"true", 0), content="true")
+  debug_inspect(@internal.is_font(b"xxxx", 0), content="false")
 }
 
 ///|
@@ -63,8 +63,8 @@ test "raw_data collection count and offsets" {
       b'\x00'
     }
   })
-  debug_inspect(is_collection(data), content="true")
-  debug_inspect(count(data), content="2")
-  debug_inspect(offset(data, 0), content="Some(32)")
-  debug_inspect(offset(data, 1), content="Some(64)")
+  debug_inspect(@internal.is_collection(data), content="true")
+  debug_inspect(@internal.count(data), content="2")
+  debug_inspect(@internal.offset(data, 0), content="Some(32)")
+  debug_inspect(@internal.offset(data, 1), content="Some(64)")
 }

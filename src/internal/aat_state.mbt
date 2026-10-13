@@ -28,9 +28,9 @@ pub(all) struct AatEntry[T] {
 ///|
 fn[T] aat_read_entry(
   b : BeBytes,
-  offset : Int,
-  _data_size : Int,
-  read_data : (BeBytes, Int) -> T?,
+  offset : Int32,
+  _data_size : Int32,
+  read_data : (BeBytes, Int32) -> T?,
 ) -> AatEntry[T]? {
   let new_state = match b.read_u16(offset) {
     None => return None
@@ -48,22 +48,22 @@ fn[T] aat_read_entry(
 }
 
 ///|
-fn aat_read_unit(_b : BeBytes, _offset : Int) -> Unit? {
+fn aat_read_unit(_b : BeBytes, _offset : Int32) -> Unit? {
   Some(())
 }
 
 ///|
-fn aat_read_u16(b : BeBytes, offset : Int) -> UInt16? {
+fn aat_read_u16(b : BeBytes, offset : Int32) -> UInt16? {
   b.read_u16(offset).map(x => x.to_uint16())
 }
 
 ///|
 pub(all) struct ExtendedStateTable {
   b : BeBytes
-  classes : Int
-  class_table : Int
-  state_array : Int
-  entry_table : Int
+  classes : Int32
+  class_table : Int32
+  state_array : Int32
+  entry_table : Int32
 }
 
 ///|
@@ -107,8 +107,8 @@ pub fn[T] ExtendedStateTable::entry(
   self : ExtendedStateTable,
   state : UInt16,
   class : UInt16,
-  data_size : Int,
-  read_data : (BeBytes, Int) -> T?,
+  data_size : Int32,
+  read_data : (BeBytes, Int32) -> T?,
 ) -> AatEntry[T]? {
   if self.classes <= 0 {
     return None
@@ -126,10 +126,10 @@ pub fn[T] ExtendedStateTable::entry(
 ///|
 pub(all) struct StateTable {
   b : BeBytes
-  class_count : Int
-  state_array : Int
+  class_count : Int32
+  state_array : Int32
   states : BytesView
-  entry_table : Int
+  entry_table : Int32
   first_glyph : UInt16
   classes : BytesView
 }
@@ -205,8 +205,8 @@ pub fn[T] StateTable::entry(
   self : StateTable,
   state : UInt16,
   class : UInt16,
-  data_size : Int,
-  read_data : (BeBytes, Int) -> T?,
+  data_size : Int32,
+  read_data : (BeBytes, Int32) -> T?,
 ) -> AatEntry[T]? {
   if self.class_count <= 0 {
     return None

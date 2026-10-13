@@ -35,7 +35,7 @@ pub fn BeBytes::from_view(data : BytesView) -> BeBytes {
 }
 
 ///|
-pub fn BeBytes::with_offset(data : Bytes, offset : Int) -> BeBytes? {
+pub fn BeBytes::with_offset(data : Bytes, offset : Int32) -> BeBytes? {
   if offset < 0 || offset > data.length() {
     return None
   }
@@ -48,28 +48,36 @@ pub fn BeBytes::data(self : BeBytes) -> BytesView {
 }
 
 ///|
-pub fn BeBytes::len(self : BeBytes) -> Int {
+pub fn BeBytes::len(self : BeBytes) -> Int32 {
   self.data.length()
 }
 
 ///|
-pub fn BeBytes::check_range(self : BeBytes, offset : Int, len : Int) -> Bool {
+pub fn BeBytes::check_range(
+  self : BeBytes,
+  offset : Int32,
+  len : Int32,
+) -> Bool {
   let end = self.data.length()
   offset >= 0 && len >= 0 && offset < end && end - offset >= len
 }
 
 ///|
-pub fn BeBytes::ensure_range(self : BeBytes, offset : Int, len : Int) -> Bool {
+pub fn BeBytes::ensure_range(
+  self : BeBytes,
+  offset : Int32,
+  len : Int32,
+) -> Bool {
   self.check_range(offset, len)
 }
 
 ///|
-pub fn BeBytes::read_u8(self : BeBytes, offset : Int) -> Byte? {
+pub fn BeBytes::read_u8(self : BeBytes, offset : Int32) -> Byte? {
   self.data.get(offset)
 }
 
 ///|
-pub fn BeBytes::read_u16(self : BeBytes, offset : Int) -> UInt? {
+pub fn BeBytes::read_u16(self : BeBytes, offset : Int32) -> UInt32? {
   if !self.check_range(offset, 2) {
     return None
   }
@@ -85,7 +93,7 @@ pub fn BeBytes::read_u16(self : BeBytes, offset : Int) -> UInt? {
 }
 
 ///|
-pub fn BeBytes::read_u32(self : BeBytes, offset : Int) -> UInt? {
+pub fn BeBytes::read_u32(self : BeBytes, offset : Int32) -> UInt32? {
   if !self.check_range(offset, 4) {
     return None
   }
@@ -108,12 +116,12 @@ pub fn BeBytes::read_u32(self : BeBytes, offset : Int) -> UInt? {
 }
 
 ///|
-pub fn BeBytes::read_i32(self : BeBytes, offset : Int) -> Int? {
+pub fn BeBytes::read_i32(self : BeBytes, offset : Int32) -> Int32? {
   self.read_u32(offset).map(x => x.reinterpret_as_int())
 }
 
 ///|
-pub fn BeBytes::read_u64(self : BeBytes, offset : Int) -> UInt64? {
+pub fn BeBytes::read_u64(self : BeBytes, offset : Int32) -> UInt64? {
   if !self.check_range(offset, 8) {
     return None
   }
@@ -154,7 +162,7 @@ pub fn BeBytes::read_u64(self : BeBytes, offset : Int) -> UInt64? {
 }
 
 ///|
-pub fn BeBytes::read_u24(self : BeBytes, offset : Int) -> UInt? {
+pub fn BeBytes::read_u24(self : BeBytes, offset : Int32) -> UInt32? {
   if !self.check_range(offset, 3) {
     return None
   }
@@ -172,7 +180,7 @@ pub fn BeBytes::read_u24(self : BeBytes, offset : Int) -> UInt? {
 }
 
 ///|
-pub fn BeBytes::read_i16(self : BeBytes, offset : Int) -> Int? {
+pub fn BeBytes::read_i16(self : BeBytes, offset : Int32) -> Int32? {
   match self.read_u16(offset) {
     None => None
     Some(u) => {
@@ -190,7 +198,7 @@ pub fn BeBytes::read_i16(self : BeBytes, offset : Int) -> Int? {
 ///|
 pub struct Stream {
   data : BytesView
-  mut offset : Int
+  mut offset : Int32
 }
 
 ///|
@@ -206,7 +214,7 @@ pub fn Stream::from_view(data : BytesView) -> Stream {
 }
 
 ///|
-pub fn Stream::with_offset(data : Bytes, offset : Int) -> Stream? {
+pub fn Stream::with_offset(data : Bytes, offset : Int32) -> Stream? {
   if offset < 0 || offset > data.length() {
     return None
   }
@@ -215,7 +223,7 @@ pub fn Stream::with_offset(data : Bytes, offset : Int) -> Stream? {
 }
 
 ///|
-pub fn Stream::len(self : Stream) -> Int {
+pub fn Stream::len(self : Stream) -> Int32 {
   self.data.length()
 }
 
@@ -225,17 +233,17 @@ pub fn Stream::data(self : Stream) -> BytesView {
 }
 
 ///|
-pub fn Stream::offset(self : Stream) -> Int {
+pub fn Stream::offset(self : Stream) -> Int32 {
   self.offset
 }
 
 ///|
-pub fn Stream::remaining(self : Stream) -> Int {
+pub fn Stream::remaining(self : Stream) -> Int32 {
   self.data.length() - self.offset
 }
 
 ///|
-pub fn Stream::set_offset(self : Stream, offset : Int) -> Bool {
+pub fn Stream::set_offset(self : Stream, offset : Int32) -> Bool {
   if offset < 0 || offset > self.data.length() {
     return false
   }
@@ -244,12 +252,12 @@ pub fn Stream::set_offset(self : Stream, offset : Int) -> Bool {
 }
 
 ///|
-pub fn Stream::check_range(self : Stream, len : Int) -> Bool {
+pub fn Stream::check_range(self : Stream, len : Int32) -> Bool {
   len >= 0 && self.data.length() - self.offset >= len
 }
 
 ///|
-pub fn Stream::skip(self : Stream, bytes : Int) -> Bool {
+pub fn Stream::skip(self : Stream, bytes : Int32) -> Bool {
   if bytes < 0 {
     return false
   }
@@ -269,7 +277,7 @@ pub fn Stream::read_u8(self : Stream) -> Byte? {
 }
 
 ///|
-pub fn Stream::read_u16(self : Stream) -> UInt? {
+pub fn Stream::read_u16(self : Stream) -> UInt32? {
   if !self.check_range(2) {
     return None
   }
@@ -281,7 +289,7 @@ pub fn Stream::read_u16(self : Stream) -> UInt? {
 }
 
 ///|
-pub fn Stream::read_u32(self : Stream) -> UInt? {
+pub fn Stream::read_u32(self : Stream) -> UInt32? {
   if !self.check_range(4) {
     return None
   }
@@ -293,7 +301,7 @@ pub fn Stream::read_u32(self : Stream) -> UInt? {
 }
 
 ///|
-pub fn Stream::read_i16(self : Stream) -> Int? {
+pub fn Stream::read_i16(self : Stream) -> Int32? {
   if !self.check_range(2) {
     return None
   }

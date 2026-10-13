@@ -34,7 +34,7 @@ priv struct AatFeatures {
 ///|
 fn AatFeatures::AatFeatures(
   data : Bytes,
-  morx_offset : UInt,
+  morx_offset : UInt32,
   kern : Bool,
 ) -> AatFeatures {
   let chains = @internal.morx_chains(data, morx_offset).iter()

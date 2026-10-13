@@ -21,7 +21,7 @@
 /// Reference to the content of a font file.
 pub struct FontDataRef {
   data : Bytes
-  len : Int
+  len : Int32
 }
 
 ///|
@@ -44,7 +44,7 @@ pub fn FontDataRef::data(self : FontDataRef) -> Bytes {
 }
 
 ///|
-pub fn FontDataRef::len(self : FontDataRef) -> Int {
+pub fn FontDataRef::len(self : FontDataRef) -> Int32 {
   self.len
 }
 
@@ -54,7 +54,7 @@ pub fn FontDataRef::is_empty(self : FontDataRef) -> Bool {
 }
 
 ///|
-pub fn FontDataRef::get(self : FontDataRef, index : Int) -> FontRef? {
+pub fn FontDataRef::get(self : FontDataRef, index : Int32) -> FontRef? {
   match @internal.offset(self.data, index) {
     None => None
     Some(off) => FontRef::from_offset(self.data, off)
@@ -76,7 +76,7 @@ pub fn FontDataRef::fonts(self : FontDataRef) -> Iter[FontRef] {
 /// Reference to a font.
 pub struct FontRef {
   data : Bytes
-  offset : Int
+  offset : Int32
   key : CacheKey
 }
 
@@ -98,7 +98,7 @@ pub fn FontRef::data(self : FontRef) -> Bytes {
 }
 
 ///|
-pub fn FontRef::offset(self : FontRef) -> Int {
+pub fn FontRef::offset(self : FontRef) -> Int32 {
   self.offset
 }
 
@@ -108,7 +108,7 @@ pub fn FontRef::key(self : FontRef) -> CacheKey {
 }
 
 ///|
-pub fn FontRef::from_index(data : Bytes, index : Int) -> FontRef? {
+pub fn FontRef::from_index(data : Bytes, index : Int32) -> FontRef? {
   match FontDataRef::from_data(data) {
     None => None
     Some(d) => d.get(index)
@@ -116,7 +116,7 @@ pub fn FontRef::from_index(data : Bytes, index : Int) -> FontRef? {
 }
 
 ///|
-pub fn FontRef::from_offset(data : Bytes, offset : Int) -> FontRef? {
+pub fn FontRef::from_offset(data : Bytes, offset : Int32) -> FontRef? {
   if !@internal.is_font(data, offset) {
     None
   } else {
@@ -141,7 +141,7 @@ pub fn FontRef::table_data(self : FontRef, tag : Tag) -> BytesView? {
 
 ///|
 /// Returns the byte offset of the table with the specified tag.
-pub fn FontRef::table_offset(self : FontRef, tag : Tag) -> UInt {
+pub fn FontRef::table_offset(self : FontRef, tag : Tag) -> UInt32 {
   @internal.table_offset(self, tag)
 }
 

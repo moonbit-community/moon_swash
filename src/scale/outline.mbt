@@ -20,10 +20,10 @@
 /// Note: MoonBit doesn't currently expose slice borrowing like Rust, so the
 /// `Layer` accessors return index ranges into the shared points/verbs arrays.
 pub struct LayerData {
-  points_start : Int
-  points_end : Int
-  verbs_start : Int
-  verbs_end : Int
+  points_start : Int32
+  points_end : Int32
+  verbs_start : Int32
+  verbs_end : Int32
   color_index : UInt16?
 }
 
@@ -86,7 +86,7 @@ pub fn Outline::is_color(self : Outline) -> Bool {
 }
 
 ///|
-pub fn Outline::len(self : Outline) -> Int {
+pub fn Outline::len(self : Outline) -> Int32 {
   self.layers.length()
 }
 
@@ -96,7 +96,7 @@ pub fn Outline::is_empty(self : Outline) -> Bool {
 }
 
 ///|
-pub fn Outline::layer_data(self : Outline, index : Int) -> LayerData? {
+pub fn Outline::layer_data(self : Outline, index : Int32) -> LayerData? {
   if index < 0 || index >= self.layers.length() {
     None
   } else {
@@ -105,7 +105,7 @@ pub fn Outline::layer_data(self : Outline, index : Int) -> LayerData? {
 }
 
 ///|
-pub fn Outline::get(self : Outline, index : Int) -> Layer? {
+pub fn Outline::get(self : Outline, index : Int32) -> Layer? {
   match self.layer_data(index) {
     None => None
     Some(layer) => {
@@ -163,7 +163,7 @@ pub fn Outline::transform(self : Outline, transform : Transform) -> Unit {
 }
 
 ///|
-fn compute_winding(points : Array[Point], start : Int, end : Int) -> UInt {
+fn compute_winding(points : Array[Point], start : Int32, end : Int32) -> UInt32 {
   if end <= start {
     return 0
   }
@@ -185,9 +185,9 @@ fn compute_winding(points : Array[Point], start : Int, end : Int) -> UInt {
 ///|
 fn embolden_contour(
   points : Array[Point],
-  start : Int,
-  end : Int,
-  winding : UInt,
+  start : Int32,
+  end : Int32,
+  winding : UInt32,
   x_strength : Double,
   y_strength : Double,
 ) -> Unit {

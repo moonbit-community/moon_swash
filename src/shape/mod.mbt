@@ -43,4 +43,4 @@ pub type ClusterChar = @swash.ClusterChar
 pub type CharCluster = @swash.CharCluster
 
 ///|
-pub const MAX_CLUSTER_SIZE : Int = @swash.MAX_CLUSTER_SIZE
+pub const MAX_CLUSTER_SIZE : Int32 = @swash.MAX_CLUSTER_SIZE

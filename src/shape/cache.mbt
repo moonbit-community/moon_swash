@@ -44,8 +44,8 @@ priv struct FeatureEntry {
   mut epoch : Epoch
   mut id0 : UInt64
   mut id1 : UInt64
-  coords : Array[Int]
-  mut tags : (UInt, UInt, UInt, UInt)
+  coords : Array[Int32]
+  mut tags : (UInt32, UInt32, UInt32, UInt32)
   store : Ref[FeatureStore]
 }
 
@@ -53,7 +53,7 @@ priv struct FeatureEntry {
 priv struct FeatureCache {
   entries : Array[FeatureEntry]
   mut epoch : Epoch
-  max_entries : Int
+  max_entries : Int32
 }
 
 ///|
@@ -65,7 +65,7 @@ priv enum FeatureCacheEntry {
 }
 
 ///|
-fn FeatureCache::FeatureCache(max_entries : Int) -> FeatureCache {
+fn FeatureCache::FeatureCache(max_entries : Int32) -> FeatureCache {
   let max_entries = if max_entries < 1 { 1 } else { max_entries }
   { entries: [], epoch: 0, max_entries, }
 }
@@ -74,9 +74,9 @@ fn FeatureCache::FeatureCache(max_entries : Int) -> FeatureCache {
 fn FeatureCache::entry(
   self : FeatureCache,
   id : (UInt64, UInt64),
-  coords : ArrayView[Int],
+  coords : ArrayView[Int32],
   has_feature_vars : Bool,
-  tags : (UInt, UInt, UInt, UInt),
+  tags : (UInt32, UInt32, UInt32, UInt32),
 ) -> FeatureCacheEntry {
   let (found, index) = self.find_entry(id, coords, has_feature_vars, tags)
   let e = self.entries.at(index)
@@ -90,7 +90,7 @@ fn FeatureCache::entry(
 }
 
 ///|
-fn coords_eq(a : ArrayView[Int], b : Array[Int]) -> Bool {
+fn coords_eq(a : ArrayView[Int32], b : Array[Int32]) -> Bool {
   if a.length() != b.length() {
     return false
   }
@@ -106,10 +106,10 @@ fn coords_eq(a : ArrayView[Int], b : Array[Int]) -> Bool {
 fn FeatureCache::find_entry(
   self : FeatureCache,
   id : (UInt64, UInt64),
-  coords : ArrayView[Int],
+  coords : ArrayView[Int32],
   has_feature_vars : Bool,
-  tags : (UInt, UInt, UInt, UInt),
-) -> (Bool, Int) {
+  tags : (UInt32, UInt32, UInt32, UInt32),
+) -> (Bool, Int32) {
   let mut lowest_epoch = self.epoch
   let mut lowest_index = 0
   for i in 0..<self.entries.length() {

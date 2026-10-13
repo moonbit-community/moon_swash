@@ -18,24 +18,24 @@
 /// Ported from `upstream swash/src/internal/aat.rs`.
 
 ///|
-pub const MORX : UInt = 0x6D6F7278 // "morx"
+pub const MORX : UInt32 = 0x6D6F7278 // "morx"
 
 ///|
-pub const LTAG : UInt = 0x6C746167 // "ltag"
+pub const LTAG : UInt32 = 0x6C746167 // "ltag"
 
 ///|
-pub const KERX : UInt = 0x6B657278 // "kerx"
+pub const KERX : UInt32 = 0x6B657278 // "kerx"
 
 ///|
-pub const ANKR : UInt = 0x616E6B72 // "ankr"
+pub const ANKR : UInt32 = 0x616E6B72 // "ankr"
 
 ///|
-pub const KERN : UInt = 0x6B65726E // "kern"
+pub const KERN : UInt32 = 0x6B65726E // "kern"
 
 // Maximum number of times we allow consecutive DONT_ADVANCE states.
 
 ///|
-const MAX_CYCLES : Int = 16
+const MAX_CYCLES : Int32 = 16
 
 ///|
 fn aat_empty_view() -> BytesView {
@@ -43,7 +43,7 @@ fn aat_empty_view() -> BytesView {
 }
 
 ///|
-fn aat_slice_from(data : Bytes, start : UInt) -> BytesView {
+fn aat_slice_from(data : Bytes, start : UInt32) -> BytesView {
   let s = start.reinterpret_as_int()
   if s < 0 || s > data.length() {
     aat_empty_view()
@@ -53,7 +53,7 @@ fn aat_slice_from(data : Bytes, start : UInt) -> BytesView {
 }
 
 ///|
-fn aat_subview(view : BytesView, start : Int) -> BytesView {
+fn aat_subview(view : BytesView, start : Int32) -> BytesView {
   if start < 0 || start > view.length() {
     aat_empty_view()
   } else {

@@ -25,10 +25,10 @@ pub const VMTX : RawTag = 0x766D7478 // "vmtx"
 /// Returns the advance for the specified glyph.
 pub fn advance(
   data : Bytes,
-  xmtx : UInt,
-  long_metric_count : UInt,
-  glyph_id : UInt,
-) -> UInt {
+  xmtx : UInt32,
+  long_metric_count : UInt32,
+  glyph_id : UInt32,
+) -> UInt32 {
   let b = BeBytes::BeBytes(data)
   let offset = if glyph_id < long_metric_count {
     glyph_id.reinterpret_as_int() * 4
@@ -43,10 +43,10 @@ pub fn advance(
 /// Returns the side bearing for the specified glyph.
 pub fn sb(
   data : Bytes,
-  xmtx : UInt,
-  long_metric_count : UInt,
-  glyph_id : UInt,
-) -> Int {
+  xmtx : UInt32,
+  long_metric_count : UInt32,
+  glyph_id : UInt32,
+) -> Int32 {
   let b = BeBytes::BeBytes(data)
   let offset = if glyph_id < long_metric_count {
     glyph_id.reinterpret_as_int() * 4 + 2

@@ -27,7 +27,7 @@ pub const GPOS : RawTag = 0x47504F53 // "GPOS"
 pub const DFLT : RawTag = 0x44464C54 // "DFLT"
 
 ///|
-pub fn script_count(data : Bytes, gsubgpos_offset : UInt) -> UInt16 {
+pub fn script_count(data : Bytes, gsubgpos_offset : UInt32) -> UInt16 {
   if gsubgpos_offset == 0U {
     return (0).to_uint16()
   }
@@ -43,9 +43,9 @@ pub fn script_count(data : Bytes, gsubgpos_offset : UInt) -> UInt16 {
 ///|
 pub fn script_at(
   data : Bytes,
-  gsubgpos_offset : UInt,
+  gsubgpos_offset : UInt32,
   index : UInt16,
-) -> (RawTag, UInt)? {
+) -> (RawTag, UInt32)? {
   if gsubgpos_offset == 0U {
     return None
   }
@@ -70,9 +70,9 @@ pub fn script_at(
 ///|
 pub fn script_by_tag(
   data : Bytes,
-  gsubgpos_offset : UInt,
+  gsubgpos_offset : UInt32,
   script : RawTag,
-) -> UInt? {
+) -> UInt32? {
   if gsubgpos_offset == 0U {
     return None
   }
@@ -110,7 +110,7 @@ pub fn script_by_tag(
 }
 
 ///|
-pub fn script_language_count(data : Bytes, script_offset : UInt) -> UInt16 {
+pub fn script_language_count(data : Bytes, script_offset : UInt32) -> UInt16 {
   if script_offset == 0U {
     return (0).to_uint16()
   }
@@ -123,7 +123,7 @@ pub fn script_language_count(data : Bytes, script_offset : UInt) -> UInt16 {
 }
 
 ///|
-pub fn script_default_language(data : Bytes, script_offset : UInt) -> UInt? {
+pub fn script_default_language(data : Bytes, script_offset : UInt32) -> UInt32? {
   if script_offset == 0U {
     return None
   }
@@ -143,9 +143,9 @@ pub fn script_default_language(data : Bytes, script_offset : UInt) -> UInt? {
 ///|
 pub fn script_language_at(
   data : Bytes,
-  script_offset : UInt,
+  script_offset : UInt32,
   index : UInt16,
-) -> (RawTag, UInt)? {
+) -> (RawTag, UInt32)? {
   if script_offset == 0U {
     return None
   }
@@ -177,9 +177,9 @@ pub fn script_language_at(
 ///|
 pub fn script_language_by_tag(
   data : Bytes,
-  script_offset : UInt,
+  script_offset : UInt32,
   language : RawTag?,
-) -> (UInt, Bool)? {
+) -> (UInt32, Bool)? {
   if script_offset == 0U {
     return None
   }
@@ -226,7 +226,7 @@ pub fn script_language_by_tag(
 }
 
 ///|
-pub fn language_feature_count(data : Bytes, language_offset : UInt) -> UInt16 {
+pub fn language_feature_count(data : Bytes, language_offset : UInt32) -> UInt16 {
   if language_offset == 0U {
     return (0).to_uint16()
   }
@@ -237,7 +237,7 @@ pub fn language_feature_count(data : Bytes, language_offset : UInt) -> UInt16 {
 ///|
 pub fn language_feature_at(
   data : Bytes,
-  language_offset : UInt,
+  language_offset : UInt32,
   index : UInt16,
 ) -> UInt16? {
   let base = language_offset.reinterpret_as_int()
@@ -248,7 +248,7 @@ pub fn language_feature_at(
 }
 
 ///|
-pub fn feature_count(data : Bytes, gsubgpos_offset : UInt) -> UInt16 {
+pub fn feature_count(data : Bytes, gsubgpos_offset : UInt32) -> UInt16 {
   if gsubgpos_offset == 0U {
     return (0).to_uint16()
   }
@@ -264,9 +264,9 @@ pub fn feature_count(data : Bytes, gsubgpos_offset : UInt) -> UInt16 {
 ///|
 pub fn feature_at(
   data : Bytes,
-  gsubgpos_offset : UInt,
+  gsubgpos_offset : UInt32,
   index : UInt16,
-) -> (RawTag, UInt)? {
+) -> (RawTag, UInt32)? {
   if gsubgpos_offset == 0U {
     return None
   }
