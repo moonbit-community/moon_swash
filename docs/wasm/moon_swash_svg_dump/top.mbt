@@ -92,7 +92,9 @@ fn fmt_num(x : Double) -> String {
 fn parse_text_arg(text_arg : String) -> String? {
   if text_arg.length() >= 6 && text_arg[0:6] == "@file:" {
     let path = text_arg[6:text_arg.length()]
-    Some(@miniio.read_text_file(path)) catch { _ => None }
+    Some(@miniio.read_text_file(path)) catch {
+      _ => None
+    }
   } else {
     Some(text_arg)
   }
