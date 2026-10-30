@@ -7,15 +7,15 @@ import {
 }
 
 // Values
-pub const COMPOSE1_COUNT : Int = 63
+pub const COMPOSE1_COUNT : Int32 = 63
 
-pub const MAX_CLUSTER_SIZE : Int = 32
+pub const MAX_CLUSTER_SIZE : Int32 = 32
 
-pub const UNICODE_VERSION_MAJOR : Int = 13
+pub const UNICODE_VERSION_MAJOR : Int32 = 13
 
-pub const UNICODE_VERSION_MINOR : Int = 0
+pub const UNICODE_VERSION_MINOR : Int32 = 0
 
-pub const UNICODE_VERSION_PATCH : Int = 0
+pub const UNICODE_VERSION_PATCH : Int32 = 0
 
 pub fn analyze(Iter[Char]) -> Analyze
 
@@ -25,15 +25,15 @@ pub fn decompose(Char) -> Iter[Char]
 
 pub fn decompose_compat(Char) -> Iter[Char]
 
-pub fn desc_from_aat(UInt16, UInt16) -> (Int, UInt, String)?
+pub fn desc_from_aat(UInt16, UInt16) -> (Int32, UInt32, String)?
 
-pub fn desc_from_at(UInt) -> (Int, String)?
+pub fn desc_from_at(UInt32) -> (Int32, String)?
 
-pub fn tag_from_bytes(Bytes) -> UInt?
+pub fn tag_from_bytes(Bytes) -> UInt32?
 
-pub fn tag_from_str_lossy(String) -> UInt
+pub fn tag_from_str_lossy(String) -> UInt32
 
-pub fn unicode_version() -> (Int, Int, Int)
+pub fn unicode_version() -> (Int32, Int32, Int32)
 
 // Errors
 
@@ -54,7 +54,7 @@ pub fn Analyze::next(Self) -> (Properties, Boundary)?
 pub fn Analyze::set_break_strength(Self, WordBreakStrength) -> Unit
 
 pub struct Attributes {
-  value : UInt
+  value : UInt32
 }
 pub fn Attributes::Attributes(Stretch, Weight, Style) -> Self
 pub fn Attributes::equal(Self, Self) -> Bool
@@ -105,8 +105,8 @@ pub fn BidiClass::needs_resolution(Self) -> Bool
 pub struct BitmapStrike {
   b : @internal.BeBytes
   bitmap_data : BytesView
-  offset : Int
-  upem : UInt
+  offset : Int32
+  upem : UInt32
   is_sbix : Bool
   is_apple : Bool
 }
@@ -120,19 +120,19 @@ pub struct BitmapStrikes {
   bitmap_data : BytesView
   is_sbix : Bool
   is_apple : Bool
-  upem : UInt
-  len : Int
+  upem : UInt32
+  len : Int32
 }
 pub fn BitmapStrikes::find_by_exact_ppem(Self, UInt16, UInt16) -> BitmapStrike?
 pub fn BitmapStrikes::find_by_largest_ppem(Self, UInt16) -> BitmapStrike?
 pub fn BitmapStrikes::find_by_nearest_ppem(Self, UInt16, UInt16) -> BitmapStrike?
 pub fn BitmapStrikes::iter(Self) -> Iter[BitmapStrike]
-pub fn BitmapStrikes::len(Self) -> Int
+pub fn BitmapStrikes::len(Self) -> Int32
 
 pub struct BitmapStrikesProxy {
-  bitmaps : (UInt, UInt)
-  color_bitmaps : (UInt, UInt)
-  upem : UInt
+  bitmaps : (UInt32, UInt32)
+  color_bitmaps : (UInt32, UInt32)
+  upem : UInt32
   is_apple : Bool
 }
 pub fn BitmapStrikesProxy::from_font(FontRef) -> Self
@@ -524,7 +524,7 @@ pub fn CharCluster::is_empty(Self) -> Bool
 pub fn CharCluster::map(Self, (Char) -> UInt16) -> Status
 pub fn CharCluster::mapped_chars(Self) -> ArrayView[ClusterChar]
 pub fn CharCluster::range(Self) -> SourceRange
-pub fn CharCluster::user_data(Self) -> UInt
+pub fn CharCluster::user_data(Self) -> UInt32
 
 type CharInfo
 pub fn CharInfo::CharInfo(Properties, Boundary) -> Self
@@ -548,14 +548,14 @@ pub struct Charmap {
   data : Bytes
   proxy : CharmapProxy
 }
-pub fn Charmap::enumerate(Self, (UInt, UInt16) -> Unit) -> Unit
+pub fn Charmap::enumerate(Self, (UInt32, UInt16) -> Unit) -> Unit
 pub fn Charmap::from_font(FontRef) -> Self
-pub fn Charmap::map(Self, UInt) -> UInt16
+pub fn Charmap::map(Self, UInt32) -> UInt16
 pub fn Charmap::proxy(Self) -> CharmapProxy
 
 pub struct CharmapProxy {
-  offset : UInt
-  format : UInt
+  offset : UInt32
+  format : UInt32
   symbol : Bool
 }
 pub fn CharmapProxy::from_font(FontRef) -> Self
@@ -587,14 +587,14 @@ pub(all) enum ClusterBreak {
 }
 
 type ClusterChar
-pub fn ClusterChar::ClusterChar(Char, UInt, ShapeClass, JoiningType, Bool, Bool, UInt16, UInt) -> Self
+pub fn ClusterChar::ClusterChar(Char, UInt32, ShapeClass, JoiningType, Bool, Bool, UInt16, UInt32) -> Self
 pub fn ClusterChar::ch(Self) -> Char
 pub fn ClusterChar::contributes_to_shaping(Self) -> Bool
-pub fn ClusterChar::data(Self) -> UInt
+pub fn ClusterChar::data(Self) -> UInt32
 pub fn ClusterChar::glyph_id(Self) -> UInt16
 pub fn ClusterChar::is_ignorable(Self) -> Bool
 pub fn ClusterChar::joining_type(Self) -> JoiningType
-pub fn ClusterChar::offset(Self) -> UInt
+pub fn ClusterChar::offset(Self) -> UInt32
 pub fn ClusterChar::shape_class(Self) -> ShapeClass
 
 type ClusterInfo
@@ -612,7 +612,7 @@ pub struct ColorPalette {
   version : UInt16
   index : UInt16
   num_entries : UInt16
-  offset : Int
+  offset : Int32
 }
 pub fn ColorPalette::get(Self, UInt16) -> (Byte, Byte, Byte, Byte)
 pub fn ColorPalette::index(Self) -> UInt16
@@ -625,11 +625,11 @@ pub fn ColorPalette::usability(Self) -> Usability?
 pub struct ColorPalettes {
   font : FontRef
   b : @internal.BeBytes
-  len : Int
+  len : Int32
 }
 pub fn ColorPalettes::from_font(FontRef) -> Self
 pub fn ColorPalettes::iter(Self) -> Iter[ColorPalette]
-pub fn ColorPalettes::len(Self) -> Int
+pub fn ColorPalettes::len(Self) -> Int32
 
 pub(all) enum CombiningClass {
   NotReordered
@@ -711,7 +711,7 @@ type Entry[T]
 type Feature
 pub fn Feature::action(Self) -> Action
 pub fn Feature::name(Self) -> String?
-pub fn Feature::tag(Self) -> UInt
+pub fn Feature::tag(Self) -> UInt32
 
 type Features
 pub fn Features::from_font(FontRef) -> Self
@@ -719,27 +719,27 @@ pub fn Features::iter(Self) -> Iter[Feature]
 
 pub struct FontCache[T] {
   entries : Array[Entry[T]]
-  max_entries : Int
+  max_entries : Int32
   mut epoch : UInt64
 }
-pub fn[T] FontCache::FontCache(Int) -> Self[T]
+pub fn[T] FontCache::FontCache(Int32) -> Self[T]
 pub fn[T] FontCache::get(Self[T], FontRef, (UInt64, UInt64)?, (FontRef) -> T) -> ((UInt64, UInt64), @ref.Ref[T])
 
 pub struct FontDataRef {
   data : Bytes
-  len : Int
+  len : Int32
 }
 pub fn FontDataRef::data(Self) -> Bytes
 pub fn FontDataRef::fonts(Self) -> Iter[FontRef]
 pub fn FontDataRef::from_data(Bytes) -> Self?
-pub fn FontDataRef::get(Self, Int) -> FontRef?
+pub fn FontDataRef::get(Self, Int32) -> FontRef?
 pub fn FontDataRef::is_collection(Self) -> Bool
 pub fn FontDataRef::is_empty(Self) -> Bool
-pub fn FontDataRef::len(Self) -> Int
+pub fn FontDataRef::len(Self) -> Int32
 
 pub struct FontRef {
   data : Bytes
-  offset : Int
+  offset : Int32
   key : CacheKey
 }
 pub fn FontRef::alpha_strikes(Self) -> BitmapStrikes
@@ -748,9 +748,9 @@ pub fn FontRef::color_palettes(Self) -> ColorPalettes
 pub fn FontRef::color_strikes(Self) -> BitmapStrikes
 pub fn FontRef::data(Self) -> Bytes
 pub fn FontRef::features(Self) -> Features
-pub fn FontRef::from_index(Bytes, Int) -> Self?
-pub fn FontRef::from_offset(Bytes, Int) -> Self?
-pub fn FontRef::glyph_metrics(Self, ArrayView[Int]) -> GlyphMetrics
+pub fn FontRef::from_index(Bytes, Int32) -> Self?
+pub fn FontRef::from_offset(Bytes, Int32) -> Self?
+pub fn FontRef::glyph_metrics(Self, ArrayView[Int32]) -> GlyphMetrics
 pub fn FontRef::glyph_name(Self, UInt16) -> String?
 pub fn FontRef::head(Self) -> @internal.Head?
 pub fn FontRef::hhea(Self) -> @internal.Hhea?
@@ -758,13 +758,13 @@ pub fn FontRef::instances(Self) -> Instances
 pub fn FontRef::key(Self) -> CacheKey
 pub fn FontRef::localized_strings(Self) -> LocalizedStrings
 pub fn FontRef::maxp(Self) -> @internal.Maxp?
-pub fn FontRef::metrics(Self, ArrayView[Int]) -> Metrics
-pub fn FontRef::offset(Self) -> Int
+pub fn FontRef::metrics(Self, ArrayView[Int32]) -> Metrics
+pub fn FontRef::offset(Self) -> Int32
 pub fn FontRef::os2(Self) -> @internal.Os2?
 pub fn FontRef::post(Self) -> @internal.Post?
-pub fn FontRef::table_by_tag(Self, UInt) -> BytesView?
-pub fn FontRef::table_data(Self, UInt) -> BytesView?
-pub fn FontRef::table_offset(Self, UInt) -> UInt
+pub fn FontRef::table_by_tag(Self, UInt32) -> BytesView?
+pub fn FontRef::table_data(Self, UInt32) -> BytesView?
+pub fn FontRef::table_offset(Self, UInt32) -> UInt32
 pub fn FontRef::variations(Self) -> Variations
 pub fn FontRef::vhea(Self) -> @internal.Vhea?
 pub fn FontRef::writing_systems(Self) -> WritingSystems
@@ -785,10 +785,10 @@ pub fn GlyphMetrics::units_per_em(Self) -> UInt16
 pub fn GlyphMetrics::vertical_origin(Self, UInt16) -> Double
 
 type Instance
-pub fn Instance::index(Self) -> Int
+pub fn Instance::index(Self) -> Int32
 pub fn Instance::name(Self, String?) -> LocalizedString?
 pub fn Instance::name_id(Self) -> StringId
-pub fn Instance::normalized_coords(Self) -> ArrayView[Int]
+pub fn Instance::normalized_coords(Self) -> ArrayView[Int32]
 pub fn Instance::postscript_name(Self, String?) -> LocalizedString?
 pub fn Instance::postscript_name_id(Self) -> StringId?
 pub fn Instance::values(Self) -> ArrayView[Double]
@@ -813,22 +813,22 @@ pub struct Language {
   language : Array[Byte]
   script : Array[Byte]
   region : Array[Byte]
-  lang_len : Int
-  script_len : Int
-  region_len : Int
+  lang_len : Int32
+  script_len : Int32
+  region_len : Int32
   cjk : Cjk
-  name_index : Int
-  tag : UInt?
+  name_index : Int32
+  tag : UInt32?
 }
 pub fn Language::cjk(Self) -> Cjk
-pub fn Language::from_opentype(UInt) -> Self?
+pub fn Language::from_opentype(UInt32) -> Self?
 pub fn Language::language(Self) -> String
 pub fn Language::name(Self) -> String?
 pub fn Language::output(Self, &Logger) -> Unit
 pub fn Language::parse(String) -> Self?
 pub fn Language::region(Self) -> String?
 pub fn Language::script(Self) -> String?
-pub fn Language::to_opentype(Self) -> UInt?
+pub fn Language::to_opentype(Self) -> UInt32?
 pub fn Language::to_string(Self) -> String
 pub impl Show for Language
 
@@ -880,8 +880,8 @@ pub(all) enum LineBreak {
 
 pub struct LocalizedString {
   b : @internal.BeBytes
-  storage : Int
-  offset : Int
+  storage : Int32
+  offset : Int32
 }
 pub fn LocalizedString::chars(Self) -> Iter[Char]
 pub fn LocalizedString::id(Self) -> StringId
@@ -892,12 +892,12 @@ pub fn LocalizedString::to_string(Self) -> String
 
 pub struct LocalizedStrings {
   b : @internal.BeBytes
-  len : Int
-  storage : Int
+  len : Int32
+  storage : Int32
 }
 pub fn LocalizedStrings::find_by_id(Self, StringId, String?) -> LocalizedString?
 pub fn LocalizedStrings::iter(Self) -> Iter[LocalizedString]
-pub fn LocalizedStrings::len(Self) -> Int
+pub fn LocalizedStrings::len(Self) -> Int32
 
 pub struct Metrics {
   units_per_em : UInt16
@@ -924,8 +924,8 @@ pub fn Metrics::scale(Self, Double) -> Self
 type MetricsProxy
 pub fn MetricsProxy::from_font(FontRef) -> Self
 pub fn MetricsProxy::glyph_count(Self) -> UInt16
-pub fn MetricsProxy::materialize_glyph_metrics(Self, FontRef, ArrayView[Int]) -> GlyphMetrics
-pub fn MetricsProxy::materialize_metrics(Self, FontRef, ArrayView[Int]) -> Metrics
+pub fn MetricsProxy::materialize_glyph_metrics(Self, FontRef, ArrayView[Int32]) -> GlyphMetrics
+pub fn MetricsProxy::materialize_metrics(Self, FontRef, ArrayView[Int32]) -> Metrics
 pub fn MetricsProxy::units_per_em(Self) -> UInt16
 
 pub(all) enum MyanmarClass {
@@ -972,15 +972,15 @@ pub fn Parser::Parser(Script, Iter[Token]) -> Self
 pub fn Parser::next(Self, CharCluster) -> Bool
 
 pub struct Properties {
-  bits : UInt
+  bits : UInt32
 }
 pub fn Properties::bidi_class(Self) -> BidiClass
 pub fn Properties::block(Self) -> Block
-pub fn Properties::boundary(Self) -> UInt
+pub fn Properties::boundary(Self) -> UInt32
 pub fn Properties::category(Self) -> Category
 pub fn Properties::cluster_break(Self) -> ClusterBreak
 pub fn Properties::cluster_class(Self) -> (ClusterBreak, Bool)
-pub fn Properties::combining_class(Self) -> UInt
+pub fn Properties::combining_class(Self) -> UInt32
 pub fn Properties::contributes_to_shaping(Self) -> Bool
 pub fn Properties::is_close_bracket(Self) -> Bool
 pub fn Properties::is_emoji(Self) -> Bool
@@ -993,7 +993,7 @@ pub fn Properties::line_break(Self) -> LineBreak
 pub fn Properties::myanmar_class(Self) -> (MyanmarClass, Bool)
 pub fn Properties::script(Self) -> Script
 pub fn Properties::use_class(Self) -> (UseClass, Bool, Bool)
-pub fn Properties::with_boundary(Self, UInt) -> Self
+pub fn Properties::with_boundary(Self, UInt32) -> Self
 pub fn Properties::word_break(Self) -> WordBreak
 
 pub(all) enum Script {
@@ -1155,23 +1155,23 @@ pub(all) enum Script {
   Common
   Unknown
 }
-pub fn Script::from_opentype(UInt) -> Self?
+pub fn Script::from_opentype(UInt32) -> Self?
 pub fn Script::is_complex(Self) -> Bool
 pub fn Script::is_joined(Self) -> Bool
 pub fn Script::name(Self) -> String
-pub fn Script::to_opentype(Self) -> UInt
+pub fn Script::to_opentype(Self) -> UInt32
 
 pub struct SeenFeatures {
-  bits : Array[UInt]
+  bits : Array[UInt32]
 }
 pub fn SeenFeatures::SeenFeatures() -> Self
-pub fn SeenFeatures::mark(Self, Int) -> Bool
+pub fn SeenFeatures::mark(Self, Int32) -> Bool
 
 pub struct Setting[T] {
-  tag : UInt
+  tag : UInt32
   value : T
 }
-pub fn[T] Setting::Setting(UInt, T) -> Self[T]
+pub fn[T] Setting::Setting(UInt32, T) -> Self[T]
 pub fn Setting::parse_feature(String) -> Self[UInt16]?
 pub fn Setting::parse_feature_list(String) -> Iter[Self[UInt16]]
 pub fn Setting::parse_variation(String) -> Self[Double]?
@@ -1197,9 +1197,9 @@ pub(all) enum ShapeClass {
 }
 
 type SourceRange
-pub fn SourceRange::SourceRange(UInt, UInt) -> Self
-pub fn SourceRange::end(Self) -> UInt
-pub fn SourceRange::start(Self) -> UInt
+pub fn SourceRange::SourceRange(UInt32, UInt32) -> Self
+pub fn SourceRange::end(Self) -> UInt32
+pub fn SourceRange::start(Self) -> UInt32
 
 pub(all) enum Status {
   Discard
@@ -1210,7 +1210,7 @@ pub(all) enum Status {
 pub struct Stretch {
   value : UInt16
 }
-pub fn Stretch::compare(Self, Self) -> Int
+pub fn Stretch::compare(Self, Self) -> Int32
 pub fn Stretch::condensed() -> Self
 pub fn Stretch::equal(Self, Self) -> Bool
 pub fn Stretch::expanded() -> Self
@@ -1288,7 +1288,7 @@ pub impl Show for Style
 pub struct Synthesis {
   vars : Array[Setting[Double]]
   embolden : Bool
-  skew : Int
+  skew : Int32
 }
 pub fn Synthesis::any(Self) -> Bool
 pub fn Synthesis::embolden(Self) -> Bool
@@ -1299,13 +1299,13 @@ pub fn Synthesis::variations(Self) -> ArrayView[Setting[Double]]
 pub impl Eq for Synthesis
 
 type Token
-pub fn Token::Token(Char, UInt, UInt, CharInfo, UInt) -> Self
+pub fn Token::Token(Char, UInt32, UInt32, CharInfo, UInt32) -> Self
 pub fn Token::ch(Self) -> Char
-pub fn Token::data(Self) -> UInt
+pub fn Token::data(Self) -> UInt32
 pub fn Token::default() -> Self
 pub fn Token::info(Self) -> CharInfo
-pub fn Token::len(Self) -> UInt
-pub fn Token::offset(Self) -> UInt
+pub fn Token::len(Self) -> UInt32
+pub fn Token::offset(Self) -> UInt32
 
 pub(all) enum Usability {
   Light
@@ -1355,21 +1355,21 @@ pub(all) enum UseClass {
 
 type Variation
 pub fn Variation::default_value(Self) -> Double
-pub fn Variation::index(Self) -> Int
+pub fn Variation::index(Self) -> Int32
 pub fn Variation::is_hidden(Self) -> Bool
 pub fn Variation::max_value(Self) -> Double
 pub fn Variation::min_value(Self) -> Double
 pub fn Variation::name(Self, String?) -> LocalizedString?
 pub fn Variation::name_id(Self) -> StringId
-pub fn Variation::normalize(Self, Double) -> Int
-pub fn Variation::tag(Self) -> UInt
+pub fn Variation::normalize(Self, Double) -> Int32
+pub fn Variation::tag(Self) -> UInt32
 
 type Variations
-pub fn Variations::find_by_tag(Self, UInt) -> Variation?
+pub fn Variations::find_by_tag(Self, UInt32) -> Variation?
 pub fn Variations::iter(Self) -> Iter[Variation]
-pub fn Variations::len(Self) -> Int
+pub fn Variations::len(Self) -> Int32
 pub fn Variations::next(Self) -> Variation?
-pub fn Variations::normalized_coords(Self, Iter[Setting[Double]]) -> Iter[Int]
+pub fn Variations::normalized_coords(Self, Iter[Setting[Double]]) -> Iter[Int32]
 
 type VariationsProxy
 pub fn VariationsProxy::from_font(FontRef) -> Self
@@ -1380,7 +1380,7 @@ pub struct Weight {
 }
 pub fn Weight::black() -> Self
 pub fn Weight::bold() -> Self
-pub fn Weight::compare(Self, Self) -> Int
+pub fn Weight::compare(Self, Self) -> Int32
 pub fn Weight::equal(Self, Self) -> Bool
 pub fn Weight::extra_bold() -> Self
 pub fn Weight::extra_light() -> Self
@@ -1442,9 +1442,9 @@ pub(all) enum WordBreakStrength {
 type WritingSystem
 pub fn WritingSystem::features(Self) -> Features
 pub fn WritingSystem::language(Self) -> Language?
-pub fn WritingSystem::language_tag(Self) -> UInt
+pub fn WritingSystem::language_tag(Self) -> UInt32
 pub fn WritingSystem::script(Self) -> Script?
-pub fn WritingSystem::script_tag(Self) -> UInt
+pub fn WritingSystem::script_tag(Self) -> UInt32
 
 type WritingSystems
 pub fn WritingSystems::from_font(FontRef) -> Self
@@ -1457,11 +1457,11 @@ pub type FeatureSetting = Setting[UInt16]
 
 pub type GlyphId = UInt16
 
-pub type NormalizedCoord = Int
+pub type NormalizedCoord = Int32
 
-pub type Tag = UInt
+pub type Tag = UInt32
 
-pub type UserData = UInt
+pub type UserData = UInt32
 
 pub type VariationSetting = Setting[Double]
 
@@ -1478,5 +1478,5 @@ pub(open) trait Codepoint {
 pub impl Codepoint for Char
 
 pub(open) trait TableProvider {
-  fn table_by_tag(Self, UInt) -> BytesView?
+  fn table_by_tag(Self, UInt32) -> BytesView?
 }

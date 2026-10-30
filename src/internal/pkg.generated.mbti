@@ -2,185 +2,185 @@
 package "Milky2018/moon_swash/internal"
 
 // Values
-pub const ANKR : UInt = 0x616E6B72
+pub const ANKR : UInt32 = 0x616E6B72
 
-pub const AVAR : UInt = 0x61766172
+pub const AVAR : UInt32 = 0x61766172
 
-pub const CPHT : UInt = 0x63706874
+pub const CPHT : UInt32 = 0x63706874
 
-pub const CVAR : UInt = 0x63766172
+pub const CVAR : UInt32 = 0x63766172
 
-pub const CVT_ : UInt = 0x63767420
+pub const CVT_ : UInt32 = 0x63767420
 
-pub const DFLT : UInt = 0x44464C54
+pub const DFLT : UInt32 = 0x44464C54
 
-pub const FPGM : UInt = 0x6670676D
+pub const FPGM : UInt32 = 0x6670676D
 
-pub const FVAR : UInt = 0x66766172
+pub const FVAR : UInt32 = 0x66766172
 
-pub const GLYF : UInt = 0x676C7966
+pub const GLYF : UInt32 = 0x676C7966
 
-pub const GPOS : UInt = 0x47504F53
+pub const GPOS : UInt32 = 0x47504F53
 
-pub const GSUB : UInt = 0x47535542
+pub const GSUB : UInt32 = 0x47535542
 
-pub const GVAR : UInt = 0x67766172
+pub const GVAR : UInt32 = 0x67766172
 
-pub const HASC : UInt = 0x68617363
+pub const HASC : UInt32 = 0x68617363
 
-pub const HDSC : UInt = 0x68647363
+pub const HDSC : UInt32 = 0x68647363
 
-pub const HEAD : UInt = 0x68656164
+pub const HEAD : UInt32 = 0x68656164
 
-pub const HEAD_MAGIC : UInt = 0x5F0F3CF5
+pub const HEAD_MAGIC : UInt32 = 0x5F0F3CF5
 
-pub const HHEA : UInt = 0x68686561
+pub const HHEA : UInt32 = 0x68686561
 
-pub const HLGP : UInt = 0x686C6770
+pub const HLGP : UInt32 = 0x686C6770
 
-pub const HMTX : UInt = 0x686D7478
+pub const HMTX : UInt32 = 0x686D7478
 
-pub const HVAR : UInt = 0x48564152
+pub const HVAR : UInt32 = 0x48564152
 
-pub const KERN : UInt = 0x6B65726E
+pub const KERN : UInt32 = 0x6B65726E
 
-pub const KERX : UInt = 0x6B657278
+pub const KERX : UInt32 = 0x6B657278
 
-pub const LOCA : UInt = 0x6C6F6361
+pub const LOCA : UInt32 = 0x6C6F6361
 
-pub const LTAG : UInt = 0x6C746167
+pub const LTAG : UInt32 = 0x6C746167
 
-pub const MAXP : UInt = 0x6D617870
+pub const MAXP : UInt32 = 0x6D617870
 
-pub const MORX : UInt = 0x6D6F7278
+pub const MORX : UInt32 = 0x6D6F7278
 
-pub const MVAR : UInt = 0x4D564152
+pub const MVAR : UInt32 = 0x4D564152
 
-pub const OS_2 : UInt = 0x4F532F32
+pub const OS_2 : UInt32 = 0x4F532F32
 
-pub const POST : UInt = 0x706F7374
+pub const POST : UInt32 = 0x706F7374
 
-pub const PREP : UInt = 0x70726570
+pub const PREP : UInt32 = 0x70726570
 
-pub const STRO : UInt = 0x7374726F
+pub const STRO : UInt32 = 0x7374726F
 
-pub const UNDO : UInt = 0x756E646F
+pub const UNDO : UInt32 = 0x756E646F
 
-pub const UNDS : UInt = 0x756E6473
+pub const UNDS : UInt32 = 0x756E6473
 
-pub const VASC : UInt = 0x76617363
+pub const VASC : UInt32 = 0x76617363
 
-pub const VDSC : UInt = 0x76647363
+pub const VDSC : UInt32 = 0x76647363
 
-pub const VHEA : UInt = 0x76686561
+pub const VHEA : UInt32 = 0x76686561
 
-pub const VLGP : UInt = 0x766C6770
+pub const VLGP : UInt32 = 0x766C6770
 
-pub const VMTX : UInt = 0x766D7478
+pub const VMTX : UInt32 = 0x766D7478
 
-pub const VORG : UInt = 0x564F5247
+pub const VORG : UInt32 = 0x564F5247
 
-pub const VVAR : UInt = 0x56564152
+pub const VVAR : UInt32 = 0x56564152
 
-pub const XHGT : UInt = 0x78686774
+pub const XHGT : UInt32 = 0x78686774
 
-pub fn aat_lookup_u16(BeBytes, Int, UInt16) -> UInt16?
+pub fn aat_lookup_u16(BeBytes, Int32, UInt16) -> UInt16?
 
-pub fn adjust_axis(Bytes, UInt, UInt, Fixed) -> Fixed?
+pub fn adjust_axis(Bytes, UInt32, UInt32, Fixed) -> Fixed?
 
-pub fn advance(Bytes, UInt, UInt, UInt) -> UInt
+pub fn advance(Bytes, UInt32, UInt32, UInt32) -> UInt32
 
-pub fn advance_delta(Bytes, UInt, UInt, ArrayView[Int]) -> Double
+pub fn advance_delta(Bytes, UInt32, UInt32, ArrayView[Int32]) -> Double
 
-pub fn ceil(Int) -> Int
+pub fn ceil(Int32) -> Int32
 
-pub fn classdef(Bytes, UInt, UInt16) -> UInt16
+pub fn classdef(Bytes, UInt32, UInt16) -> UInt16
 
-pub fn count(Bytes) -> Int
+pub fn count(Bytes) -> Int32
 
-pub fn coverage(Bytes, UInt, UInt16) -> UInt16?
+pub fn coverage(Bytes, UInt32, UInt16) -> UInt16?
 
-pub fn div(Int, Int) -> Int
+pub fn div(Int32, Int32) -> Int32
 
-pub fn enumerate(Bytes, UInt, (UInt, UInt) -> Unit) -> Unit
+pub fn enumerate(Bytes, UInt32, (UInt32, UInt32) -> Unit) -> Unit
 
-pub fn feature_at(Bytes, UInt, UInt16) -> (UInt, UInt)?
+pub fn feature_at(Bytes, UInt32, UInt16) -> (UInt32, UInt32)?
 
-pub fn feature_count(Bytes, UInt) -> UInt16
+pub fn feature_count(Bytes, UInt32) -> UInt16
 
-pub fn floor(Int) -> Int
+pub fn floor(Int32) -> Int32
 
-pub fn get(Bytes, UInt, UInt, UInt, UInt) -> BytesView?
+pub fn get(Bytes, UInt32, UInt32, UInt32, UInt32) -> BytesView?
 
 pub fn is_collection(Bytes) -> Bool
 
-pub fn is_font(Bytes, Int) -> Bool
+pub fn is_font(Bytes, Int32) -> Bool
 
-pub fn item_delta(Bytes, UInt, UInt, UInt, ArrayView[Int]) -> Fixed?
+pub fn item_delta(Bytes, UInt32, UInt32, UInt32, ArrayView[Int32]) -> Fixed?
 
-pub fn kern_subtables(Bytes, UInt) -> KernSubtables
+pub fn kern_subtables(Bytes, UInt32) -> KernSubtables
 
 pub fn kerx_anchor_points(BytesView, UInt16) -> KerxAnchorPoints?
 
-pub fn kerx_subtables(Bytes, UInt, UInt) -> KerxSubtables
+pub fn kerx_subtables(Bytes, UInt32, UInt32) -> KerxSubtables
 
-pub fn language_feature_at(Bytes, UInt, UInt16) -> UInt16?
+pub fn language_feature_at(Bytes, UInt32, UInt16) -> UInt16?
 
-pub fn language_feature_count(Bytes, UInt) -> UInt16
+pub fn language_feature_count(Bytes, UInt32) -> UInt16
 
-pub fn lookup_data(Bytes, Byte, UInt, UInt16, Byte, Gdef?) -> LookupData?
+pub fn lookup_data(Bytes, Byte, UInt32, UInt16, Byte, Gdef?) -> LookupData?
 
-pub fn map(Bytes, UInt, UInt, UInt) -> UInt?
+pub fn map(Bytes, UInt32, UInt32, UInt32) -> UInt32?
 
-pub fn morx_chains(Bytes, UInt) -> MorxChains
+pub fn morx_chains(Bytes, UInt32) -> MorxChains
 
-pub fn morx_feature_from_tag(UInt) -> (UInt16, (UInt16, UInt16))?
+pub fn morx_feature_from_tag(UInt32) -> (UInt16, (UInt16, UInt16))?
 
-pub fn morx_language_index(Bytes, UInt, String) -> UInt?
+pub fn morx_language_index(Bytes, UInt32, String) -> UInt32?
 
-pub fn mul(Int, Int) -> Int
+pub fn mul(Int32, Int32) -> Int32
 
-pub fn muldiv(Int, Int, Int) -> Int
+pub fn muldiv(Int32, Int32, Int32) -> Int32
 
-pub fn offset(Bytes, Int) -> Int?
+pub fn offset(Bytes, Int32) -> Int32?
 
-pub fn origin(Bytes, UInt, UInt) -> Int?
+pub fn origin(Bytes, UInt32, UInt32) -> Int32?
 
-pub fn raw_tag(Bytes) -> UInt?
+pub fn raw_tag(Bytes) -> UInt32?
 
-pub fn round(Int) -> Int
+pub fn round(Int32) -> Int32
 
-pub fn sb(Bytes, UInt, UInt, UInt) -> Int
+pub fn sb(Bytes, UInt32, UInt32, UInt32) -> Int32
 
-pub fn sb_delta(Bytes, UInt, UInt, ArrayView[Int]) -> Double
+pub fn sb_delta(Bytes, UInt32, UInt32, ArrayView[Int32]) -> Double
 
-pub fn script_at(Bytes, UInt, UInt16) -> (UInt, UInt)?
+pub fn script_at(Bytes, UInt32, UInt16) -> (UInt32, UInt32)?
 
-pub fn script_by_tag(Bytes, UInt, UInt) -> UInt?
+pub fn script_by_tag(Bytes, UInt32, UInt32) -> UInt32?
 
-pub fn script_count(Bytes, UInt) -> UInt16
+pub fn script_count(Bytes, UInt32) -> UInt16
 
-pub fn script_default_language(Bytes, UInt) -> UInt?
+pub fn script_default_language(Bytes, UInt32) -> UInt32?
 
-pub fn script_language_at(Bytes, UInt, UInt16) -> (UInt, UInt)?
+pub fn script_language_at(Bytes, UInt32, UInt16) -> (UInt32, UInt32)?
 
-pub fn script_language_by_tag(Bytes, UInt, UInt?) -> (UInt, Bool)?
+pub fn script_language_by_tag(Bytes, UInt32, UInt32?) -> (UInt32, Bool)?
 
-pub fn script_language_count(Bytes, UInt) -> UInt16
+pub fn script_language_count(Bytes, UInt32) -> UInt16
 
-pub fn[T : RawFont] subtable(T) -> (UInt, UInt, Bool)?
+pub fn[T : RawFont] subtable(T) -> (UInt32, UInt32, Bool)?
 
-pub fn subtable_data(Bytes, UInt, LookupKind, UInt16) -> SubtableData?
+pub fn subtable_data(Bytes, UInt32, LookupKind, UInt16) -> SubtableData?
 
-pub fn[T : RawFont] table_data(T, UInt) -> BytesView?
+pub fn[T : RawFont] table_data(T, UInt32) -> BytesView?
 
-pub fn[T : RawFont] table_offset(T, UInt) -> UInt
+pub fn[T : RawFont] table_offset(T, UInt32) -> UInt32
 
-pub fn[T : RawFont] table_range(T, UInt) -> (UInt, UInt)?
+pub fn[T : RawFont] table_range(T, UInt32) -> (UInt32, UInt32)?
 
-pub fn validate_coverage(Bytes, UInt) -> Bool
+pub fn validate_coverage(Bytes, UInt32) -> Bool
 
-pub fn ymax(Bytes, UInt, UInt, UInt, UInt) -> Int?
+pub fn ymax(Bytes, UInt32, UInt32, UInt32, UInt32) -> Int32?
 
 // Errors
 
@@ -195,39 +195,39 @@ pub struct BeBytes {
   data : BytesView
 }
 pub fn BeBytes::BeBytes(Bytes) -> Self
-pub fn BeBytes::check_range(Self, Int, Int) -> Bool
+pub fn BeBytes::check_range(Self, Int32, Int32) -> Bool
 pub fn BeBytes::data(Self) -> BytesView
-pub fn BeBytes::ensure_range(Self, Int, Int) -> Bool
+pub fn BeBytes::ensure_range(Self, Int32, Int32) -> Bool
 pub fn BeBytes::from_view(BytesView) -> Self
-pub fn BeBytes::len(Self) -> Int
-pub fn BeBytes::read_i16(Self, Int) -> Int?
-pub fn BeBytes::read_i32(Self, Int) -> Int?
-pub fn BeBytes::read_u16(Self, Int) -> UInt?
-pub fn BeBytes::read_u24(Self, Int) -> UInt?
-pub fn BeBytes::read_u32(Self, Int) -> UInt?
-pub fn BeBytes::read_u64(Self, Int) -> UInt64?
-pub fn BeBytes::read_u8(Self, Int) -> Byte?
-pub fn BeBytes::with_offset(Bytes, Int) -> Self?
+pub fn BeBytes::len(Self) -> Int32
+pub fn BeBytes::read_i16(Self, Int32) -> Int32?
+pub fn BeBytes::read_i32(Self, Int32) -> Int32?
+pub fn BeBytes::read_u16(Self, Int32) -> UInt32?
+pub fn BeBytes::read_u24(Self, Int32) -> UInt32?
+pub fn BeBytes::read_u32(Self, Int32) -> UInt32?
+pub fn BeBytes::read_u64(Self, Int32) -> UInt64?
+pub fn BeBytes::read_u8(Self, Int32) -> Byte?
+pub fn BeBytes::with_offset(Bytes, Int32) -> Self?
 
 pub(all) struct ExtendedStateTable {
   b : BeBytes
-  classes : Int
-  class_table : Int
-  state_array : Int
-  entry_table : Int
+  classes : Int32
+  class_table : Int32
+  state_array : Int32
+  entry_table : Int32
 }
 pub fn ExtendedStateTable::class(Self, UInt16) -> UInt16
-pub fn[T] ExtendedStateTable::entry(Self, UInt16, UInt16, Int, (BeBytes, Int) -> T?) -> AatEntry[T]?
+pub fn[T] ExtendedStateTable::entry(Self, UInt16, UInt16, Int32, (BeBytes, Int32) -> T?) -> AatEntry[T]?
 pub fn ExtendedStateTable::from_view(BytesView) -> Self?
 
 pub struct FeatureSubsts {
-  offset : UInt
+  offset : UInt32
 }
-pub fn FeatureSubsts::apply(Self, Bytes, UInt16) -> UInt?
-pub fn FeatureSubsts::from_data(Bytes, UInt, ArrayView[Int]) -> Self?
+pub fn FeatureSubsts::apply(Self, Bytes, UInt16) -> UInt32?
+pub fn FeatureSubsts::from_data(Bytes, UInt32, ArrayView[Int32]) -> Self?
 
 pub struct Fixed {
-  value : Int
+  value : Int32
 }
 pub fn Fixed::abs(Self) -> Self
 pub fn Fixed::add(Self, Self) -> Self
@@ -235,10 +235,10 @@ pub fn Fixed::div(Self, Self) -> Self
 pub fn Fixed::epsilon() -> Self
 pub fn Fixed::floor(Self) -> Self
 pub fn Fixed::fract(Self) -> Self
-pub fn Fixed::from_f2dot14(Int) -> Self
+pub fn Fixed::from_f2dot14(Int32) -> Self
 pub fn Fixed::from_f32(Double) -> Self
-pub fn Fixed::from_i32(Int) -> Self
-pub fn Fixed::from_raw(Int) -> Self
+pub fn Fixed::from_i32(Int32) -> Self
+pub fn Fixed::from_raw(Int32) -> Self
 pub fn Fixed::max(Self, Self) -> Self
 pub fn Fixed::max_value() -> Self
 pub fn Fixed::min(Self, Self) -> Self
@@ -246,12 +246,12 @@ pub fn Fixed::min_value() -> Self
 pub fn Fixed::mul(Self, Self) -> Self
 pub fn Fixed::neg(Self) -> Self
 pub fn Fixed::one() -> Self
-pub fn Fixed::raw(Self) -> Int
+pub fn Fixed::raw(Self) -> Int32
 pub fn Fixed::round(Self) -> Self
 pub fn Fixed::sub(Self, Self) -> Self
-pub fn Fixed::to_f2dot14(Self) -> Int
+pub fn Fixed::to_f2dot14(Self) -> Int32
 pub fn Fixed::to_f32(Self) -> Double
-pub fn Fixed::to_i32(Self) -> Int
+pub fn Fixed::to_i32(Self) -> Int32
 pub fn Fixed::zero() -> Self
 pub impl Add for Fixed
 pub impl Div for Fixed
@@ -261,99 +261,99 @@ pub impl Sub for Fixed
 
 pub struct Fvar {
   data : BytesView
-  axis_offset : UInt
-  axis_count : UInt
-  axis_size : UInt
-  inst_count : UInt
-  inst_size : UInt
+  axis_offset : UInt32
+  axis_count : UInt32
+  axis_size : UInt32
+  inst_count : UInt32
+  inst_size : UInt32
 }
 pub fn Fvar::Fvar(BytesView) -> Self
-pub fn Fvar::axis_count(Self) -> UInt
+pub fn Fvar::axis_count(Self) -> UInt32
 pub fn[T : RawFont] Fvar::from_font(T) -> Self?
-pub fn Fvar::get_axis(Self, UInt) -> VarAxis?
-pub fn Fvar::get_axis_by_tag(Self, UInt) -> VarAxis?
-pub fn Fvar::get_instance(Self, UInt) -> VarInstance?
-pub fn Fvar::instance_count(Self) -> UInt
+pub fn Fvar::get_axis(Self, UInt32) -> VarAxis?
+pub fn Fvar::get_axis_by_tag(Self, UInt32) -> VarAxis?
+pub fn Fvar::get_instance(Self, UInt32) -> VarInstance?
+pub fn Fvar::instance_count(Self) -> UInt32
 
 pub struct Gdef {
   data : Bytes
-  base : Int
+  base : Int32
   classes : UInt16
   mark_classes : UInt16
   mark_sets : UInt16
-  var_store : UInt
+  var_store : UInt32
 }
 pub fn Gdef::class(Self, UInt16) -> UInt16
-pub fn Gdef::delta(Self, UInt16, UInt16, ArrayView[Int]) -> Double
+pub fn Gdef::delta(Self, UInt16, UInt16, ArrayView[Int32]) -> Double
 pub fn Gdef::empty() -> Self
-pub fn Gdef::from_base(Bytes, Int) -> Self?
-pub fn Gdef::from_offset(Bytes, UInt) -> Self?
+pub fn Gdef::from_base(Bytes, Int32) -> Self?
+pub fn Gdef::from_offset(Bytes, UInt32) -> Self?
 pub fn Gdef::has_classes(Self) -> Bool
 pub fn Gdef::has_mark_classes(Self) -> Bool
 pub fn Gdef::has_var_store(Self) -> Bool
 pub fn Gdef::mark_class(Self, UInt16) -> UInt16
-pub fn Gdef::mark_set_coverage(Self, UInt, UInt16) -> UInt16?
-pub fn Gdef::mark_set_offset(Self, UInt16) -> UInt?
+pub fn Gdef::mark_set_coverage(Self, UInt32, UInt16) -> UInt16?
+pub fn Gdef::mark_set_offset(Self, UInt16) -> UInt32?
 pub fn Gdef::ok(Self) -> Bool
 
 pub struct Head {
   data : BytesView
 }
 pub fn Head::Head(BytesView) -> Self
-pub fn Head::bounds(Self) -> ((Int, Int), (Int, Int))
-pub fn Head::checksum_adjustment(Self) -> UInt
+pub fn Head::bounds(Self) -> ((Int32, Int32), (Int32, Int32))
+pub fn Head::checksum_adjustment(Self) -> UInt32
 pub fn Head::created(Self) -> UInt64
-pub fn Head::direction_hint(Self) -> UInt
-pub fn Head::flags(Self) -> UInt
+pub fn Head::direction_hint(Self) -> UInt32
+pub fn Head::flags(Self) -> UInt32
 pub fn[T : RawFont] Head::from_font(T) -> Self?
-pub fn Head::glyph_data_format(Self) -> Int
-pub fn Head::index_to_location_format(Self) -> UInt
-pub fn Head::lowest_recommended_ppem(Self) -> UInt
-pub fn Head::mac_style(Self) -> UInt
-pub fn Head::magic(Self) -> UInt
-pub fn Head::major_version(Self) -> UInt
-pub fn Head::minor_version(Self) -> UInt
+pub fn Head::glyph_data_format(Self) -> Int32
+pub fn Head::index_to_location_format(Self) -> UInt32
+pub fn Head::lowest_recommended_ppem(Self) -> UInt32
+pub fn Head::mac_style(Self) -> UInt32
+pub fn Head::magic(Self) -> UInt32
+pub fn Head::major_version(Self) -> UInt32
+pub fn Head::minor_version(Self) -> UInt32
 pub fn Head::modified(Self) -> UInt64
-pub fn Head::revision(Self) -> UInt
-pub fn Head::units_per_em(Self) -> UInt
+pub fn Head::revision(Self) -> UInt32
+pub fn Head::units_per_em(Self) -> UInt32
 
 pub struct Hhea {
   data : BytesView
 }
 pub fn Hhea::Hhea(BytesView) -> Self
-pub fn Hhea::ascender(Self) -> Int
-pub fn Hhea::descender(Self) -> Int
+pub fn Hhea::ascender(Self) -> Int32
+pub fn Hhea::descender(Self) -> Int32
 pub fn[T : RawFont] Hhea::from_font(T) -> Self?
-pub fn Hhea::line_gap(Self) -> Int
-pub fn Hhea::max_advance(Self) -> UInt
-pub fn Hhea::num_long_metrics(Self) -> UInt
+pub fn Hhea::line_gap(Self) -> Int32
+pub fn Hhea::max_advance(Self) -> UInt32
+pub fn Hhea::num_long_metrics(Self) -> UInt32
 
 pub struct KernFormat0 {
   b : BeBytes
-  base : Int
-  count : Int
+  base : Int32
+  count : Int32
 }
-pub fn KernFormat0::get(Self, UInt16, UInt16) -> Int?
+pub fn KernFormat0::get(Self, UInt16, UInt16) -> Int32?
 
 pub struct KernFormat1 {
   b : BeBytes
   state_table : StateTable
   cross_stream : Bool
 }
-pub fn KernFormat1::next(Self, KernFormat1State, Int, UInt16, (Int, Int) -> Unit?) -> Int?
+pub fn KernFormat1::next(Self, KernFormat1State, Int32, UInt16, (Int32, Int32) -> Unit?) -> Int32?
 
 pub struct KernFormat1State {
   mut state : UInt16
-  stack : Array[Int]
-  mut pos : Int
-  mut cycles : Int
+  stack : Array[Int32]
+  mut pos : Int32
+  mut cycles : Int32
 }
 pub fn KernFormat1State::KernFormat1State() -> Self
 
 pub struct KernSubtable {
   b : BeBytes
-  offset : Int
-  size : UInt
+  offset : Int32
+  size : UInt32
   is_horizontal : Bool
   cross_stream : Bool
   format : Byte
@@ -370,74 +370,74 @@ pub(all) enum KernSubtableKind {
 
 pub struct KernSubtables {
   b : BeBytes
-  offset : Int
-  len : UInt
-  cur : UInt
+  offset : Int32
+  len : UInt32
+  cur : UInt32
   is_aat : Bool
 }
 pub fn KernSubtables::iter(Self) -> Iter[KernSubtable]
 
 pub struct KerxAnchorPoints {
   b : BeBytes
-  offset : Int
-  len : UInt
+  offset : Int32
+  len : UInt32
 }
-pub fn KerxAnchorPoints::get(Self, UInt16) -> (Int, Int)?
+pub fn KerxAnchorPoints::get(Self, UInt16) -> (Int32, Int32)?
 
 pub struct KerxContextualState {
   mut state : UInt16
-  stack : Array[Int]
-  mut pos : Int
-  mut cycles : Int
+  stack : Array[Int32]
+  mut pos : Int32
+  mut cycles : Int32
 }
 pub fn KerxContextualState::KerxContextualState() -> Self
 
 pub struct KerxFormat0 {
   b : BeBytes
-  count : Int
+  count : Int32
 }
-pub fn KerxFormat0::get(Self, UInt16, UInt16) -> Int?
+pub fn KerxFormat0::get(Self, UInt16, UInt16) -> Int32?
 
 pub struct KerxFormat1 {
   b : BeBytes
   state_table : ExtendedStateTable
-  value : Int
-  tuple_count : UInt
-  tuple_size : Int
+  value : Int32
+  tuple_count : UInt32
+  tuple_size : Int32
 }
-pub fn KerxFormat1::next(Self, KerxContextualState, Int, UInt16, (Int, Int) -> Unit?) -> Int?
+pub fn KerxFormat1::next(Self, KerxContextualState, Int32, UInt16, (Int32, Int32) -> Unit?) -> Int32?
 
 pub struct KerxFormat2 {
   b : BeBytes
-  l_table : Int
-  r_table : Int
-  array : Int
+  l_table : Int32
+  r_table : Int32
+  array : Int32
 }
-pub fn KerxFormat2::get(Self, UInt16, UInt16) -> Int?
+pub fn KerxFormat2::get(Self, UInt16, UInt16) -> Int32?
 
 pub struct KerxFormat4 {
   b : BeBytes
   state_table : ExtendedStateTable
-  action_type : UInt
-  control_table : Int
+  action_type : UInt32
+  control_table : Int32
   ankr : BytesView
 }
-pub fn KerxFormat4::next(Self, KerxFormat4State, Int, UInt16, (Int, Int, Double, Double) -> Unit?) -> Int?
+pub fn KerxFormat4::next(Self, KerxFormat4State, Int32, UInt16, (Int32, Int32, Double, Double) -> Unit?) -> Int32?
 
 pub struct KerxFormat4State {
   mut state : UInt16
-  mut mark : Int
+  mut mark : Int32
   mut mark_id : UInt16
-  mut cycles : Int
+  mut cycles : Int32
 }
 pub fn KerxFormat4State::KerxFormat4State() -> Self
 
 pub struct KerxSubtable {
   b : BeBytes
   version : UInt16
-  size : UInt
-  coverage : UInt
-  tuple_count : UInt
+  size : UInt32
+  coverage : UInt32
+  tuple_count : UInt32
   ankr : BytesView
 }
 pub fn KerxSubtable::is_cross_stream(Self) -> Bool
@@ -455,9 +455,9 @@ pub(all) enum KerxSubtableKind {
 pub struct KerxSubtables {
   b : BeBytes
   version : UInt16
-  offset : Int
-  len : UInt
-  cur : UInt
+  offset : Int32
+  len : UInt32
+  cur : UInt32
   ankr : BytesView
 }
 pub fn KerxSubtables::iter(Self) -> Iter[KerxSubtable]
@@ -470,15 +470,15 @@ pub struct LookupData {
   mask : Byte
   ignored : Byte
   is_ext : Bool
-  offset : UInt
-  mut coverage : UInt
+  offset : UInt32
+  mut coverage : UInt32
   count : UInt16
   mut subtables : (UInt16, UInt16)
-  mark_set : UInt
+  mark_set : UInt32
   mark_check : Byte
   mark_class : Byte
 }
-pub fn LookupData::set_coverage(Self, UInt) -> Unit
+pub fn LookupData::set_coverage(Self, UInt32) -> Unit
 pub fn LookupData::set_feature(Self, UInt16) -> Unit
 pub fn LookupData::set_subtables(Self, UInt16, UInt16) -> Unit
 pub fn LookupData::subtable_data(Self, Bytes, UInt16) -> SubtableData?
@@ -504,53 +504,53 @@ pub struct Maxp {
 }
 pub fn Maxp::Maxp(BytesView) -> Self
 pub fn[T : RawFont] Maxp::from_font(T) -> Self?
-pub fn Maxp::glyph_count(Self) -> UInt
+pub fn Maxp::glyph_count(Self) -> UInt32
 pub fn Maxp::is_truetype(Self) -> Bool
-pub fn Maxp::max_component_depth(Self) -> UInt
-pub fn Maxp::max_component_elements(Self) -> UInt
-pub fn Maxp::max_composite_contours(Self) -> UInt
-pub fn Maxp::max_composite_points(Self) -> UInt
-pub fn Maxp::max_contours(Self) -> UInt
-pub fn Maxp::max_function_definitions(Self) -> UInt
-pub fn Maxp::max_instruction_definitions(Self) -> UInt
-pub fn Maxp::max_instructions_size(Self) -> UInt
-pub fn Maxp::max_points(Self) -> UInt
-pub fn Maxp::max_stack_depth(Self) -> UInt
-pub fn Maxp::max_storage(Self) -> UInt
-pub fn Maxp::max_twilight_points(Self) -> UInt
-pub fn Maxp::max_zones(Self) -> UInt
-pub fn Maxp::version(Self) -> UInt
+pub fn Maxp::max_component_depth(Self) -> UInt32
+pub fn Maxp::max_component_elements(Self) -> UInt32
+pub fn Maxp::max_composite_contours(Self) -> UInt32
+pub fn Maxp::max_composite_points(Self) -> UInt32
+pub fn Maxp::max_contours(Self) -> UInt32
+pub fn Maxp::max_function_definitions(Self) -> UInt32
+pub fn Maxp::max_instruction_definitions(Self) -> UInt32
+pub fn Maxp::max_instructions_size(Self) -> UInt32
+pub fn Maxp::max_points(Self) -> UInt32
+pub fn Maxp::max_stack_depth(Self) -> UInt32
+pub fn Maxp::max_storage(Self) -> UInt32
+pub fn Maxp::max_twilight_points(Self) -> UInt32
+pub fn Maxp::max_zones(Self) -> UInt32
+pub fn Maxp::version(Self) -> UInt32
 
 pub struct MorxChain {
   b : BeBytes
-  offset : Int
-  default_flags : UInt
-  feature_count : UInt
-  subtable_count : UInt
+  offset : Int32
+  default_flags : UInt32
+  feature_count : UInt32
+  subtable_count : UInt32
 }
-pub fn MorxChain::default_flags(Self) -> UInt
+pub fn MorxChain::default_flags(Self) -> UInt32
 pub fn MorxChain::features(Self) -> Iter[MorxFeature]
 pub fn MorxChain::subtables(Self) -> MorxSubtables
 
 pub struct MorxChains {
   b : BeBytes
-  offset : Int
-  len : UInt
-  cur : UInt
+  offset : Int32
+  len : UInt32
+  cur : UInt32
 }
 pub fn MorxChains::iter(Self) -> Iter[MorxChain]
 
 pub struct MorxContextual {
   b : BeBytes
   state_table : ExtendedStateTable
-  table : Int
+  table : Int32
 }
-pub fn MorxContextual::next(Self, MorxContextualState, Int, UInt16, Bool, (Int, UInt16) -> Unit?) -> Unit?
+pub fn MorxContextual::next(Self, MorxContextualState, Int32, UInt16, Bool, (Int32, UInt16) -> Unit?) -> Unit?
 
 pub struct MorxContextualState {
   mut state : UInt16
   mut mark_set : Bool
-  mut mark_index : Int
+  mut mark_index : Int32
   mut mark_id : UInt16
 }
 pub fn MorxContextualState::MorxContextualState() -> Self
@@ -558,38 +558,38 @@ pub fn MorxContextualState::MorxContextualState() -> Self
 pub struct MorxFeature {
   selector : UInt16
   setting_selector : UInt16
-  enable_flags : UInt
-  disable_flags : UInt
+  enable_flags : UInt32
+  disable_flags : UInt32
 }
 
 pub struct MorxInsertion {
   b : BeBytes
   state_table : ExtendedStateTable
-  action : Int
+  action : Int32
 }
-pub fn MorxInsertion::next(Self, MorxInsertionState, Int, UInt16, Bool, (Int, ArrayView[UInt16]) -> Unit?) -> Int?
+pub fn MorxInsertion::next(Self, MorxInsertionState, Int32, UInt16, Bool, (Int32, ArrayView[UInt16]) -> Unit?) -> Int32?
 
 pub struct MorxInsertionState {
   mut state : UInt16
-  mut mark : Int
-  mut cycles : Int
+  mut mark : Int32
+  mut cycles : Int32
 }
 pub fn MorxInsertionState::MorxInsertionState() -> Self
 
 pub struct MorxLigature {
   b : BeBytes
   state_table : ExtendedStateTable
-  action : Int
-  component : Int
-  ligature : Int
+  action : Int32
+  component : Int32
+  ligature : Int32
 }
-pub fn MorxLigature::next(Self, MorxLigatureState, Int, UInt16, Bool, (Int, UInt16, ArrayView[Int]) -> Unit?) -> Unit?
+pub fn MorxLigature::next(Self, MorxLigatureState, Int32, UInt16, Bool, (Int32, UInt16, ArrayView[Int32]) -> Unit?) -> Unit?
 
 pub struct MorxLigatureState {
   mut state : UInt16
-  indices : Array[Int]
+  indices : Array[Int32]
   glyphs : Array[UInt16]
-  mut pos : Int
+  mut pos : Int32
 }
 pub fn MorxLigatureState::MorxLigatureState() -> Self
 
@@ -599,36 +599,36 @@ pub struct MorxNonContextual {
 pub fn MorxNonContextual::substitute(Self, UInt16) -> UInt16?
 
 pub struct MorxRearrange {
-  l : Int
-  r : Int
+  l : Int32
+  r : Int32
   reverse_l : Bool
   reverse_r : Bool
-  start : Int
-  end : Int
+  start : Int32
+  end : Int32
 }
 pub fn[T] MorxRearrange::apply(Self, Array[T]) -> Unit
 
 pub struct MorxRearrangement {
   state_table : ExtendedStateTable
 }
-pub fn MorxRearrangement::next(Self, MorxRearrangementState, Int, UInt16, Bool, (MorxRearrange) -> Unit?) -> Int?
+pub fn MorxRearrangement::next(Self, MorxRearrangementState, Int32, UInt16, Bool, (MorxRearrange) -> Unit?) -> Int32?
 
 pub struct MorxRearrangementState {
   mut state : UInt16
-  mut first : Int
-  mut last : Int
-  mut cycles : Int
+  mut first : Int32
+  mut last : Int32
+  mut cycles : Int32
 }
 pub fn MorxRearrangementState::MorxRearrangementState() -> Self
 
 pub struct MorxSubtable {
   b : BeBytes
-  offset : Int
-  kind : UInt
-  coverage : UInt
-  flags : UInt
+  offset : Int32
+  kind : UInt32
+  coverage : UInt32
+  flags : UInt32
 }
-pub fn MorxSubtable::flags(Self) -> UInt
+pub fn MorxSubtable::flags(Self) -> UInt32
 pub fn MorxSubtable::kind(Self) -> MorxSubtableKind?
 pub fn MorxSubtable::should_reverse(Self, Bool) -> Bool
 
@@ -642,43 +642,43 @@ pub(all) enum MorxSubtableKind {
 
 pub struct MorxSubtables {
   b : BeBytes
-  offset : Int
-  len : UInt
-  cur : UInt
+  offset : Int32
+  len : UInt32
+  cur : UInt32
 }
 pub fn MorxSubtables::iter(Self) -> Iter[MorxSubtable]
 
 pub struct Mvar {
   data : Bytes
-  coords : ArrayView[Int]
-  base : Int
-  rec_size : Int
-  rec_count : Int
-  store : UInt
+  coords : ArrayView[Int32]
+  base : Int32
+  rec_size : Int32
+  rec_count : Int32
+  store : UInt32
 }
-pub fn Mvar::delta(Self, UInt) -> Double
-pub fn Mvar::from_data(Bytes, UInt, ArrayView[Int]) -> Self?
+pub fn Mvar::delta(Self, UInt32) -> Double
+pub fn Mvar::from_data(Bytes, UInt32, ArrayView[Int32]) -> Self?
 
 pub struct Os2 {
   data : BytesView
 }
 pub fn Os2::Os2(BytesView) -> Self
-pub fn Os2::average_char_width(Self) -> Int
-pub fn Os2::cap_height(Self) -> Int
+pub fn Os2::average_char_width(Self) -> Int32
+pub fn Os2::cap_height(Self) -> Int32
 pub fn[T : RawFont] Os2::from_font(T) -> Self?
 pub fn Os2::selection_flags(Self) -> Os2Flags
-pub fn Os2::strikeout_position(Self) -> Int
-pub fn Os2::strikeout_size(Self) -> Int
-pub fn Os2::typographic_ascender(Self) -> Int
-pub fn Os2::typographic_descender(Self) -> Int
-pub fn Os2::typographic_line_gap(Self) -> Int
-pub fn Os2::version(Self) -> UInt
-pub fn Os2::weight_class(Self) -> Int
-pub fn Os2::width_class(Self) -> Int
-pub fn Os2::x_height(Self) -> Int
+pub fn Os2::strikeout_position(Self) -> Int32
+pub fn Os2::strikeout_size(Self) -> Int32
+pub fn Os2::typographic_ascender(Self) -> Int32
+pub fn Os2::typographic_descender(Self) -> Int32
+pub fn Os2::typographic_line_gap(Self) -> Int32
+pub fn Os2::version(Self) -> UInt32
+pub fn Os2::weight_class(Self) -> Int32
+pub fn Os2::width_class(Self) -> Int32
+pub fn Os2::x_height(Self) -> Int32
 
 pub struct Os2Flags {
-  value : UInt
+  value : UInt32
 }
 pub fn Os2Flags::italic(Self) -> Bool
 pub fn Os2Flags::oblique(Self) -> Bool
@@ -692,46 +692,46 @@ pub fn Post::data(Self) -> BytesView
 pub fn[T : RawFont] Post::from_font(T) -> Self?
 pub fn Post::has_names(Self) -> Bool
 pub fn Post::is_fixed_pitch(Self) -> Bool
-pub fn Post::italic_angle(Self) -> UInt
+pub fn Post::italic_angle(Self) -> UInt32
 pub fn Post::name(Self, UInt16) -> String?
-pub fn Post::underline_position(Self) -> Int
-pub fn Post::underline_size(Self) -> Int
-pub fn Post::version(Self) -> UInt
+pub fn Post::underline_position(Self) -> Int32
+pub fn Post::underline_size(Self) -> Int32
+pub fn Post::version(Self) -> UInt32
 
 pub(all) struct StateTable {
   b : BeBytes
-  class_count : Int
-  state_array : Int
+  class_count : Int32
+  state_array : Int32
   states : BytesView
-  entry_table : Int
+  entry_table : Int32
   first_glyph : UInt16
   classes : BytesView
 }
 pub fn StateTable::class(Self, UInt16) -> UInt16
-pub fn[T] StateTable::entry(Self, UInt16, UInt16, Int, (BeBytes, Int) -> T?) -> AatEntry[T]?
+pub fn[T] StateTable::entry(Self, UInt16, UInt16, Int32, (BeBytes, Int32) -> T?) -> AatEntry[T]?
 pub fn StateTable::from_view(BytesView) -> Self?
 
 pub struct Stream {
   data : BytesView
-  mut offset : Int
+  mut offset : Int32
 }
 pub fn Stream::Stream(Bytes) -> Self
-pub fn Stream::check_range(Self, Int) -> Bool
+pub fn Stream::check_range(Self, Int32) -> Bool
 pub fn Stream::data(Self) -> BytesView
 pub fn Stream::from_view(BytesView) -> Self
-pub fn Stream::len(Self) -> Int
-pub fn Stream::offset(Self) -> Int
-pub fn Stream::read_i16(Self) -> Int?
-pub fn Stream::read_u16(Self) -> UInt?
-pub fn Stream::read_u32(Self) -> UInt?
+pub fn Stream::len(Self) -> Int32
+pub fn Stream::offset(Self) -> Int32
+pub fn Stream::read_i16(Self) -> Int32?
+pub fn Stream::read_u16(Self) -> UInt32?
+pub fn Stream::read_u32(Self) -> UInt32?
 pub fn Stream::read_u8(Self) -> Byte?
-pub fn Stream::remaining(Self) -> Int
-pub fn Stream::set_offset(Self, Int) -> Bool
-pub fn Stream::skip(Self, Int) -> Bool
-pub fn Stream::with_offset(Bytes, Int) -> Self?
+pub fn Stream::remaining(Self) -> Int32
+pub fn Stream::set_offset(Self, Int32) -> Bool
+pub fn Stream::skip(Self, Int32) -> Bool
+pub fn Stream::with_offset(Bytes, Int32) -> Self?
 
 pub struct SubtableData {
-  offset : UInt
+  offset : UInt32
   kind : SubtableKind
   coverage : UInt16
 }
@@ -761,22 +761,22 @@ pub(all) enum SubtableKind {
 }
 
 pub struct VarAxis {
-  index : UInt
-  tag : UInt
-  name_id : UInt
-  flags : UInt
+  index : UInt32
+  tag : UInt32
+  name_id : UInt32
+  flags : UInt32
   min : Fixed
   default : Fixed
   max : Fixed
 }
 pub fn VarAxis::default() -> Self
 pub fn VarAxis::is_hidden(Self) -> Bool
-pub fn VarAxis::normalized_coord(Self, Fixed, (Bytes, UInt)?) -> Int
+pub fn VarAxis::normalized_coord(Self, Fixed, (Bytes, UInt32)?) -> Int32
 
 pub struct VarInstance {
-  index : UInt
-  name_id : UInt
-  postscript_name_id : UInt?
+  index : UInt32
+  name_id : UInt32
+  postscript_name_id : UInt32?
   values : Array[Fixed]
 }
 
@@ -784,18 +784,18 @@ pub struct Vhea {
   data : BytesView
 }
 pub fn Vhea::Vhea(BytesView) -> Self
-pub fn Vhea::ascender(Self) -> Int
-pub fn Vhea::descender(Self) -> Int
+pub fn Vhea::ascender(Self) -> Int32
+pub fn Vhea::descender(Self) -> Int32
 pub fn[T : RawFont] Vhea::from_font(T) -> Self?
-pub fn Vhea::line_gap(Self) -> Int
-pub fn Vhea::max_advance(Self) -> UInt
-pub fn Vhea::num_long_metrics(Self) -> UInt
+pub fn Vhea::line_gap(Self) -> Int32
+pub fn Vhea::max_advance(Self) -> UInt32
+pub fn Vhea::num_long_metrics(Self) -> UInt32
 
 // Type aliases
-pub type RawTag = UInt
+pub type RawTag = UInt32
 
 // Traits
 pub(open) trait RawFont {
   fn data(Self) -> Bytes
-  fn offset(Self) -> Int
+  fn offset(Self) -> Int32
 }

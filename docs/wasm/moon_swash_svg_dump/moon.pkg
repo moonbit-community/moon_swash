@@ -1,14 +1,15 @@
 import {
-  "moonbit-community/miniio" @miniio,
+  "moonbit-community/miniio",
   "Milky2018/moon_zeno" @zeno,
   "Milky2018/moon_swash" @swash,
-  "Milky2018/moon_swash/shape" @shape,
-  "Milky2018/moon_swash/scale" @scale,
+  "Milky2018/moon_swash/shape",
+  "Milky2018/moon_swash/scale",
 }
 
 supported_targets = "wasm"
 
+pkgtype(kind: "executable")
+
 options(
-  "is-main": true,
   link: { "wasm": { "export-memory-name": "memory" } },
 )

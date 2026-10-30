@@ -9,7 +9,7 @@ import {
 }
 
 // Values
-pub fn blit(Array[Byte], UInt, UInt, Int, Int, Array[Byte], Array[Byte], UInt, UInt) -> Unit
+pub fn blit(Array[Byte], UInt32, UInt32, Int32, Int32, Array[Byte], Array[Byte], UInt32, UInt32) -> Unit
 
 pub fn inflate_zlib(Bytes) -> Array[Byte] raise @moon_yazi.YaziError
 
@@ -64,10 +64,10 @@ pub fn Layer::points(Self) -> Array[@moon_zeno.Vector]
 pub fn Layer::verbs(Self) -> Array[@moon_zeno.Verb]
 
 pub struct LayerData {
-  points_start : Int
-  points_end : Int
-  verbs_start : Int
-  verbs_end : Int
+  points_start : Int32
+  points_end : Int32
+  verbs_start : Int32
+  verbs_end : Int32
   color_index : UInt16?
 }
 
@@ -85,11 +85,11 @@ pub fn Outline::close(Self) -> Unit
 pub fn Outline::curve_to(Self, @moon_zeno.Vector, @moon_zeno.Vector, @moon_zeno.Vector) -> Unit
 pub fn Outline::embolden(Self, Double, Double) -> Unit
 pub fn Outline::finish(Self) -> Unit
-pub fn Outline::get(Self, Int) -> Layer?
+pub fn Outline::get(Self, Int32) -> Layer?
 pub fn Outline::is_color(Self) -> Bool
 pub fn Outline::is_empty(Self) -> Bool
-pub fn Outline::layer_data(Self, Int) -> LayerData?
-pub fn Outline::len(Self) -> Int
+pub fn Outline::layer_data(Self, Int32) -> LayerData?
+pub fn Outline::len(Self) -> Int32
 pub fn Outline::line_to(Self, @moon_zeno.Vector) -> Unit
 pub fn Outline::move_to(Self, @moon_zeno.Vector) -> Unit
 pub fn Outline::path(Self) -> (Array[@moon_zeno.Vector], Array[@moon_zeno.Verb])
@@ -130,7 +130,7 @@ type ScaleContext
 pub fn ScaleContext::ScaleContext() -> Self
 pub fn ScaleContext::builder(Self, @moon_swash.FontRef) -> ScalerBuilder
 pub fn ScaleContext::builder_with_id(Self, @moon_swash.FontRef, (UInt64, UInt64)) -> ScalerBuilder
-pub fn ScaleContext::with_max_entries(Int) -> Self
+pub fn ScaleContext::with_max_entries(Int32) -> Self
 
 type Scaler
 pub fn Scaler::has_bitmaps(Self) -> Bool
@@ -151,7 +151,7 @@ pub fn Scaler::size(Self) -> Double
 type ScalerBuilder
 pub fn ScalerBuilder::build(Self) -> Scaler
 pub fn ScalerBuilder::hint(Self, Bool) -> Self
-pub fn ScalerBuilder::normalized_coords(Self, ArrayView[Int]) -> Self
+pub fn ScalerBuilder::normalized_coords(Self, ArrayView[Int32]) -> Self
 pub fn ScalerBuilder::size(Self, Double) -> Self
 pub fn ScalerBuilder::variations(Self, ArrayView[@moon_swash.Setting[Double]]) -> Self
 
@@ -170,7 +170,7 @@ pub(all) enum StrikeWith {
   ExactSize
   BestFit
   LargestSize
-  Index(UInt)
+  Index(UInt32)
 }
 
 // Type aliases
@@ -184,7 +184,7 @@ pub using @moon_zeno {type Placement}
 
 pub using @moon_zeno {type Vector as Point}
 
-pub type StrikeIndex = UInt
+pub type StrikeIndex = UInt32
 
 pub using @moon_zeno {type Transform}
 
