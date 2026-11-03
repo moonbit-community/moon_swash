@@ -133,15 +133,17 @@ fn HintingCache::get(
     Some((ix, is_current)) => {
       self.serial = self.serial + 1
       if ix == entries.length() {
-        match
+        try
           @skrifa_outline.HintingInstance::create(
             outlines,
             size,
             loc,
             hinting_options(),
-          ) {
-          Err(_) => None
-          Ok(h) => {
+          )
+        catch {
+          _ => None
+        } noraise {
+          h => {
             entries.push({
               id0,
               id1,
@@ -169,9 +171,10 @@ fn HintingCache::get(
           // Reuse the existing instance memory by reconfiguring it in-place.
           let e2 = entries[ix]
           let inst = e2.instance
-          match inst.reconfigure(outlines, size, loc, hinting_options()) {
-            Err(_) => None
-            Ok(_) => {
+          try inst.reconfigure(outlines, size, loc, hinting_options()) catch {
+            _ => None
+          } noraise {
+            _ => {
               entries[ix] = {
                 id0,
                 id1,

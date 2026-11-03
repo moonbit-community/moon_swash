@@ -838,13 +838,14 @@ fn Scaler::scale_outline_layer_into(
             Some(h) => @skrifa_outline.DrawSettings::hinted(h, false)
           }
           let pen = OutlineWriter::OutlineWriter(outline)
-          match glyph.draw(settings, pen) {
-            Ok(_) => {
+          try glyph.draw(settings, pen) catch {
+            _ => false
+          } noraise {
+            _ => {
               outline.maybe_close()
               outline.finish()
               true
             }
-            Err(_) => false
           }
         }
       }
